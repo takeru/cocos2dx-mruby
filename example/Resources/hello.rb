@@ -4,7 +4,6 @@ class TestScene
   def initialize
     visibleSize = CCDirector.sharedDirector().getVisibleSize()
     origin = CCDirector.sharedDirector().getVisibleOrigin()
-    puts("visibleSize: #{visibleSize.width},#{visibleSize.height}")
 
     sceneGame = CCScene.create()
     sceneGame.addChild(createLayerFarm(visibleSize, origin))
@@ -46,9 +45,9 @@ class TestScene
     @touchBeginPoint = nil
 
     @layerFarm.registerScriptTouchHandler do |eventType, x, y|
-      if eventType == CCTOUCHBEGAN  #"began"
+      if eventType == CCTOUCHBEGAN
         onTouchBegan(x, y)
-      elsif eventType == CCTOUCHMOVED  #"moved"
+      elsif eventType == CCTOUCHMOVED
         onTouchMoved(x, y)
       else  # ENDED or CANCELLED
         onTouchEnded(x, y)
@@ -87,9 +86,9 @@ class TestScene
     CCDirector.sharedDirector().getScheduler().scheduleScriptFunc(0, false) do
       unless @spriteDogIsPaused
         x, y = spriteDog.getPosition()
-        if x > origin.x + visibleSize.width then
+        if x > origin.x + visibleSize.width
           x = origin.x
-          else
+        else
           x = x + 1
         end
 
