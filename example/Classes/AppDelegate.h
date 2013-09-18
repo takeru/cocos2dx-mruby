@@ -2,8 +2,8 @@
 //  CocosMrubyAppDelegate.h
 //  CocosMruby
 //
-//  Created by admin on 13/09/17.
-//  Copyright __MyCompanyName__ 2013年. All rights reserved.
+//  Created by ktaobo on 13/09/17.
+//  Copyright __MyCompanyName__ 2013. All rights reserved.
 //
 
 #ifndef  _APP_DELEGATE_H_
