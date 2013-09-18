@@ -124,5 +124,3 @@ class TestScene
 end
 
 TestScene.new
-
-# eof
