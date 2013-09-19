@@ -111,14 +111,14 @@ int CCMrubyEngine::executeString(const char* codes)
 
 int CCMrubyEngine::executeScriptFile(const char* filename)
 {
-  FILE* fp = fopen(filename, "r");
-  if (fp == NULL) {
-    CCLOGERROR("Can't open %s", filename);
+  unsigned long nSize = 0;
+  unsigned char* pBuffer = CCFileUtils::sharedFileUtils()->getFileData(filename, "r", &nSize);
+  CCLOG("Result size: %d", (int)nSize);
+  if (pBuffer == NULL)
     return FALSE;
-  }
 
-  mrb_load_file(m_mrb, fp);
-  fclose(fp);
+  mrb_load_nstring(m_mrb, reinterpret_cast<const char*>(pBuffer), nSize);
+  delete[] pBuffer;
   if (m_mrb->exc) {
     mrb_p(m_mrb, mrb_obj_value(m_mrb->exc));
     return FALSE;
