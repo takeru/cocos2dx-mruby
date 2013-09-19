@@ -116,8 +116,7 @@ bool CCMrubyEngine::init(void)
   mrb_define_method(m_mrb, m_mrb->kernel_module, "p", _mrb_puts, MRB_ARGS_ANY());
 
   // Installs cocos2d classes.
-  struct RClass* mod = m_mrb->kernel_module;
-  installMrubyCocos2d(m_mrb, mod);
+  installMrubyCocos2d(m_mrb);
   
   // Installs helper functions.
   // This line must be after installing mruby bindings,

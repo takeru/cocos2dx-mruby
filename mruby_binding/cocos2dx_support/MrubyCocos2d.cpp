@@ -11,6 +11,7 @@ using namespace cocos2d;
 #include "mruby/string.h"
 #include "mruby/variable.h"
 #include <new>
+#include <assert.h>
 
 static void dummy(mrb_state *mrb, void *ptr) {
   //printf("dummy called\n");
@@ -44,7 +45,9 @@ static float get_float(mrb_value x) {
 }
 
 static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className) {
-  mrb_value klass = mrb_iv_get(mrb, mrb_obj_value(mrb->kernel_module), mrb_intern_cstr(mrb, className));
+  mrb_sym sym = mrb_intern_cstr(mrb, "Cocos2d");
+  mrb_value mod = mrb_const_get(mrb, mrb_obj_value(mrb->kernel_module), sym);
+  mrb_value klass = mrb_iv_get(mrb, mod, mrb_intern_cstr(mrb, className));
   return klass;
 }
 
@@ -55,6 +58,7 @@ static struct RClass* getMrubyCocos2dClassPtr(mrb_state *mrb, const char* classN
 template <class T>
 mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
   struct RClass* tc = getMrubyCocos2dClassPtr(mrb, type);
+  assert(tc != NULL);
   mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &dummy_type, NULL));
   DATA_TYPE(instance) = &dummy_type;
   DATA_PTR(instance) = ptr;
@@ -78,6 +82,16 @@ static mrb_value CCPoint___ctor(mrb_state *mrb, mrb_value self) {
     float p1 = get_float(args[1]);
     
     CCPoint* retval = new CCPoint(p0, p1);
+    DATA_PTR(self) = retval; return self;
+  } else if (arg_count == 1) {
+    const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+    
+    CCPoint* retval = new CCPoint(p0);
+    DATA_PTR(self) = retval; return self;
+  } else if (arg_count == 1) {
+    const CCSize& p0 = *static_cast<CCSize*>(DATA_PTR(args[0]));
+    
+    CCPoint* retval = new CCPoint(p0);
     DATA_PTR(self) = retval; return self;
   } else {
     // TODO: raise exception.
@@ -140,6 +154,16 @@ static mrb_value CCSize___ctor(mrb_state *mrb, mrb_value self) {
     
     CCSize* retval = new CCSize(p0, p1);
     DATA_PTR(self) = retval; return self;
+  } else if (arg_count == 1) {
+    const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+    
+    CCSize* retval = new CCSize(p0);
+    DATA_PTR(self) = retval; return self;
+  } else if (arg_count == 1) {
+    const CCSize& p0 = *static_cast<CCSize*>(DATA_PTR(args[0]));
+    
+    CCSize* retval = new CCSize(p0);
+    DATA_PTR(self) = retval; return self;
   } else {
     // TODO: raise exception.
     return mrb_nil_value();
@@ -181,6 +205,74 @@ static void installCCSize(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "width=", CCSize_set_width, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, tc, "height", CCSize_height, MRB_ARGS_NONE());
   mrb_define_method(mrb, tc, "height=", CCSize_set_height, MRB_ARGS_REQ(1));
+}
+
+////////////////////////////////////////////////////////////////
+// CCRect
+
+static mrb_value CCRect___ctor(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    
+    CCRect* retval = new CCRect();
+    DATA_PTR(self) = retval; return self;
+  } else if (arg_count == 4) {
+    float p0 = get_float(args[0]);
+    float p1 = get_float(args[1]);
+    float p2 = get_float(args[2]);
+    float p3 = get_float(args[3]);
+    
+    CCRect* retval = new CCRect(p0, p1, p2, p3);
+    DATA_PTR(self) = retval; return self;
+  } else if (arg_count == 1) {
+    const CCRect& p0 = *static_cast<CCRect*>(DATA_PTR(args[0]));
+    
+    CCRect* retval = new CCRect(p0);
+    DATA_PTR(self) = retval; return self;
+  } else {
+    // TODO: raise exception.
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCRect_origin(mrb_state *mrb, mrb_value self) {
+  CCRect* instance = static_cast<CCRect*>(DATA_PTR(self));
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(instance->origin), "CCPoint");
+}
+
+static mrb_value CCRect_set_origin(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  CCRect* instance = static_cast<CCRect*>(DATA_PTR(self));
+  instance->origin = *static_cast<CCPoint*>(DATA_PTR(o));
+  return mrb_nil_value();
+}
+
+static mrb_value CCRect_size(mrb_state *mrb, mrb_value self) {
+  CCRect* instance = static_cast<CCRect*>(DATA_PTR(self));
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(instance->size), "CCSize");
+}
+
+static mrb_value CCRect_set_size(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  CCRect* instance = static_cast<CCRect*>(DATA_PTR(self));
+  instance->size = *static_cast<CCSize*>(DATA_PTR(o));
+  return mrb_nil_value();
+}
+
+static void installCCRect(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = mrb->object_class;
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCRect", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_method(mrb, tc, "initialize", CCRect___ctor, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "origin", CCRect_origin, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "origin=", CCRect_set_origin, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "size", CCRect_size, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "size=", CCRect_set_size, MRB_ARGS_REQ(1));
 }
 
 ////////////////////////////////////////////////////////////////
@@ -722,7 +814,8 @@ static mrb_value CCRectMake__(mrb_state *mrb, mrb_value self) {
   return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCRect))) CCRect(retval), "CCRect");
 }
 
-void installMrubyCocos2d(mrb_state *mrb, struct RClass *mod) {
+void installMrubyCocos2d(mrb_state *mrb) {
+  struct RClass* mod = mrb_define_module(mrb, "Cocos2d");
   mrb_define_const(mrb, mod, "CCTOUCHBEGAN", mrb_fixnum_value(CCTOUCHBEGAN));
   mrb_define_const(mrb, mod, "CCTOUCHMOVED", mrb_fixnum_value(CCTOUCHMOVED));
   mrb_define_const(mrb, mod, "CCTOUCHENDED", mrb_fixnum_value(CCTOUCHENDED));
@@ -732,12 +825,12 @@ void installMrubyCocos2d(mrb_state *mrb, struct RClass *mod) {
   mrb_define_const(mrb, mod, "kCCNodeOnEnterTransitionDidFinish", mrb_fixnum_value(kCCNodeOnEnterTransitionDidFinish));
   mrb_define_const(mrb, mod, "kCCNodeOnExitTransitionDidStart", mrb_fixnum_value(kCCNodeOnExitTransitionDidStart));
   mrb_define_const(mrb, mod, "kCCNodeOnCleanup", mrb_fixnum_value(kCCNodeOnCleanup));
-  struct RClass* tc = mrb->kernel_module;
-  mrb_define_method(mrb, tc, "CCPointMake", CCPointMake__, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "CCSizeMake", CCSizeMake__, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "CCRectMake", CCRectMake__, MRB_ARGS_ANY());
+  mrb_define_method(mrb, mod, "CCPointMake", CCPointMake__, MRB_ARGS_ANY());
+  mrb_define_method(mrb, mod, "CCSizeMake", CCSizeMake__, MRB_ARGS_ANY());
+  mrb_define_method(mrb, mod, "CCRectMake", CCRectMake__, MRB_ARGS_ANY());
   installCCPoint(mrb, mod);
   installCCSize(mrb, mod);
+  installCCRect(mrb, mod);
   installCCObject(mrb, mod);
   installCCArray(mrb, mod);
   installCCAction(mrb, mod);

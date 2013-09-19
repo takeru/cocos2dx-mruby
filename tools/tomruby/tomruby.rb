@@ -27,7 +27,7 @@ end
 
 
 class MrubyStubGenerator
-  def put_header
+  def put_header(module_name)
     print <<EOD
 #{Header}
 #include "mruby.h"
@@ -36,6 +36,7 @@ class MrubyStubGenerator
 #include "mruby/string.h"
 #include "mruby/variable.h"
 #include <new>
+#include <assert.h>
 
 static void dummy(mrb_state *mrb, void *ptr) {
   //printf("dummy called\\n");
@@ -69,7 +70,15 @@ static float get_float(mrb_value x) {
 }
 
 static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className) {
-  mrb_value klass = mrb_iv_get(mrb, mrb_obj_value(mrb->kernel_module), mrb_intern_cstr(mrb, className));
+#{
+  if module_name
+    ["  mrb_sym sym = mrb_intern_cstr(mrb, \"#{module_name}\");",
+     "  mrb_value mod = mrb_const_get(mrb, mrb_obj_value(mrb->kernel_module), sym);"].join("\n")
+  else
+    '  mrb_value mod = mrb_obj_value(mrb->kernel_module);'
+  end
+}
+  mrb_value klass = mrb_iv_get(mrb, mod, mrb_intern_cstr(mrb, className));
   return klass;
 }
 
@@ -80,6 +89,7 @@ static struct RClass* getMrubyCocos2dClassPtr(mrb_state *mrb, const char* classN
 template <class T>
 mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
   struct RClass* tc = getMrubyCocos2dClassPtr(mrb, type);
+  assert(tc != NULL);
   mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &dummy_type, NULL));
   DATA_TYPE(instance) = &dummy_type;
   DATA_PTR(instance) = ptr;
@@ -99,8 +109,8 @@ EOD
     end
   end
 
-  def generate(filename, constants, classes, functions)
-    put_header
+  def generate(filename, module_name, constants, classes, functions)
+    put_header(module_name)
 
     classes.each do |klass, info|
       methods = convert_constructors(klass, info[:methods])
@@ -130,14 +140,19 @@ EOD
     end
 
     puts ""
-    puts "void install#{File.basename(filename, '.*')}(mrb_state *mrb, struct RClass *mod) {"
+    puts "void install#{File.basename(filename, '.*')}(mrb_state *mrb) {"
+
+    if module_name
+      puts "  struct RClass* mod = mrb_define_module(mrb, \"#{module_name}\");"
+    else
+      puts "  struct RClass *mod = mrb->kernel_module;"
+    end
 
     register_constants(constants)
 
     # TODO: Define functions under module.
-    puts "  struct RClass* tc = mrb->kernel_module;"
     functions.each do |return_type, func_name, params|
-      puts %!  mrb_define_method(mrb, tc, "#{func_name}", #{func_name}__, MRB_ARGS_ANY());!
+      puts %!  mrb_define_method(mrb, mod, "#{func_name}", #{func_name}__, MRB_ARGS_ANY());!
     end
 
     classes.each do |klass, _|
@@ -389,7 +404,8 @@ if $0 == __FILE__
   eval(content)
 
   gen = MrubyStubGenerator.new
-  gen.generate(filename, Constants, Classes, Functions)
+  module_name = Object.constants.index(:ModuleName) ? ModuleName : nil
+  gen.generate(filename, module_name, Constants, Classes, Functions)
 end
 
 #

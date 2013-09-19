@@ -5,6 +5,6 @@
 
 #include "mruby.h"
 
-void installMrubyCocos2d(mrb_state *mrb, struct RClass *mod);
+void installMrubyCocos2d(mrb_state *mrb);
 
 #endif // __MRUBYCOCOS2D_H_

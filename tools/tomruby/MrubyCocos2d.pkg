@@ -7,6 +7,8 @@ extern int registerProc(mrb_state *mrb, mrb_value proc);
 using namespace cocos2d;
 EOD
 
+ModuleName = 'Cocos2d'
+
 Constants = [
   ['int', 'CCTOUCHBEGAN'],
   ['int', 'CCTOUCHMOVED'],
@@ -31,6 +33,8 @@ Classes = {
     :methods => [
                  [CONSTRUCTOR, []],
                  [CONSTRUCTOR, ['float', 'float']],
+                 [CONSTRUCTOR, ['const CCPoint&']],
+                 [CONSTRUCTOR, ['const CCSize&']],
                  [ATTR_ACCESSOR, 'float', 'x'],
                  [ATTR_ACCESSOR, 'float', 'y'],
                 ],
@@ -39,8 +43,19 @@ Classes = {
     :methods => [
                  [CONSTRUCTOR, []],
                  [CONSTRUCTOR, ['float', 'float']],
+                 [CONSTRUCTOR, ['const CCPoint&']],
+                 [CONSTRUCTOR, ['const CCSize&']],
                  [ATTR_ACCESSOR, 'float', 'width'],
                  [ATTR_ACCESSOR, 'float', 'height'],
+                ],
+  },
+  'CCRect' => {
+    :methods => [
+                 [CONSTRUCTOR, []],
+                 [CONSTRUCTOR, ['float', 'float', 'float', 'float']],
+                 [CONSTRUCTOR, ['const CCRect&']],
+                 [ATTR_ACCESSOR, 'CCPoint&', 'origin'],
+                 [ATTR_ACCESSOR, 'CCSize&', 'size'],
                 ],
   },
   'CCObject' => {
