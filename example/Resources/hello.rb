@@ -2,17 +2,17 @@ class TestScene
   include Cocos2d
 
   def initialize
-    visibleSize = CCDirector.sharedDirector().getVisibleSize()
-    origin = CCDirector.sharedDirector().getVisibleOrigin()
+    visibleSize = CCDirector.sharedDirector.getVisibleSize
+    origin = CCDirector.sharedDirector.getVisibleOrigin
 
-    sceneGame = CCScene.create()
+    sceneGame = CCScene.create
     sceneGame.addChild(createLayerFarm(visibleSize, origin))
 
-    CCDirector.sharedDirector().runWithScene(sceneGame)
+    CCDirector.sharedDirector.runWithScene(sceneGame)
   end
 
   def createLayerFarm(visibleSize, origin)
-    @layerFarm = CCLayer.create()
+    @layerFarm = CCLayer.create
 
     bg = CCSprite.create("farm.jpg")
     bg.setPosition(origin.x + visibleSize.width / 2 + 80, origin.y + visibleSize.height / 2)
@@ -63,7 +63,7 @@ class TestScene
     frameHeight = 95
 
     # create dog animate
-    textureDog = CCTextureCache.sharedTextureCache().addImage("dog.png")
+    textureDog = CCTextureCache.sharedTextureCache.addImage("dog.png")
     rect = CCRectMake(0, 0, frameWidth, frameHeight)
     frame0 = CCSpriteFrame.createWithTexture(textureDog, rect)
     rect = CCRectMake(frameWidth, 0, frameWidth, frameHeight)
@@ -73,7 +73,7 @@ class TestScene
     @spriteDogIsPaused = false
     spriteDog.setPosition(origin.x, origin.y + visibleSize.height / 4 * 3)
 
-    animFrames = CCArray.create()
+    animFrames = CCArray.create
 
     animFrames.addObject(frame0)
     animFrames.addObject(frame1)
@@ -83,9 +83,9 @@ class TestScene
     spriteDog.runAction(CCRepeatForever.create(animate))
 
     # moving dog at every frame
-    CCDirector.sharedDirector().getScheduler().scheduleScriptFunc(0, false) do
+    CCDirector.sharedDirector.getScheduler.scheduleScriptFunc(0, false) do
       unless @spriteDogIsPaused
-        x = spriteDog.getPositionX()
+        x = spriteDog.getPositionX
         if x > origin.x + visibleSize.width
           x = origin.x
         else
@@ -110,7 +110,7 @@ class TestScene
   def onTouchMoved(x, y)
     puts("onTouchMoved: #{x}, #{y}")
     if @touchBeginPoint
-      pos = @layerFarm.getPosition()
+      pos = @layerFarm.getPosition
       @layerFarm.setPosition(pos.x + x - @touchBeginPoint[:x], pos.y + y - @touchBeginPoint[:y])
       @touchBeginPoint = {:x => x, :y => y}
     end
