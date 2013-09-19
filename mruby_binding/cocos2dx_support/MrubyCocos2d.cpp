@@ -230,8 +230,8 @@ static struct RClass* installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "runAction", ccnode_runAction, MRB_ARGS_REQ(1));
   
   mrubybind::MrubyBind b(mrb, mod);
-  b.bind_class_method("CCNode", "setPosition", (void (CCNode::*)(float, float))&CCNode::setPosition);
-  b.bind_class_method("CCNode", "setPositionX", &CCNode::setPositionX);
+  b.bind_instance_method("CCNode", "setPosition", (void (CCNode::*)(float, float))&CCNode::setPosition);
+  b.bind_instance_method("CCNode", "setPositionX", &CCNode::setPositionX);
   return tc;
 }
 
@@ -514,7 +514,7 @@ static void installCCLayer(mrb_state *mrb, struct RClass *mod, struct RClass *pa
   mrb_define_method(mrb, tc, "setTouchEnabled", cclayer_setTouchEnabled, MRB_ARGS_REQ(1));
 
   mrubybind::MrubyBind b(mrb, mod);
-  b.bind_class_method("CCNode", "setTouchEnabled", &CCLayer::setTouchEnabled);
+  b.bind_instance_method("CCNode", "setTouchEnabled", &CCLayer::setTouchEnabled);
 }
 
 ////////////////////////////////////////////////////////////////
