@@ -85,7 +85,7 @@ class TestScene
     # moving dog at every frame
     CCDirector.sharedDirector().getScheduler().scheduleScriptFunc(0, false) do
       unless @spriteDogIsPaused
-        x, y = spriteDog.getPosition()
+        x = spriteDog.getPositionX()
         if x > origin.x + visibleSize.width
           x = origin.x
         else
@@ -110,8 +110,8 @@ class TestScene
   def onTouchMoved(x, y)
     puts("onTouchMoved: #{x}, #{y}")
     if @touchBeginPoint
-      cx, cy = @layerFarm.getPosition()
-      @layerFarm.setPosition(cx + x - @touchBeginPoint[:x], cy + y - @touchBeginPoint[:y])
+      pos = @layerFarm.getPosition()
+      @layerFarm.setPosition(pos.x + x - @touchBeginPoint[:x], pos.y + y - @touchBeginPoint[:y])
       @touchBeginPoint = {:x => x, :y => y}
     end
   end

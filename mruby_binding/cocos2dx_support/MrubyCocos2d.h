@@ -5,9 +5,6 @@
 
 #include "mruby.h"
 
-void installMrubyCocos2dBindings(mrb_state *mrb);
-
-int registerProc(mrb_state *mrb, mrb_value proc);
-mrb_value getRegisteredProc(mrb_state *mrb, int id);
+void installMrubyCocos2d(mrb_state *mrb, struct RClass *mod);
 
 #endif // __MRUBYCOCOS2D_H_

@@ -1,0 +1,157 @@
+Header = <<EOD
+#include "cocos2d.h"
+#include "mruby.h"
+
+extern int registerProc(mrb_state *mrb, mrb_value proc);
+
+using namespace cocos2d;
+EOD
+
+Constants = [
+  ['int', 'CCTOUCHBEGAN'],
+  ['int', 'CCTOUCHMOVED'],
+  ['int', 'CCTOUCHENDED'],
+  ['int', 'CCTOUCHCANCELLED'],
+
+  ['int', 'kCCNodeOnEnter'],
+  ['int', 'kCCNodeOnExit'],
+  ['int', 'kCCNodeOnEnterTransitionDidFinish'],
+  ['int', 'kCCNodeOnExitTransitionDidStart'],
+  ['int', 'kCCNodeOnCleanup'],
+]
+
+Functions = [
+  ['CCPoint', 'CCPointMake', ['float', 'float']],
+  ['CCSize', 'CCSizeMake', ['float', 'float']],
+  ['CCRect', 'CCRectMake', ['float', 'float', 'float', 'float']],
+]
+
+Classes = {
+  'CCPoint' => {
+    :methods => [
+                 [CONSTRUCTOR, []],
+                 [CONSTRUCTOR, ['float', 'float']],
+                 [ATTR_ACCESSOR, 'float', 'x'],
+                 [ATTR_ACCESSOR, 'float', 'y'],
+                ],
+  },
+  'CCSize' => {
+    :methods => [
+                 [CONSTRUCTOR, []],
+                 [CONSTRUCTOR, ['float', 'float']],
+                 [ATTR_ACCESSOR, 'float', 'width'],
+                 [ATTR_ACCESSOR, 'float', 'height'],
+                ],
+  },
+  'CCObject' => {
+    :methods => [
+                ],
+  },
+  'CCArray' => {
+    :methods => [
+                 [STATIC, 'CCArray*', 'create', []],
+                 [0, 'void', 'addObject', ['CCObject*']],
+                ],
+  },
+  'CCAction' => {
+    :parent => 'CCObject',
+    :methods => [
+                  # TODO
+                ],
+  },
+  'CCActionInterval' => {
+    :parent => 'CCAction',
+    :methods => [
+                  # TODO
+                ],
+  },
+  'CCNode' => {
+    :methods => [
+                 [0, 'void', 'setPosition', ['const CCPoint&']],
+                 [0, 'void', 'setPosition', ['float', 'float']],
+                 [0, 'void', 'setPositionX', ['float']],
+                 [0, 'float', 'getPositionX', []],
+                 [0, 'void', 'setPositionY', ['float']],
+                 [0, 'float', 'getPositionY', []],
+                 [0, 'const CCPoint&', 'getPosition', []],
+                 [0, 'void', 'addChild', ['CCNode*']],
+                 [0, 'void', 'addChild', ['CCNode*', 'int']],
+                 [0, 'void', 'runAction', ['CCAction*']],
+                ],
+  },
+  'CCTexture2D' => {
+    :methods => [
+                ],
+  },
+  'CCTextureCache' => {
+    :methods => [
+                 [STATIC, 'CCTextureCache*', 'sharedTextureCache', []],
+                 [0, 'CCTexture2D*', 'addImage', ['const char*']],
+                ],
+  },
+  'CCSpriteFrame' => {
+    :parent => 'CCObject',
+    :methods => [
+                 [STATIC, 'CCSpriteFrame*', 'create', ['const char*', 'const CCRect&']],
+                 [STATIC, 'CCSpriteFrame*', 'createWithTexture', ['CCTexture2D*', 'const CCRect&']],
+                ],
+  },
+  'CCAnimation' => {
+    :parent => 'CCObject',
+    :methods => [
+                 [STATIC, 'CCAnimation*', 'createWithSpriteFrames', ['CCArray*', 'float']],
+                ],
+  },
+  'CCAnimate' => {
+    :parent => 'CCActionInterval',
+    :methods => [
+                 [STATIC, 'CCAnimate*', 'create', ['CCAnimation*']],
+                ],
+  },
+  'CCRepeatForever' => {
+    :parent => 'CCActionInterval',
+    :methods => [
+                 [STATIC, 'CCRepeatForever*', 'create', ['CCActionInterval*']],
+                ],
+  },
+  'CCSprite' => {
+    :parent => 'CCNode',
+    :methods => [
+                 [STATIC, 'CCSprite*', 'create', []],
+                 [STATIC, 'CCSprite*', 'create', ['const char*']],
+                 [STATIC, 'CCSprite*', 'create', ['const char*', 'const CCRect&']],
+                 [STATIC, 'CCSprite*', 'createWithSpriteFrame', ['CCSpriteFrame*']],
+                ],
+  },
+  'CCLayer' => {
+    :parent => 'CCNode',
+    :methods => [
+                 [STATIC, 'CCLayer*', 'create', []],
+                 [0, 'void', 'registerScriptTouchHandler', ['block']],
+                 [0, 'void', 'registerScriptTouchHandler', ['block', 'bool']],
+                 [0, 'void', 'registerScriptTouchHandler', ['block', 'bool', 'int']],
+                 [0, 'void', 'registerScriptTouchHandler', ['block', 'bool', 'int', 'bool']],
+                 [0, 'void', 'setTouchEnabled', ['bool']],
+                ],
+  },
+  'CCScene' => {
+    :parent => 'CCNode',
+    :methods => [
+                 [STATIC, 'CCScene*', 'create', []],
+                ],
+  },
+  'CCScheduler' => {
+    :methods => [
+                 [0, 'int', 'scheduleScriptFunc', ['block', 'float', 'bool']],
+                ],
+  },
+  'CCDirector' => {
+    :methods => [
+                 [STATIC, 'CCDirector*', 'sharedDirector', []],
+                 [0, 'CCPoint', 'getVisibleOrigin', []],
+                 [0, 'CCSize', 'getVisibleSize', []],
+                 [0, 'void', 'runWithScene', ['CCScene*']],
+                 [0, 'CCScheduler*', 'getScheduler', []],
+                ],
+  },
+}

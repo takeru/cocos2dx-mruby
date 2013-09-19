@@ -9,8 +9,33 @@
 #include "CCMrubyEngine.h"
 #include "mruby.h"
 #include "mruby/array.h"
+#include "mruby/class.h"
 #include "mruby/compile.h"
 #include "mruby/string.h"
+#include "mruby/variable.h"
+
+static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className) {
+  mrb_sym sym = mrb_intern_cstr(mrb, "Cocos2d");
+  mrb_value mod = mrb_const_get(mrb, mrb_obj_value(mrb->kernel_module), sym);
+  mrb_value klass = mrb_iv_get(mrb, mod, mrb_intern_cstr(mrb, className));
+  return klass;
+}
+
+static struct RClass* getMrubyCocos2dClassPtr(mrb_state *mrb, const char* className) {
+  return mrb_class_ptr(getMrubyCocos2dClassValue(mrb, className));
+}
+
+int registerProc(mrb_state *mrb, mrb_value proc) {
+  mrb_value man = getMrubyCocos2dClassValue(mrb, "HandleManager");
+  mrb_value result = mrb_funcall(mrb, man, "register", 1, proc);
+  return mrb_fixnum(result);
+}
+
+mrb_value getRegisteredProc(mrb_state *mrb, int id) {
+  mrb_value man = getMrubyCocos2dClassValue(mrb, "HandleManager");
+  mrb_value proc = mrb_funcall(mrb, man, "getProc", 1, mrb_fixnum_value(id));
+  return proc;
+}
 
 NS_CC_BEGIN
 
@@ -50,6 +75,14 @@ static mrb_value _mrb_puts(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
+static bool dumpException(mrb_state *mrb) {
+  if (!mrb->exc)
+    return false;
+  CCLOG("Exception in mruby\n%s", mrb_string_value_ptr(mrb, mrb_inspect(mrb, mrb_obj_value(mrb->exc))));
+  mrb->exc = 0;
+  return true;
+}
+
 
 CCMrubyEngine* CCMrubyEngine::m_defaultEngine = NULL;
 
@@ -83,7 +116,8 @@ bool CCMrubyEngine::init(void)
   mrb_define_method(m_mrb, m_mrb->kernel_module, "p", _mrb_puts, MRB_ARGS_ANY());
 
   // Installs cocos2d classes.
-  installMrubyCocos2dBindings(m_mrb);
+  struct RClass* mod = m_mrb->kernel_module;
+  installMrubyCocos2d(m_mrb, mod);
   
   // Installs helper functions.
   // This line must be after installing mruby bindings,
@@ -96,16 +130,14 @@ bool CCMrubyEngine::init(void)
 /** Remove script object. */
 void CCMrubyEngine::removeScriptObjectByCCObject(CCObject* pObj)
 {
-  CCLOGERROR("CCRubyEngine::removeScriptObjectByCCObject has not implemented: %p", pObj);
+  CCLOGERROR("CCMrubyEngine::removeScriptObjectByCCObject has not implemented: %p", pObj);
 }
 
 int CCMrubyEngine::executeString(const char* codes)
 {
   mrb_load_string(m_mrb, codes);
-  if (m_mrb->exc) {
-    mrb_p(m_mrb, mrb_obj_value(m_mrb->exc));
+  if (dumpException(m_mrb))
     return FALSE;
-  }
   return TRUE;
 }
 
@@ -119,20 +151,16 @@ int CCMrubyEngine::executeScriptFile(const char* filename)
 
   mrb_load_nstring(m_mrb, reinterpret_cast<const char*>(pBuffer), nSize);
   delete[] pBuffer;
-  if (m_mrb->exc) {
-    mrb_p(m_mrb, mrb_obj_value(m_mrb->exc));
+  if (dumpException(m_mrb))
     return FALSE;
-  }
   return TRUE;
 }
 
 int CCMrubyEngine::executeGlobalFunction(const char* functionName)
 {
   mrb_funcall(m_mrb, mrb_top_self(m_mrb), functionName, 0);
-  if (m_mrb->exc) {
-    mrb_p(m_mrb, mrb_obj_value(m_mrb->exc));
+  if (dumpException(m_mrb))
     return FALSE;
-  }
   return TRUE;
 }
 
@@ -145,28 +173,26 @@ int CCMrubyEngine::executeNodeEvent(CCNode* pNode, int nAction)
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
   mrb_funcall(m_mrb, proc, "call", 1, mrb_fixnum_value(nAction));
   mrb_gc_arena_restore(m_mrb, areana);
-  if (m_mrb->exc) {
-    mrb_p(m_mrb, mrb_obj_value(m_mrb->exc));
+  if (dumpException(m_mrb))
     return FALSE;
-  }
   return TRUE;
 }
 
 int CCMrubyEngine::executeMenuItemEvent(CCMenuItem* pMenuItem)
 {
-  CCLOGERROR("CCRubyEngine::executeMenuItemEvent has not implemented: %p", pMenuItem);
+  CCLOGERROR("CCMrubyEngine::executeMenuItemEvent has not implemented: %p", pMenuItem);
   return 0;
 }
 
 int CCMrubyEngine::executeNotificationEvent(CCNotificationCenter* pNotificationCenter, const char* pszName)
 {
-  CCLOGERROR("CCRubyEngine::executeNotificationEvent has not implemented: %p, %s", pNotificationCenter, pszName);
+  CCLOGERROR("CCMrubyEngine::executeNotificationEvent has not implemented: %p, %s", pNotificationCenter, pszName);
   return 0;
 }
 
 int CCMrubyEngine::executeCallFuncActionEvent(CCCallFunc* pAction, CCObject* pTarget)
 {
-  CCLOGERROR("CCRubyEngine::executeCallFuncActionEvent has not implemented: %p, %p", pAction, pTarget);
+  CCLOGERROR("CCMrubyEngine::executeCallFuncActionEvent has not implemented: %p, %p", pAction, pTarget);
   return 0;
 }
 
@@ -178,16 +204,14 @@ int CCMrubyEngine::executeSchedule(int nHandler, float dt, CCNode* pNode)
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
   mrb_funcall(m_mrb, proc, "call", 1, mrb_float_value(m_mrb, dt));
   mrb_gc_arena_restore(m_mrb, areana);
-  if (m_mrb->exc) {
-    mrb_p(m_mrb, mrb_obj_value(m_mrb->exc));
+  if (dumpException(m_mrb))
     return FALSE;
-  }
   return TRUE;
 }
 
 int CCMrubyEngine::executeLayerTouchesEvent(CCLayer* pLayer, int eventType, CCSet *pTouches)
 {
-  CCLOGERROR("CCRubyEngine::executeLayerTouchesEvent has not implemented: %p, %d, %p", pLayer, eventType, pTouches);
+  CCLOGERROR("CCMrubyEngine::executeLayerTouchesEvent has not implemented: %p, %d, %p", pLayer, eventType, pTouches);
   return 0;
 }
 
@@ -205,28 +229,26 @@ int CCMrubyEngine::executeLayerTouchEvent(CCLayer* pLayer, int eventType, CCTouc
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
   mrb_funcall(m_mrb, proc, "call", 3, mrb_fixnum_value(eventType), x, y);
   mrb_gc_arena_restore(m_mrb, areana);
-  if (m_mrb->exc) {
-    mrb_p(m_mrb, mrb_obj_value(m_mrb->exc));
+  if (dumpException(m_mrb))
     return FALSE;
-  }
   return TRUE;
 }
 
 int CCMrubyEngine::executeLayerKeypadEvent(CCLayer* pLayer, int eventType)
 {
-  CCLOGERROR("CCRubyEngine::executeLayerKeypadEvent has not implemented: %p, %d", pLayer, eventType);
+  CCLOGERROR("CCMrubyEngine::executeLayerKeypadEvent has not implemented: %p, %d", pLayer, eventType);
   return 0;
 }
 
 int CCMrubyEngine::executeAccelerometerEvent(CCLayer* pLayer, CCAcceleration* pAccelerationValue)
 {
-  CCLOGERROR("CCRubyEngine::executeAccelerometerEvent has not implemented: %p, %p", pLayer, pAccelerationValue);
+  CCLOGERROR("CCMrubyEngine::executeAccelerometerEvent has not implemented: %p, %p", pLayer, pAccelerationValue);
   return 0;
 }
 
 int CCMrubyEngine::executeEvent(int nHandler, const char* pEventName, CCObject* pEventSource, const char* pEventSourceClassName)
 {
-  CCLOGERROR("CCRubyEngine::executeEvent has not implemented: %d, %s, %p, %s", nHandler, pEventName, pEventSource, pEventSourceClassName);
+  CCLOGERROR("CCMrubyEngine::executeEvent has not implemented: %d, %s, %p, %s", nHandler, pEventName, pEventSource, pEventSourceClassName);
   return 0;
 }
 
@@ -236,7 +258,7 @@ int CCMrubyEngine::executeEvent(int nHandler, const char* pEventName, CCObject* 
  */
 bool CCMrubyEngine::handleAssert(const char *msg)
 {
-  CCLOGERROR("CCRubyEngine::handleAssert has not implemented: %s", msg);
+  CCLOGERROR("CCMrubyEngine::handleAssert has not implemented: %s", msg);
   return 0;
 }
 
