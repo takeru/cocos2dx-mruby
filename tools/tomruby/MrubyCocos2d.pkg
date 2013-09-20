@@ -1,13 +1,16 @@
+ModuleName = 'Cocos2d'
+
 Header = <<EOD
+#include <string>
 #include "cocos2d.h"
+#include "SimpleAudioEngine.h"
 #include "mruby.h"
 
 extern int registerProc(mrb_state *mrb, mrb_value proc);
 
 using namespace cocos2d;
+using namespace CocosDenshion;
 EOD
-
-ModuleName = 'Cocos2d'
 
 Constants = [
   ['int', 'CCTOUCHBEGAN'],
@@ -167,6 +170,12 @@ Classes = {
                  [0, 'CCSize', 'getVisibleSize', []],
                  [0, 'void', 'runWithScene', ['CCScene*']],
                  [0, 'CCScheduler*', 'getScheduler', []],
+                ],
+  },
+  'CCFileUtils' => {
+    :methods => [
+                 [STATIC, 'CCFileUtils*', 'sharedFileUtils', []],
+                 [0, 'std::string', 'fullPathForFilename', ['const char*']],
                 ],
   },
 }

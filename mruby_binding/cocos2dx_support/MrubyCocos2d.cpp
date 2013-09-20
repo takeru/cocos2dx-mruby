@@ -1,9 +1,12 @@
+#include <string>
 #include "cocos2d.h"
+#include "SimpleAudioEngine.h"
 #include "mruby.h"
 
 extern int registerProc(mrb_state *mrb, mrb_value proc);
 
 using namespace cocos2d;
+using namespace CocosDenshion;
 
 #include "mruby.h"
 #include "mruby/class.h"
@@ -777,6 +780,34 @@ static void installCCDirector(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// CCFileUtils
+
+static mrb_value CCFileUtils_sharedFileUtils(mrb_state *mrb, mrb_value self) {
+
+  
+  CCFileUtils* retval = CCFileUtils::sharedFileUtils();
+  return wrap(mrb, retval, "CCFileUtils");
+}
+
+static mrb_value CCFileUtils_fullPathForFilename(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  CCFileUtils* instance = static_cast<CCFileUtils*>(DATA_PTR(self));
+  std::string retval = instance->fullPathForFilename(p0);
+  return mrb_str_new(mrb, retval.c_str(), retval.size());
+}
+
+static void installCCFileUtils(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = mrb->object_class;
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCFileUtils", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "sharedFileUtils", CCFileUtils_sharedFileUtils, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "fullPathForFilename", CCFileUtils_fullPathForFilename, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
 // Functions.
 
 static mrb_value CCPointMake__(mrb_state *mrb, mrb_value self) {
@@ -847,4 +878,5 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCScene(mrb, mod);
   installCCScheduler(mrb, mod);
   installCCDirector(mrb, mod);
+  installCCFileUtils(mrb, mod);
 }

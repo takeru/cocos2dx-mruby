@@ -11,7 +11,6 @@
 
 #include "cocos2d.h"
 #include "mruby.h"
-#include "MrubyCocos2d.h"
 
 NS_CC_BEGIN
 

@@ -1,7 +1,12 @@
 
-TARGET=../../mruby_binding/cocos2dx_support/MrubyCocos2d.cpp
+DST=../../mruby_binding/cocos2dx_support
+TARGETS=$(DST)/MrubyCocos2d.cpp \
+        $(DST)/MrubyCocosDenshion.cpp
 
-all:	$(TARGET)
+all:	$(TARGETS)
 
-$(TARGET):  MrubyCocos2d.pkg
+$(DST)/MrubyCocos2d.cpp:  MrubyCocos2d.pkg
+	ruby tomruby.rb $< > $@
+
+$(DST)/MrubyCocosDenshion.cpp:  MrubyCocosDenshion.pkg
 	ruby tomruby.rb $< > $@

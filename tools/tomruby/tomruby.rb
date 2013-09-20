@@ -385,6 +385,8 @@ EOD
       return "mrb_fixnum_value(#{varname})"
     when 'float'
       return "mrb_float_value(mrb, #{varname})"
+    when 'std::string'
+      return "mrb_str_new(mrb, #{varname}.c_str(), #{varname}.size())"
     else
       plain_type = get_plain_type(type)
       if is_pointer_type(type)
@@ -405,7 +407,11 @@ if $0 == __FILE__
 
   gen = MrubyStubGenerator.new
   module_name = Object.constants.index(:ModuleName) ? ModuleName : nil
-  gen.generate(filename, module_name, Constants, Classes, Functions)
+  constants = Object.constants.index(:Constants) ? Constants : []
+  classes = Object.constants.index(:Classes) ? Classes : {}
+  functions = Object.constants.index(:Functions) ? Functions : []
+
+  gen.generate(filename, module_name, constants, classes, functions)
 end
 
 #

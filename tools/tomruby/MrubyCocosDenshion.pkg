@@ -1,0 +1,18 @@
+ModuleName = 'CocosDenshion'
+
+Header = <<EOD
+#include "SimpleAudioEngine.h"
+
+using namespace CocosDenshion;
+EOD
+
+Classes = {
+  'SimpleAudioEngine' => {
+    :methods => [
+                 [STATIC, 'SimpleAudioEngine*', 'sharedEngine', []],
+                 [0, 'void', 'playBackgroundMusic', ['const char*']],
+                 [0, 'void', 'playBackgroundMusic', ['const char*', 'bool']],
+                 [0, 'void', 'preloadEffect', ['const char*']],
+                ],
+  },
+}

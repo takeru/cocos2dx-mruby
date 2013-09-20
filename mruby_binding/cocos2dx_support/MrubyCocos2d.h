@@ -1,5 +1,3 @@
-
-
 #ifndef __MRUBYCOCOS2D_H_
 #define __MRUBYCOCOS2D_H_
 

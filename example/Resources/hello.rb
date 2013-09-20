@@ -1,10 +1,21 @@
 class TestScene
   include Cocos2d
+  include CocosDenshion
 
   def initialize
     visibleSize = CCDirector.sharedDirector.getVisibleSize
     origin = CCDirector.sharedDirector.getVisibleOrigin
 
+    # play background music, preload effect
+    
+    # uncomment below for the BlackBerry version
+    # bgMusicPath = CCFileUtils.sharedFileUtils.fullPathForFilename("background.ogg")
+    bgMusicPath = CCFileUtils.sharedFileUtils.fullPathForFilename("background.mp3")
+    SimpleAudioEngine.sharedEngine.playBackgroundMusic(bgMusicPath, true)
+    effectPath = CCFileUtils.sharedFileUtils.fullPathForFilename("effect1.wav")
+    SimpleAudioEngine.sharedEngine.preloadEffect(effectPath)
+
+    # run
     sceneGame = CCScene.create
     sceneGame.addChild(createLayerFarm(visibleSize, origin))
 

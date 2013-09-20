@@ -13,6 +13,8 @@
 #include "mruby/compile.h"
 #include "mruby/string.h"
 #include "mruby/variable.h"
+#include "MrubyCocos2d.h"
+#include "MrubyCocosDenshion.h"
 
 static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className) {
   mrb_sym sym = mrb_intern_cstr(mrb, "Cocos2d");
@@ -117,6 +119,7 @@ bool CCMrubyEngine::init(void)
 
   // Installs cocos2d classes.
   installMrubyCocos2d(m_mrb);
+  installMrubyCocosDenshion(m_mrb);
   
   // Installs helper functions.
   // This line must be after installing mruby bindings,
