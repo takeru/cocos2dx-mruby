@@ -1,0 +1,87 @@
+ModuleName = 'Box2D'
+
+Header = <<EOD
+#include "Box2D.h"
+EOD
+
+Enums = [
+      'b2BodyType',
+]
+
+Constants = [
+          ['int', 'b2_staticBody'],
+          ['int', 'b2_kinematicBody'],
+          ['int', 'b2_dynamicBody'],
+]
+
+Functions = [
+          ['b2Vec2', 'b2Vec2', ['float', 'float']],
+]
+
+Classes = {
+  'b2Vec2' => {
+    :methods => [
+                 [CONSTRUCTOR, []],
+                 [CONSTRUCTOR, ['float', 'float']],
+                 [ATTR_ACCESSOR, 'float', 'x'],
+                 [ATTR_ACCESSOR, 'float', 'y'],
+                 [0, 'void', 'Set', ['float', 'float']],
+                ],
+  },
+  'b2Shape' => {
+    :methods => [
+                ],
+  },
+  'b2EdgeShape' => {
+    :parent => 'b2Shape',
+    :methods => [
+                 [CONSTRUCTOR, []],
+                 [0, 'void', 'Set', ['const b2Vec2&', 'const b2Vec2&']],
+                ],
+  },
+  'b2PolygonShape' => {
+    :parent => 'b2Shape',
+    :methods => [
+                 [CONSTRUCTOR, []],
+                 [0, 'void', 'SetAsBox', ['float', 'float']],
+                ],
+  },
+  'b2FixtureDef' => {
+    :methods => [
+                 [CONSTRUCTOR, []],
+                 [ATTR_ACCESSOR, 'const b2Shape*', 'shape'],
+                 [ATTR_ACCESSOR, 'float', 'friction'],
+                 [ATTR_ACCESSOR, 'float', 'restitution'],
+                 [ATTR_ACCESSOR, 'float', 'density'],
+                ],
+  },
+  'b2Fixture' => {
+    :methods => [
+                ],
+  },
+  'b2BodyDef' => {
+    :methods => [
+                 [CONSTRUCTOR, []],
+                 [ATTR_ACCESSOR, 'b2BodyType', 'type'],
+                 [ATTR_ACCESSOR, 'b2Vec2', 'position'],
+                ],
+  },
+  'b2Body' => {
+    :methods => [
+                 [0, 'b2Fixture*', 'CreateFixture', ['const b2FixtureDef*']],
+                 [0, 'b2Fixture*', 'CreateFixture', ['const b2Shape*', 'float']],
+                 [0, 'b2Body*', 'GetNext', []],
+                 [0, 'void*', 'GetUserData', []],
+                ],
+  },
+  'b2World' => {
+    :methods => [
+                 [CONSTRUCTOR, ['b2Vec2']],
+                 [0, 'void', 'SetAllowSleeping', ['bool']],
+                 [0, 'void', 'SetContinuousPhysics', ['bool']],
+                 [0, 'b2Body*', 'CreateBody', ['const b2BodyDef*']],
+                 [0, 'void', 'Step', ['float', 'int', 'int']],
+                 [0, 'b2Body*', 'GetBodyList', []],
+                ],
+  },
+}

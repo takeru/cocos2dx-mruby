@@ -6,7 +6,8 @@
 extern int registerProc(mrb_state *mrb, mrb_value proc);
 
 using namespace cocos2d;
-using namespace CocosDenshion;
+
+typedef ccColor3B CcColor3B;
 
 #include "mruby.h"
 #include "mruby/class.h"
@@ -23,11 +24,11 @@ static void dummy(mrb_state *mrb, void *ptr) {
 // TODO: Use different data type for each class.
 static struct mrb_data_type dummy_type = { "Dummy", dummy };
 
-static float get_bool(mrb_value x) {
+static bool get_bool(mrb_value x) {
   return mrb_bool(x);
 }
 
-static float get_int(mrb_value x) {
+static int get_int(mrb_value x) {
   if (mrb_fixnum_p(x)) {
     return mrb_fixnum(x);
   } else if (mrb_float_p(x)) {
@@ -64,8 +65,62 @@ mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
   assert(tc != NULL);
   mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &dummy_type, NULL));
   DATA_TYPE(instance) = &dummy_type;
-  DATA_PTR(instance) = ptr;
+  DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+
+////////////////////////////////////////////////////////////////
+// CcColor3B
+
+static mrb_value CcColor3B_r(mrb_state *mrb, mrb_value self) {
+  CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(unsigned char))) unsigned char(instance->r), "Unsigned char");
+}
+
+static mrb_value CcColor3B_set_r(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
+  instance->r = get_int(o);
+  return mrb_nil_value();
+}
+
+static mrb_value CcColor3B_g(mrb_state *mrb, mrb_value self) {
+  CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(unsigned char))) unsigned char(instance->g), "Unsigned char");
+}
+
+static mrb_value CcColor3B_set_g(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
+  instance->g = get_int(o);
+  return mrb_nil_value();
+}
+
+static mrb_value CcColor3B_b(mrb_state *mrb, mrb_value self) {
+  CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(unsigned char))) unsigned char(instance->b), "Unsigned char");
+}
+
+static mrb_value CcColor3B_set_b(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
+  instance->b = get_int(o);
+  return mrb_nil_value();
+}
+
+static void installCcColor3B(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = mrb->object_class;
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CcColor3B", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_method(mrb, tc, "r", CcColor3B_r, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "r=", CcColor3B_set_r, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "g", CcColor3B_g, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "g=", CcColor3B_set_g, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "b", CcColor3B_b, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "b=", CcColor3B_set_b, MRB_ARGS_REQ(1));
 }
 
 ////////////////////////////////////////////////////////////////
@@ -281,10 +336,26 @@ static void installCCRect(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCObject
 
+static mrb_value CCObject_release(mrb_state *mrb, mrb_value self) {
+
+  CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
+  instance->release();
+  return mrb_nil_value();
+}
+
+static mrb_value CCObject_autorelease(mrb_state *mrb, mrb_value self) {
+
+  CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
+  CCObject* retval = instance->autorelease();
+  return wrap(mrb, retval, "CCObject");
+}
+
 static void installCCObject(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCObject", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_method(mrb, tc, "release", CCObject_release, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "autorelease", CCObject_autorelease, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -413,10 +484,27 @@ static mrb_value CCNode_addChild(mrb_state *mrb, mrb_value self) {
     CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
     instance->addChild(p0, p1);
     return mrb_nil_value();
+  } else if (arg_count == 3) {
+    CCNode* p0 = static_cast<CCNode*>(DATA_PTR(args[0]));
+    int p1 = get_int(args[1]);
+    int p2 = get_int(args[2]);
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    instance->addChild(p0, p1, p2);
+    return mrb_nil_value();
   } else {
     // TODO: raise exception.
     return mrb_nil_value();
   }
+}
+
+static mrb_value CCNode_getChildByTag(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  int p0 = get_int(args[0]);
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  CCNode* retval = instance->getChildByTag(p0);
+  return wrap(mrb, retval, "CCNode");
 }
 
 static mrb_value CCNode_runAction(mrb_state *mrb, mrb_value self) {
@@ -446,8 +534,27 @@ static mrb_value CCNode_setVisible(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
+static mrb_value CCNode_scheduleUpdate(mrb_state *mrb, mrb_value self) {
+
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  instance->scheduleUpdate();
+  return mrb_nil_value();
+}
+
+static mrb_value CCNode_scheduleUpdateWithPriorityLua(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_value block;
+  mrb_get_args(mrb, "*&", &args, &arg_count, &block);
+  int blockHandler = registerProc(mrb, block);
+  int p0 = get_int(args[0]);
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  instance->scheduleUpdateWithPriorityLua(blockHandler, p0);
+  return mrb_nil_value();
+}
+
 static void installCCNode(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = mrb->object_class;
+  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCObject");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCNode", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "setPosition", CCNode_setPosition, MRB_ARGS_ANY());
@@ -457,18 +564,32 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "getPositionY", CCNode_getPositionY, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getPosition", CCNode_getPosition, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "addChild", CCNode_addChild, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getChildByTag", CCNode_getChildByTag, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "runAction", CCNode_runAction, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getContentSize", CCNode_getContentSize, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setVisible", CCNode_setVisible, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "scheduleUpdate", CCNode_scheduleUpdate, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "scheduleUpdateWithPriorityLua", CCNode_scheduleUpdateWithPriorityLua, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
 // CCNodeRGBA
 
+static mrb_value CCNodeRGBA_setColor(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const CcColor3B& p0 = *static_cast<CcColor3B*>(DATA_PTR(args[0]));
+  CCNodeRGBA* instance = static_cast<CCNodeRGBA*>(DATA_PTR(self));
+  instance->setColor(p0);
+  return mrb_nil_value();
+}
+
 static void installCCNodeRGBA(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNode");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCNodeRGBA", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_method(mrb, tc, "setColor", CCNodeRGBA_setColor, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -641,16 +762,122 @@ static mrb_value CCSprite_createWithSpriteFrame(mrb_state *mrb, mrb_value self) 
   return wrap(mrb, retval, "CCSprite");
 }
 
+static mrb_value CCSprite___ctor(mrb_state *mrb, mrb_value self) {
+
+  
+  CCSprite* retval = new CCSprite();
+  DATA_PTR(self) = retval; return self;
+}
+
+static mrb_value CCSprite_initWithTexture(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 1) {
+    CCTexture2D* p0 = static_cast<CCTexture2D*>(DATA_PTR(args[0]));
+    CCSprite* instance = static_cast<CCSprite*>(DATA_PTR(self));
+    instance->initWithTexture(p0);
+    return mrb_nil_value();
+  } else if (arg_count == 2) {
+    CCTexture2D* p0 = static_cast<CCTexture2D*>(DATA_PTR(args[0]));
+    const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
+    CCSprite* instance = static_cast<CCSprite*>(DATA_PTR(self));
+    instance->initWithTexture(p0, p1);
+    return mrb_nil_value();
+  } else {
+    // TODO: raise exception.
+    return mrb_nil_value();
+  }
+}
+
 static void installCCSprite(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNode");
+  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNodeRGBA");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCSprite", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCSprite_create, MRB_ARGS_ANY());
   mrb_define_class_method(mrb, tc, "createWithSpriteFrame", CCSprite_createWithSpriteFrame, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "initialize", CCSprite___ctor, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "initWithTexture", CCSprite_initWithTexture, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
+// CCSpriteBatchNode
+
+static mrb_value CCSpriteBatchNode___ctor(mrb_state *mrb, mrb_value self) {
+
+  
+  CCSpriteBatchNode* retval = new CCSpriteBatchNode();
+  DATA_PTR(self) = retval; return self;
+}
+
+static mrb_value CCSpriteBatchNode_create(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 2) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    unsigned int p1 = get_int(args[1]);
+    
+    CCSpriteBatchNode* retval = CCSpriteBatchNode::create(p0, p1);
+    return wrap(mrb, retval, "CCSpriteBatchNode");
+  } else if (arg_count == 1) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    
+    CCSpriteBatchNode* retval = CCSpriteBatchNode::create(p0);
+    return wrap(mrb, retval, "CCSpriteBatchNode");
+  } else {
+    // TODO: raise exception.
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCSpriteBatchNode_getTexture(mrb_state *mrb, mrb_value self) {
+
+  CCSpriteBatchNode* instance = static_cast<CCSpriteBatchNode*>(DATA_PTR(self));
+  CCTexture2D* retval = instance->getTexture();
+  return wrap(mrb, retval, "CCTexture2D");
+}
+
+static void installCCSpriteBatchNode(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNode");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCSpriteBatchNode", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_method(mrb, tc, "initialize", CCSpriteBatchNode___ctor, MRB_ARGS_ANY());
+  mrb_define_class_method(mrb, tc, "create", CCSpriteBatchNode_create, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getTexture", CCSpriteBatchNode_getTexture, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
+// CCLabelTTF
+
+static mrb_value CCLabelTTF_create(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  const char* p1 = mrb_string_value_ptr(mrb, args[1]);
+  float p2 = get_float(args[2]);
+  
+  CCLabelTTF* retval = CCLabelTTF::create(p0, p1, p2);
+  return wrap(mrb, retval, "CCLabelTTF");
+}
+
+static void installCCLabelTTF(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCSprite");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCLabelTTF", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "create", CCLabelTTF_create, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
 // CCLayer
+
+static mrb_value CCLayer___ctor(mrb_state *mrb, mrb_value self) {
+
+  
+  CCLayer* retval = new CCLayer();
+  DATA_PTR(self) = retval; return self;
+}
 
 static mrb_value CCLayer_create(mrb_state *mrb, mrb_value self) {
 
@@ -706,13 +933,25 @@ static mrb_value CCLayer_setTouchEnabled(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
+static mrb_value CCLayer_setAccelerometerEnabled(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  bool p0 = get_bool(args[0]);
+  CCLayer* instance = static_cast<CCLayer*>(DATA_PTR(self));
+  instance->setAccelerometerEnabled(p0);
+  return mrb_nil_value();
+}
+
 static void installCCLayer(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNode");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCLayer", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_method(mrb, tc, "initialize", CCLayer___ctor, MRB_ARGS_ANY());
   mrb_define_class_method(mrb, tc, "create", CCLayer_create, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "registerScriptTouchHandler", CCLayer_registerScriptTouchHandler, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setTouchEnabled", CCLayer_setTouchEnabled, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setAccelerometerEnabled", CCLayer_setAccelerometerEnabled, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -774,6 +1013,13 @@ static mrb_value CCDirector_sharedDirector(mrb_state *mrb, mrb_value self) {
   return wrap(mrb, retval, "CCDirector");
 }
 
+static mrb_value CCDirector_getWinSize(mrb_state *mrb, mrb_value self) {
+
+  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+  CCSize retval = instance->getWinSize();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+}
+
 static mrb_value CCDirector_getVisibleOrigin(mrb_state *mrb, mrb_value self) {
 
   CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
@@ -786,6 +1032,16 @@ static mrb_value CCDirector_getVisibleSize(mrb_state *mrb, mrb_value self) {
   CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
   CCSize retval = instance->getVisibleSize();
   return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+}
+
+static mrb_value CCDirector_convertToGL(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+  CCPoint retval = instance->convertToGL(p0);
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
 }
 
 static mrb_value CCDirector_runWithScene(mrb_state *mrb, mrb_value self) {
@@ -810,8 +1066,10 @@ static void installCCDirector(mrb_state *mrb, struct RClass *mod) {
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCDirector", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "sharedDirector", CCDirector_sharedDirector, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getWinSize", CCDirector_getWinSize, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getVisibleOrigin", CCDirector_getVisibleOrigin, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getVisibleSize", CCDirector_getVisibleSize, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "convertToGL", CCDirector_convertToGL, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "runWithScene", CCDirector_runWithScene, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getScheduler", CCDirector_getScheduler, MRB_ARGS_ANY());
 }
@@ -929,6 +1187,17 @@ static mrb_value CCPointMake__(mrb_state *mrb, mrb_value self) {
   return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
 }
 
+static mrb_value ccp__(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  float p0 = get_float(args[0]);
+  float p1 = get_float(args[1]);
+  
+  CCPoint retval = ccp(p0, p1);
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+}
+
 static mrb_value CCSizeMake__(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
@@ -953,20 +1222,43 @@ static mrb_value CCRectMake__(mrb_state *mrb, mrb_value self) {
   return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCRect))) CCRect(retval), "CCRect");
 }
 
+static mrb_value ccc3__(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  unsigned char p0 = get_int(args[0]);
+  unsigned char p1 = get_int(args[1]);
+  unsigned char p2 = get_int(args[2]);
+  
+  CcColor3B retval = ccc3(p0, p1, p2);
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CcColor3B))) CcColor3B(retval), "CcColor3B");
+}
+
+static mrb_value CCRANDOM_0_1__(mrb_state *mrb, mrb_value self) {
+
+  
+  float retval = CCRANDOM_0_1();
+  return mrb_float_value(mrb, retval);
+}
+
 void installMrubyCocos2d(mrb_state *mrb) {
   struct RClass* mod = mrb_define_module(mrb, "Cocos2d");
   mrb_define_const(mrb, mod, "CCTOUCHBEGAN", mrb_fixnum_value(CCTOUCHBEGAN));
   mrb_define_const(mrb, mod, "CCTOUCHMOVED", mrb_fixnum_value(CCTOUCHMOVED));
   mrb_define_const(mrb, mod, "CCTOUCHENDED", mrb_fixnum_value(CCTOUCHENDED));
   mrb_define_const(mrb, mod, "CCTOUCHCANCELLED", mrb_fixnum_value(CCTOUCHCANCELLED));
-  mrb_define_const(mrb, mod, "kCCNodeOnEnter", mrb_fixnum_value(kCCNodeOnEnter));
-  mrb_define_const(mrb, mod, "kCCNodeOnExit", mrb_fixnum_value(kCCNodeOnExit));
-  mrb_define_const(mrb, mod, "kCCNodeOnEnterTransitionDidFinish", mrb_fixnum_value(kCCNodeOnEnterTransitionDidFinish));
-  mrb_define_const(mrb, mod, "kCCNodeOnExitTransitionDidStart", mrb_fixnum_value(kCCNodeOnExitTransitionDidStart));
-  mrb_define_const(mrb, mod, "kCCNodeOnCleanup", mrb_fixnum_value(kCCNodeOnCleanup));
+  mrb_define_const(mrb, mod, "KCCNodeOnEnter", mrb_fixnum_value(kCCNodeOnEnter));
+  mrb_define_const(mrb, mod, "KCCNodeOnExit", mrb_fixnum_value(kCCNodeOnExit));
+  mrb_define_const(mrb, mod, "KCCNodeOnEnterTransitionDidFinish", mrb_fixnum_value(kCCNodeOnEnterTransitionDidFinish));
+  mrb_define_const(mrb, mod, "KCCNodeOnExitTransitionDidStart", mrb_fixnum_value(kCCNodeOnExitTransitionDidStart));
+  mrb_define_const(mrb, mod, "KCCNodeOnCleanup", mrb_fixnum_value(kCCNodeOnCleanup));
   mrb_define_method(mrb, mod, "CCPointMake", CCPointMake__, MRB_ARGS_ANY());
+  mrb_define_method(mrb, mod, "ccp", ccp__, MRB_ARGS_ANY());
   mrb_define_method(mrb, mod, "CCSizeMake", CCSizeMake__, MRB_ARGS_ANY());
   mrb_define_method(mrb, mod, "CCRectMake", CCRectMake__, MRB_ARGS_ANY());
+  mrb_define_method(mrb, mod, "ccc3", ccc3__, MRB_ARGS_ANY());
+  mrb_define_method(mrb, mod, "CCRANDOM_0_1", CCRANDOM_0_1__, MRB_ARGS_ANY());
+  installCcColor3B(mrb, mod);
   installCCPoint(mrb, mod);
   installCCSize(mrb, mod);
   installCCRect(mrb, mod);
@@ -983,6 +1275,8 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCAnimate(mrb, mod);
   installCCRepeatForever(mrb, mod);
   installCCSprite(mrb, mod);
+  installCCSpriteBatchNode(mrb, mod);
+  installCCLabelTTF(mrb, mod);
   installCCLayer(mrb, mod);
   installCCLayerRGBA(mrb, mod);
   installCCScene(mrb, mod);

@@ -9,7 +9,8 @@ Header = <<EOD
 extern int registerProc(mrb_state *mrb, mrb_value proc);
 
 using namespace cocos2d;
-using namespace CocosDenshion;
+
+typedef ccColor3B CcColor3B;
 EOD
 
 Constants = [
@@ -27,11 +28,21 @@ Constants = [
 
 Functions = [
   ['CCPoint', 'CCPointMake', ['float', 'float']],
+  ['CCPoint', 'ccp', ['float', 'float']],
   ['CCSize', 'CCSizeMake', ['float', 'float']],
   ['CCRect', 'CCRectMake', ['float', 'float', 'float', 'float']],
+  ['CcColor3B', 'ccc3', ['unsigned char', 'unsigned char', 'unsigned char']],
+  ['float', 'CCRANDOM_0_1', []],
 ]
 
 Classes = {
+  'CcColor3B' => {
+    :methods => [
+                 [ATTR_ACCESSOR, 'unsigned char', 'r'],
+                 [ATTR_ACCESSOR, 'unsigned char', 'g'],
+                 [ATTR_ACCESSOR, 'unsigned char', 'b'],
+                ],
+  },
   'CCPoint' => {
     :methods => [
                  [CONSTRUCTOR, []],
@@ -63,6 +74,8 @@ Classes = {
   },
   'CCObject' => {
     :methods => [
+                 [0, 'void', 'release', []],
+                 [0, 'CCObject*', 'autorelease', []],
                 ],
   },
   'CCArray' => {
@@ -84,6 +97,7 @@ Classes = {
                 ],
   },
   'CCNode' => {
+    :parent => 'CCObject',
     :methods => [
                  [0, 'void', 'setPosition', ['const CCPoint&']],
                  [0, 'void', 'setPosition', ['float', 'float']],
@@ -94,14 +108,19 @@ Classes = {
                  [0, 'const CCPoint&', 'getPosition', []],
                  [0, 'void', 'addChild', ['CCNode*']],
                  [0, 'void', 'addChild', ['CCNode*', 'int']],
+                 [0, 'void', 'addChild', ['CCNode*', 'int', 'int']],
+                 [0, 'CCNode*', 'getChildByTag', ['int']],
                  [0, 'void', 'runAction', ['CCAction*']],
                  [0, 'const CCSize&', 'getContentSize', []],
                  [0, 'void', 'setVisible', ['bool']],
+                 [0, 'void', 'scheduleUpdate', []],
+                 [0, 'void', 'scheduleUpdateWithPriorityLua', ['block', 'int']],
                 ],
   },
   'CCNodeRGBA' => {
     :parent => 'CCNode',
     :methods => [
+                 [0, 'void', 'setColor', ['const CcColor3B&']],
                 ],
   },
   'CCTexture2D' => {
@@ -140,23 +159,43 @@ Classes = {
                 ],
   },
   'CCSprite' => {
-    :parent => 'CCNode',
+    :parent => 'CCNodeRGBA',
     :methods => [
                  [STATIC, 'CCSprite*', 'create', []],
                  [STATIC, 'CCSprite*', 'create', ['const char*']],
                  [STATIC, 'CCSprite*', 'create', ['const char*', 'const CCRect&']],
                  [STATIC, 'CCSprite*', 'createWithSpriteFrame', ['CCSpriteFrame*']],
+                 [CONSTRUCTOR, []],
+                 [0, 'void', 'initWithTexture', ['CCTexture2D*']],
+                 [0, 'void', 'initWithTexture', ['CCTexture2D*', 'const CCRect&']],
+                ],
+  },
+  'CCSpriteBatchNode' => {
+    :parent => 'CCNode',
+    :methods => [
+                 [CONSTRUCTOR, []],
+                 [STATIC, 'CCSpriteBatchNode*', 'create', ['const char*', 'unsigned int']],
+                 [STATIC, 'CCSpriteBatchNode*', 'create', ['const char*']],
+                 [0, 'CCTexture2D*', 'getTexture', []],
+                ],
+  },
+  'CCLabelTTF' => {
+    :parent => 'CCSprite',
+    :methods => [
+                 [STATIC, 'CCLabelTTF*', 'create', ['const char*', 'const char*', 'float']],
                 ],
   },
   'CCLayer' => {
     :parent => 'CCNode',
     :methods => [
+                 [CONSTRUCTOR, []],
                  [STATIC, 'CCLayer*', 'create', []],
                  [0, 'void', 'registerScriptTouchHandler', ['block']],
                  [0, 'void', 'registerScriptTouchHandler', ['block', 'bool']],
                  [0, 'void', 'registerScriptTouchHandler', ['block', 'bool', 'int']],
                  [0, 'void', 'registerScriptTouchHandler', ['block', 'bool', 'int', 'bool']],
                  [0, 'void', 'setTouchEnabled', ['bool']],
+                 [0, 'void', 'setAccelerometerEnabled', ['bool']],
                 ],
   },
   'CCLayerRGBA' => {
@@ -178,8 +217,10 @@ Classes = {
   'CCDirector' => {
     :methods => [
                  [STATIC, 'CCDirector*', 'sharedDirector', []],
+                 [0, 'CCSize', 'getWinSize', []],
                  [0, 'CCPoint', 'getVisibleOrigin', []],
                  [0, 'CCSize', 'getVisibleSize', []],
+                 [0, 'CCPoint', 'convertToGL', ['const CCPoint&']],
                  [0, 'void', 'runWithScene', ['CCScene*']],
                  [0, 'CCScheduler*', 'getScheduler', []],
                 ],

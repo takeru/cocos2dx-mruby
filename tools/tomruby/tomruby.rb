@@ -25,6 +25,12 @@ def is_pointer_type(type)
   type.index('*')
 end
 
+class String
+  def capitalize1
+    self[0].upcase + self[1..-1]
+  end
+end
+
 
 class MrubyStubGenerator
   def put_header(module_name)
@@ -45,11 +51,11 @@ static void dummy(mrb_state *mrb, void *ptr) {
 // TODO: Use different data type for each class.
 static struct mrb_data_type dummy_type = { "Dummy", dummy };
 
-static float get_bool(mrb_value x) {
+static bool get_bool(mrb_value x) {
   return mrb_bool(x);
 }
 
-static float get_int(mrb_value x) {
+static int get_int(mrb_value x) {
   if (mrb_fixnum_p(x)) {
     return mrb_fixnum(x);
   } else if (mrb_float_p(x)) {
@@ -92,7 +98,7 @@ mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
   assert(tc != NULL);
   mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &dummy_type, NULL));
   DATA_TYPE(instance) = &dummy_type;
-  DATA_PTR(instance) = ptr;
+  DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
 EOD
@@ -170,7 +176,7 @@ EOD
 
   def register_constant(type, varname)
     puts <<EOD
-  mrb_define_const(mrb, mod, "#{varname}", #{c_value_to_mruby_value(type, varname)});
+  mrb_define_const(mrb, mod, "#{varname.capitalize1}", #{c_value_to_mruby_value(type, varname)});
 EOD
   end
 
@@ -326,7 +332,7 @@ EOD
 
 static void install#{klass}(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = #{get_parent};
-  struct RClass* tc = mrb_define_class_under(mrb, mod, "#{klass}", parent);
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "#{klass.capitalize1}", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
 EOD
     methods.each do |method_name, methods|
@@ -359,7 +365,7 @@ EOD
     case type
     when 'bool'
       return "get_bool(#{varname})"
-    when 'int', 'unsigned int', 'short', 'unsinged short', 'long', 'unsigned long'
+    when 'int', 'unsigned int', 'short', 'unsinged short', 'long', 'unsigned long', 'char', 'unsigned char'
       return "get_int(#{varname})"
     when 'float'
       return "get_float(#{varname})"
@@ -370,6 +376,10 @@ EOD
     when 'block'
       return "get_bool(#{varname})"
     else
+      if is_enum?(type)
+        return "(#{type})mrb_fixnum(#{varname})"
+      end
+
       plain_type = get_plain_type(type)
       if is_pointer_type(type)
         return "static_cast<#{plain_type}*>(DATA_PTR(#{varname}))"
@@ -390,12 +400,20 @@ EOD
     else
       plain_type = get_plain_type(type)
       if is_pointer_type(type)
-        return %!wrap(mrb, #{varname}, "#{plain_type}")!
+        if type =~ /^void\s*\*+/  # Treat as voidp
+          return %!(#{varname} == NULL ? mrb_nil_value() : mrb_voidp_value(mrb, #{varname}))!
+        else
+          return %!(#{varname} == NULL ? mrb_nil_value() : wrap(mrb, #{varname}, "#{plain_type.capitalize1}"))!
+        end
       else
         # TODO: Think other way to copy object.
-        return %!wrap(mrb, new(mrb_malloc(mrb, sizeof(#{plain_type}))) #{plain_type}(#{varname}), "#{plain_type}")!
+        return %!wrap(mrb, new(mrb_malloc(mrb, sizeof(#{plain_type}))) #{plain_type}(#{varname}), "#{plain_type.capitalize1}")!
       end
     end
+  end
+
+  def is_enum?(type)
+    Object.constants.index(:Enums) && Enums.index(type)
   end
 end
 

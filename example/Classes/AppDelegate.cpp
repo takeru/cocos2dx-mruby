@@ -39,7 +39,9 @@ bool AppDelegate::applicationDidFinishLaunching()
   CCMrubyEngine* pEngine = CCMrubyEngine::defaultEngine();
   CCScriptEngineManager::sharedManager()->setScriptEngine(pEngine);
   
-  std::string path = CCFileUtils::sharedFileUtils()->fullPathForFilename("hello.rb");
+  const char* scriptFileName = "hello.rb";
+  //const char* scriptFileName = "box2dsample.rb";
+  std::string path = CCFileUtils::sharedFileUtils()->fullPathForFilename(scriptFileName);
   pEngine->executeScriptFile(path.c_str());
   
   return true;
