@@ -13,6 +13,10 @@ Classes = {
                  [0, 'void', 'playBackgroundMusic', ['const char*']],
                  [0, 'void', 'playBackgroundMusic', ['const char*', 'bool']],
                  [0, 'void', 'preloadEffect', ['const char*']],
+                 [0, 'void', 'playEffect', ['const char*']],
+                 [0, 'void', 'playEffect', ['const char*', 'bool']],
+                 [0, 'void', 'stopEffect', ['unsigned int']],
+                 [0, 'void', 'stopAllEffects', []],
                 ],
   },
 }

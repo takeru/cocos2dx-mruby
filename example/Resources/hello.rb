@@ -7,7 +7,7 @@ class TestScene
     origin = CCDirector.sharedDirector.getVisibleOrigin
 
     # play background music, preload effect
-    
+
     # uncomment below for the BlackBerry version
     # bgMusicPath = CCFileUtils.sharedFileUtils.fullPathForFilename("background.ogg")
     bgMusicPath = CCFileUtils.sharedFileUtils.fullPathForFilename("background.mp3")
@@ -18,6 +18,7 @@ class TestScene
     # run
     sceneGame = CCScene.create
     sceneGame.addChild(createLayerFarm(visibleSize, origin))
+    sceneGame.addChild(createLayerMenu(visibleSize, origin))
 
     CCDirector.sharedDirector.runWithScene(sceneGame)
   end
@@ -131,6 +132,42 @@ class TestScene
     puts("onTouchEnded: #{x}, #{y}")
     @touchBeginPoint = nil
     @spriteDogIsPaused = false
+  end
+
+  # create menu
+  def createLayerMenu(visibleSize, origin)
+    layerMenu = CCLayer.create
+
+    menuPopup = menuTools = effectID = nil
+
+    # add a popup menu
+    menuPopupItem = CCMenuItemImage.create("menu2.png", "menu2.png")
+    menuPopupItem.setPosition(0, 0)
+    menuPopupItem.registerScriptTapHandler do
+      # stop test sound effect
+      SimpleAudioEngine.sharedEngine.stopEffect(effectID)
+      menuPopup.setVisible(false)
+    end
+    menuPopup = CCMenu.createWithItem(menuPopupItem)
+    menuPopup.setPosition(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2)
+    menuPopup.setVisible(false)
+    layerMenu.addChild(menuPopup)
+
+    # add the left-bottom "tools" menu to invoke menuPopup
+    menuToolsItem = CCMenuItemImage.create("menu1.png", "menu1.png")
+    menuToolsItem.setPosition(0, 0)
+    menuToolsItem.registerScriptTapHandler do
+      # loop test sound effect
+      effectPath = CCFileUtils.sharedFileUtils.fullPathForFilename("effect1.wav")
+      effectID = SimpleAudioEngine.sharedEngine.playEffect(effectPath)
+      menuPopup.setVisible(true)
+    end
+    menuTools = CCMenu.createWithItem(menuToolsItem)
+    itemSize = menuToolsItem.getContentSize
+    menuTools.setPosition(origin.x + itemSize.width/2, origin.y + itemSize.height/2)
+    layerMenu.addChild(menuTools)
+
+    return layerMenu
   end
 end
 

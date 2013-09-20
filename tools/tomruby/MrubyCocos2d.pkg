@@ -95,6 +95,13 @@ Classes = {
                  [0, 'void', 'addChild', ['CCNode*']],
                  [0, 'void', 'addChild', ['CCNode*', 'int']],
                  [0, 'void', 'runAction', ['CCAction*']],
+                 [0, 'const CCSize&', 'getContentSize', []],
+                 [0, 'void', 'setVisible', ['bool']],
+                ],
+  },
+  'CCNodeRGBA' => {
+    :parent => 'CCNode',
+    :methods => [
                 ],
   },
   'CCTexture2D' => {
@@ -152,6 +159,11 @@ Classes = {
                  [0, 'void', 'setTouchEnabled', ['bool']],
                 ],
   },
+  'CCLayerRGBA' => {
+    :parent => 'CCLayer',
+    :methods => [
+                ],
+  },
   'CCScene' => {
     :parent => 'CCNode',
     :methods => [
@@ -176,6 +188,30 @@ Classes = {
     :methods => [
                  [STATIC, 'CCFileUtils*', 'sharedFileUtils', []],
                  [0, 'std::string', 'fullPathForFilename', ['const char*']],
+                ],
+  },
+
+  'CCMenuItem' => {
+    :parent => 'CCNodeRGBA',
+    :methods => [
+                 [0, 'void', 'registerScriptTapHandler', ['block']],
+                ],
+  },
+  'CCMenuItemSprite' => {
+    :parent => 'CCMenuItem',
+    :methods => [
+                ],
+  },
+  'CCMenuItemImage' => {
+    :parent => 'CCMenuItemSprite',
+    :methods => [
+                 [STATIC, 'CCMenuItemImage*', 'create', ['const char*', 'const char*']],
+                ],
+  },
+  'CCMenu' => {
+    :parent => 'CCLayerRGBA',
+    :methods => [
+                 [STATIC, 'CCMenu*', 'createWithItem', ['CCMenuItem*']],
                 ],
   },
 }

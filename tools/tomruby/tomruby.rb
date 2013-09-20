@@ -357,16 +357,16 @@ EOD
 
   def mruby_value_to_c_value(type, varname)
     case type
-    when 'const char*'
-      return "mrb_string_value_ptr(mrb, #{varname})"
     when 'bool'
       return "get_bool(#{varname})"
-    when 'int'
+    when 'int', 'unsigned int', 'short', 'unsinged short', 'long', 'unsigned long'
       return "get_int(#{varname})"
     when 'float'
       return "get_float(#{varname})"
     when 'double'
       return "get_double(#{varname})"
+    when 'const char*'
+      return "mrb_string_value_ptr(mrb, #{varname})"
     when 'block'
       return "get_bool(#{varname})"
     else

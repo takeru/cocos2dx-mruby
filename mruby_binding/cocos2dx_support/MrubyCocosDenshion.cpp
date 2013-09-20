@@ -103,6 +103,44 @@ static mrb_value SimpleAudioEngine_preloadEffect(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+static mrb_value SimpleAudioEngine_playEffect(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 1) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    SimpleAudioEngine* instance = static_cast<SimpleAudioEngine*>(DATA_PTR(self));
+    instance->playEffect(p0);
+    return mrb_nil_value();
+  } else if (arg_count == 2) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    bool p1 = get_bool(args[1]);
+    SimpleAudioEngine* instance = static_cast<SimpleAudioEngine*>(DATA_PTR(self));
+    instance->playEffect(p0, p1);
+    return mrb_nil_value();
+  } else {
+    // TODO: raise exception.
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value SimpleAudioEngine_stopEffect(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  unsigned int p0 = get_int(args[0]);
+  SimpleAudioEngine* instance = static_cast<SimpleAudioEngine*>(DATA_PTR(self));
+  instance->stopEffect(p0);
+  return mrb_nil_value();
+}
+
+static mrb_value SimpleAudioEngine_stopAllEffects(mrb_state *mrb, mrb_value self) {
+
+  SimpleAudioEngine* instance = static_cast<SimpleAudioEngine*>(DATA_PTR(self));
+  instance->stopAllEffects();
+  return mrb_nil_value();
+}
+
 static void installSimpleAudioEngine(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "SimpleAudioEngine", parent);
@@ -110,6 +148,9 @@ static void installSimpleAudioEngine(mrb_state *mrb, struct RClass *mod) {
   mrb_define_class_method(mrb, tc, "sharedEngine", SimpleAudioEngine_sharedEngine, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "playBackgroundMusic", SimpleAudioEngine_playBackgroundMusic, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "preloadEffect", SimpleAudioEngine_preloadEffect, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "playEffect", SimpleAudioEngine_playEffect, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "stopEffect", SimpleAudioEngine_stopEffect, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "stopAllEffects", SimpleAudioEngine_stopAllEffects, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////

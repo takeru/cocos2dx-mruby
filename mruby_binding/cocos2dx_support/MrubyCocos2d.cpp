@@ -429,6 +429,23 @@ static mrb_value CCNode_runAction(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
+static mrb_value CCNode_getContentSize(mrb_state *mrb, mrb_value self) {
+
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  const CCSize& retval = instance->getContentSize();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+}
+
+static mrb_value CCNode_setVisible(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  bool p0 = get_bool(args[0]);
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  instance->setVisible(p0);
+  return mrb_nil_value();
+}
+
 static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCNode", parent);
@@ -441,6 +458,17 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "getPosition", CCNode_getPosition, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "addChild", CCNode_addChild, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "runAction", CCNode_runAction, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getContentSize", CCNode_getContentSize, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setVisible", CCNode_setVisible, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
+// CCNodeRGBA
+
+static void installCCNodeRGBA(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNode");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCNodeRGBA", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -688,6 +716,15 @@ static void installCCLayer(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// CCLayerRGBA
+
+static void installCCLayerRGBA(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCLayer");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCLayerRGBA", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+}
+
+////////////////////////////////////////////////////////////////
 // CCScene
 
 static mrb_value CCScene_create(mrb_state *mrb, mrb_value self) {
@@ -808,6 +845,77 @@ static void installCCFileUtils(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// CCMenuItem
+
+static mrb_value CCMenuItem_registerScriptTapHandler(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_value block;
+  mrb_get_args(mrb, "*&", &args, &arg_count, &block);
+  int blockHandler = registerProc(mrb, block);
+  CCMenuItem* instance = static_cast<CCMenuItem*>(DATA_PTR(self));
+  instance->registerScriptTapHandler(blockHandler);
+  return mrb_nil_value();
+}
+
+static void installCCMenuItem(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNodeRGBA");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMenuItem", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_method(mrb, tc, "registerScriptTapHandler", CCMenuItem_registerScriptTapHandler, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
+// CCMenuItemSprite
+
+static void installCCMenuItemSprite(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCMenuItem");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMenuItemSprite", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+}
+
+////////////////////////////////////////////////////////////////
+// CCMenuItemImage
+
+static mrb_value CCMenuItemImage_create(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  const char* p1 = mrb_string_value_ptr(mrb, args[1]);
+  
+  CCMenuItemImage* retval = CCMenuItemImage::create(p0, p1);
+  return wrap(mrb, retval, "CCMenuItemImage");
+}
+
+static void installCCMenuItemImage(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCMenuItemSprite");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMenuItemImage", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "create", CCMenuItemImage_create, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
+// CCMenu
+
+static mrb_value CCMenu_createWithItem(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  CCMenuItem* p0 = static_cast<CCMenuItem*>(DATA_PTR(args[0]));
+  
+  CCMenu* retval = CCMenu::createWithItem(p0);
+  return wrap(mrb, retval, "CCMenu");
+}
+
+static void installCCMenu(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCLayerRGBA");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMenu", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "createWithItem", CCMenu_createWithItem, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
 // Functions.
 
 static mrb_value CCPointMake__(mrb_state *mrb, mrb_value self) {
@@ -867,6 +975,7 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCAction(mrb, mod);
   installCCActionInterval(mrb, mod);
   installCCNode(mrb, mod);
+  installCCNodeRGBA(mrb, mod);
   installCCTexture2D(mrb, mod);
   installCCTextureCache(mrb, mod);
   installCCSpriteFrame(mrb, mod);
@@ -875,8 +984,13 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCRepeatForever(mrb, mod);
   installCCSprite(mrb, mod);
   installCCLayer(mrb, mod);
+  installCCLayerRGBA(mrb, mod);
   installCCScene(mrb, mod);
   installCCScheduler(mrb, mod);
   installCCDirector(mrb, mod);
   installCCFileUtils(mrb, mod);
+  installCCMenuItem(mrb, mod);
+  installCCMenuItemSprite(mrb, mod);
+  installCCMenuItemImage(mrb, mod);
+  installCCMenu(mrb, mod);
 }

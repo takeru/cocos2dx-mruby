@@ -182,8 +182,16 @@ int CCMrubyEngine::executeNodeEvent(CCNode* pNode, int nAction)
 
 int CCMrubyEngine::executeMenuItemEvent(CCMenuItem* pMenuItem)
 {
-  CCLOGERROR("CCMrubyEngine::executeMenuItemEvent has not implemented: %p", pMenuItem);
-  return 0;
+  int nHandler = pMenuItem->getScriptTapHandler();
+  if (!nHandler) return 0;
+
+  int areana = mrb_gc_arena_save(m_mrb);
+  mrb_value proc = getRegisteredProc(m_mrb, nHandler);
+  mrb_funcall(m_mrb, proc, "call", 0);
+  mrb_gc_arena_restore(m_mrb, areana);
+  if (dumpException(m_mrb))
+    return FALSE;
+  return TRUE;
 }
 
 int CCMrubyEngine::executeNotificationEvent(CCNotificationCenter* pNotificationCenter, const char* pszName)
