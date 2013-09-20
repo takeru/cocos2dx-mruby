@@ -27,8 +27,8 @@ How to use
 ```
 
 
-Exampe
-------
+Example
+-------
 
 * Please see [hello.rb](https://github.com/ktaobo/cocos2dx-mruby/blob/master/example/Resources/hello.rb)
 * Add Classes/* and Resources/* to the according paths
