@@ -13,7 +13,6 @@ How to use
 * Put source files under mruby_binding into libs/ directory in the project.
 * Add header include paths for
   * mruby_binding/include
-  * mruby_binding/mrubybind
 * For Xcode, set Target > Build Settings > Search Paths > Always Search User Paths to NO.
 * Use CCMrubyEngine and start mruby script using `executeScriptFile()`
 
