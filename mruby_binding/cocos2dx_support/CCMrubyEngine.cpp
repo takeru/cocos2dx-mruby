@@ -16,6 +16,17 @@
 #include "MrubyCocos2d.h"
 #include "MrubyCocosDenshion.h"
 
+extern "C" mrb_value mrb_get_backtrace(mrb_state*, mrb_value);
+
+static const char* getBaseName(const char* fullpath) {
+  int len = strlen(fullpath);
+  for (int i = len - 1; --i >= 0; ) {
+    if (fullpath[i] == '/')
+      return &fullpath[i + 1];
+  }
+  return fullpath;
+}
+
 static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className) {
   mrb_sym sym = mrb_intern_cstr(mrb, "Cocos2d");
   mrb_value mod = mrb_const_get(mrb, mrb_obj_value(mrb->kernel_module), sym);
@@ -77,12 +88,20 @@ static mrb_value _mrb_puts(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
-static bool dumpException(mrb_state *mrb) {
+static int dumpException(mrb_state *mrb) {
   if (!mrb->exc)
-    return false;
-  CCLOG("Exception in mruby\n%s", mrb_string_value_ptr(mrb, mrb_inspect(mrb, mrb_obj_value(mrb->exc))));
+    return FALSE;
+  
+  mrb_value exc = mrb_obj_value(mrb->exc);
+  mrb_value backtrace = mrb_get_backtrace(mrb, exc);
+  mrb_value s = mrb_funcall(mrb, exc, "inspect", 0);
+  CCLOG("%s", RSTRING_PTR(s));
+  for (mrb_int n = mrb_ary_len(mrb, backtrace), i = 0; i < n; ++i) {
+    mrb_value v = mrb_ary_ref(mrb, backtrace, i);
+    CCLOG("  %s", RSTRING_PTR(v));
+  }
   mrb->exc = 0;
-  return true;
+  return TRUE;
 }
 
 
@@ -137,33 +156,51 @@ void CCMrubyEngine::removeScriptObjectByCCObject(CCObject* pObj)
 
 int CCMrubyEngine::executeString(const char* codes)
 {
+  int arena = mrb_gc_arena_save(m_mrb);
+#if DEBUG
+  mrbc_context *cxt = mrbc_context_new(m_mrb);
+  mrbc_filename(m_mrb, cxt, getBaseName("*main*"));
+  mrb_load_string_cxt(m_mrb, codes, cxt);
+  mrbc_context_free(m_mrb, cxt);
+#else
+  // No debug info.
   mrb_load_string(m_mrb, codes);
-  if (dumpException(m_mrb))
-    return FALSE;
-  return TRUE;
+#endif
+  int exc = dumpException(m_mrb);
+  mrb_gc_arena_restore(m_mrb, arena);
+  return !exc;
 }
 
 int CCMrubyEngine::executeScriptFile(const char* filename)
 {
   unsigned long nSize = 0;
   unsigned char* pBuffer = CCFileUtils::sharedFileUtils()->getFileData(filename, "r", &nSize);
-  CCLOG("Result size: %d", (int)nSize);
   if (pBuffer == NULL)
     return FALSE;
 
+  int arena = mrb_gc_arena_save(m_mrb);
+#if DEBUG
+  mrbc_context *cxt = mrbc_context_new(m_mrb);
+  mrbc_filename(m_mrb, cxt, getBaseName(filename));
+  mrb_load_nstring_cxt(m_mrb, reinterpret_cast<const char*>(pBuffer), nSize, cxt);
+  mrbc_context_free(m_mrb, cxt);
+#else
+  // No debug info.
   mrb_load_nstring(m_mrb, reinterpret_cast<const char*>(pBuffer), nSize);
+#endif
   delete[] pBuffer;
-  if (dumpException(m_mrb))
-    return FALSE;
-  return TRUE;
+  int exc = dumpException(m_mrb);
+  mrb_gc_arena_restore(m_mrb, arena);
+  return !exc;
 }
 
 int CCMrubyEngine::executeGlobalFunction(const char* functionName)
 {
+  int arena = mrb_gc_arena_save(m_mrb);
   mrb_funcall(m_mrb, mrb_top_self(m_mrb), functionName, 0);
-  if (dumpException(m_mrb))
-    return FALSE;
-  return TRUE;
+  int exc = dumpException(m_mrb);
+  mrb_gc_arena_restore(m_mrb, arena);
+  return !exc;
 }
 
 int CCMrubyEngine::executeNodeEvent(CCNode* pNode, int nAction)
@@ -171,13 +208,12 @@ int CCMrubyEngine::executeNodeEvent(CCNode* pNode, int nAction)
   int nHandler = pNode->getScriptHandler();
   if (!nHandler) return 0;
   
-  int areana = mrb_gc_arena_save(m_mrb);
+  int arena = mrb_gc_arena_save(m_mrb);
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
   mrb_funcall(m_mrb, proc, "call", 1, mrb_fixnum_value(nAction));
-  mrb_gc_arena_restore(m_mrb, areana);
-  if (dumpException(m_mrb))
-    return FALSE;
-  return TRUE;
+  int exc = dumpException(m_mrb);
+  mrb_gc_arena_restore(m_mrb, arena);
+  return !exc;
 }
 
 int CCMrubyEngine::executeMenuItemEvent(CCMenuItem* pMenuItem)
@@ -185,13 +221,12 @@ int CCMrubyEngine::executeMenuItemEvent(CCMenuItem* pMenuItem)
   int nHandler = pMenuItem->getScriptTapHandler();
   if (!nHandler) return 0;
 
-  int areana = mrb_gc_arena_save(m_mrb);
+  int arena = mrb_gc_arena_save(m_mrb);
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
   mrb_funcall(m_mrb, proc, "call", 0);
-  mrb_gc_arena_restore(m_mrb, areana);
-  if (dumpException(m_mrb))
-    return FALSE;
-  return TRUE;
+  int exc = dumpException(m_mrb);
+  mrb_gc_arena_restore(m_mrb, arena);
+  return !exc;
 }
 
 int CCMrubyEngine::executeNotificationEvent(CCNotificationCenter* pNotificationCenter, const char* pszName)
@@ -210,13 +245,12 @@ int CCMrubyEngine::executeSchedule(int nHandler, float dt, CCNode* pNode)
 {
   if (!nHandler) return FALSE;
 
-  int areana = mrb_gc_arena_save(m_mrb);
+  int arena = mrb_gc_arena_save(m_mrb);
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
   mrb_funcall(m_mrb, proc, "call", 1, mrb_float_value(m_mrb, dt));
-  mrb_gc_arena_restore(m_mrb, areana);
-  if (dumpException(m_mrb))
-    return FALSE;
-  return TRUE;
+  int exc = dumpException(m_mrb);
+  mrb_gc_arena_restore(m_mrb, arena);
+  return !exc;
 }
 
 int CCMrubyEngine::executeLayerTouchesEvent(CCLayer* pLayer, int eventType, CCSet *pTouches)
@@ -232,16 +266,15 @@ int CCMrubyEngine::executeLayerTouchEvent(CCLayer* pLayer, int eventType, CCTouc
   int nHandler = pScriptHandlerEntry->getHandler();
   if (!nHandler) return FALSE;
   
-  int areana = mrb_gc_arena_save(m_mrb);
+  int arena = mrb_gc_arena_save(m_mrb);
   const CCPoint pt = CCDirector::sharedDirector()->convertToGL(pTouch->getLocationInView());
   mrb_value x = mrb_float_value(m_mrb, pt.x);
   mrb_value y = mrb_float_value(m_mrb, pt.y);
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
   mrb_funcall(m_mrb, proc, "call", 3, mrb_fixnum_value(eventType), x, y);
-  mrb_gc_arena_restore(m_mrb, areana);
-  if (dumpException(m_mrb))
-    return FALSE;
-  return TRUE;
+  int exc = dumpException(m_mrb);
+  mrb_gc_arena_restore(m_mrb, arena);
+  return !exc;
 }
 
 int CCMrubyEngine::executeLayerKeypadEvent(CCLayer* pLayer, int eventType)

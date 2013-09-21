@@ -19,10 +19,10 @@ class TestScene
     sceneGame = CCScene.create
     sceneGame.addChild(createLayerFarm(visibleSize, origin))
     sceneGame.addChild(createLayerMenu(visibleSize, origin))
-
     CCDirector.sharedDirector.runWithScene(sceneGame)
   end
 
+  # create farm
   def createLayerFarm(visibleSize, origin)
     @layerFarm = CCLayer.create
 
@@ -70,6 +70,7 @@ class TestScene
     return @layerFarm
   end
 
+  # add the moving dog
   def creatDog(visibleSize, origin)
     frameWidth = 105
     frameHeight = 95
@@ -93,7 +94,7 @@ class TestScene
     animation = CCAnimation.createWithSpriteFrames(animFrames, 0.5)
     animate = CCAnimate.create(animation)
     spriteDog.runAction(CCRepeatForever.create(animate))
-
+    
     # moving dog at every frame
     CCDirector.sharedDirector.getScheduler.scheduleScriptFunc(0, false) do
       unless @spriteDogIsPaused
@@ -101,7 +102,7 @@ class TestScene
         if x > origin.x + visibleSize.width
           x = origin.x
         else
-          x = x + 1
+          x += 1
         end
 
         spriteDog.setPositionX(x)
