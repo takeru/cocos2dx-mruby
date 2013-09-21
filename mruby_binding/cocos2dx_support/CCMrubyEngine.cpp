@@ -27,15 +27,13 @@ static const char* getBaseName(const char* fullpath) {
   return fullpath;
 }
 
-static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className) {
-  mrb_sym sym = mrb_intern_cstr(mrb, "Cocos2d");
-  mrb_value mod = mrb_const_get(mrb, mrb_obj_value(mrb->kernel_module), sym);
-  mrb_value klass = mrb_iv_get(mrb, mod, mrb_intern_cstr(mrb, className));
-  return klass;
+static struct RClass* getMrubyCocos2dClassPtr(mrb_state *mrb, const char* className) {
+  RClass* mod = mrb_class_get_under(mrb, mrb->kernel_module, "Cocos2d");
+  return mrb_class_get_under(mrb, mod, className);
 }
 
-static struct RClass* getMrubyCocos2dClassPtr(mrb_state *mrb, const char* className) {
-  return mrb_class_ptr(getMrubyCocos2dClassValue(mrb, className));
+static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className) {
+  return mrb_obj_value(getMrubyCocos2dClassPtr(mrb, className));
 }
 
 int registerProc(mrb_state *mrb, mrb_value proc) {

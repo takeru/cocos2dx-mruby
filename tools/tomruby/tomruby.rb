@@ -75,26 +75,20 @@ static float get_float(mrb_value x) {
   }
 }
 
-static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className) {
+static struct RClass* getClass(mrb_state *mrb, const char* className) {
 #{
   if module_name
-    ["  mrb_sym sym = mrb_intern_cstr(mrb, \"#{module_name}\");",
-     "  mrb_value mod = mrb_const_get(mrb, mrb_obj_value(mrb->kernel_module), sym);"].join("\n")
+    ["  RClass* mod = mrb_class_get(mrb, \"#{module_name}\");",
+     "  return mrb_class_get_under(mrb, mod, className);"].join("\n")
   else
-    '  mrb_value mod = mrb_obj_value(mrb->kernel_module);'
+    '  return mrb_class_get(mrb, className);'
   end
 }
-  mrb_value klass = mrb_iv_get(mrb, mod, mrb_intern_cstr(mrb, className));
-  return klass;
-}
-
-static struct RClass* getMrubyCocos2dClassPtr(mrb_state *mrb, const char* className) {
-  return mrb_class_ptr(getMrubyCocos2dClassValue(mrb, className));
 }
 
 template <class T>
 mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
-  struct RClass* tc = getMrubyCocos2dClassPtr(mrb, type);
+  struct RClass* tc = getClass(mrb, type);
   assert(tc != NULL);
   mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &dummy_type, NULL));
   DATA_TYPE(instance) = &dummy_type;
@@ -324,7 +318,7 @@ EOD
 
   def declare_class(klass, parent, methods)
     if parent
-      get_parent = "getMrubyCocos2dClassPtr(mrb, \"#{parent}\")";
+      get_parent = "getClass(mrb, \"#{parent}\")";
     else
       get_parent = 'mrb->object_class';
     end

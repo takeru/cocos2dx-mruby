@@ -48,20 +48,14 @@ static float get_float(mrb_value x) {
   }
 }
 
-static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className) {
-  mrb_sym sym = mrb_intern_cstr(mrb, "Cocos2d");
-  mrb_value mod = mrb_const_get(mrb, mrb_obj_value(mrb->kernel_module), sym);
-  mrb_value klass = mrb_iv_get(mrb, mod, mrb_intern_cstr(mrb, className));
-  return klass;
-}
-
-static struct RClass* getMrubyCocos2dClassPtr(mrb_state *mrb, const char* className) {
-  return mrb_class_ptr(getMrubyCocos2dClassValue(mrb, className));
+static struct RClass* getClass(mrb_state *mrb, const char* className) {
+  RClass* mod = mrb_class_get(mrb, "Cocos2d");
+  return mrb_class_get_under(mrb, mod, className);
 }
 
 template <class T>
 mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
-  struct RClass* tc = getMrubyCocos2dClassPtr(mrb, type);
+  struct RClass* tc = getClass(mrb, type);
   assert(tc != NULL);
   mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &dummy_type, NULL));
   DATA_TYPE(instance) = &dummy_type;
@@ -347,7 +341,7 @@ static mrb_value CCObject_autorelease(mrb_state *mrb, mrb_value self) {
 
   CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
   CCObject* retval = instance->autorelease();
-  return wrap(mrb, retval, "CCObject");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCObject"));
 }
 
 static void installCCObject(mrb_state *mrb, struct RClass *mod) {
@@ -365,7 +359,7 @@ static mrb_value CCArray_create(mrb_state *mrb, mrb_value self) {
 
   
   CCArray* retval = CCArray::create();
-  return wrap(mrb, retval, "CCArray");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCArray"));
 }
 
 static mrb_value CCArray_addObject(mrb_state *mrb, mrb_value self) {
@@ -390,7 +384,7 @@ static void installCCArray(mrb_state *mrb, struct RClass *mod) {
 // CCAction
 
 static void installCCAction(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCObject");
+  struct RClass* parent = getClass(mrb, "CCObject");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCAction", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
 }
@@ -399,7 +393,7 @@ static void installCCAction(mrb_state *mrb, struct RClass *mod) {
 // CCActionInterval
 
 static void installCCActionInterval(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCAction");
+  struct RClass* parent = getClass(mrb, "CCAction");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCActionInterval", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
 }
@@ -504,7 +498,7 @@ static mrb_value CCNode_getChildByTag(mrb_state *mrb, mrb_value self) {
   int p0 = get_int(args[0]);
   CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
   CCNode* retval = instance->getChildByTag(p0);
-  return wrap(mrb, retval, "CCNode");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCNode"));
 }
 
 static mrb_value CCNode_runAction(mrb_state *mrb, mrb_value self) {
@@ -554,7 +548,7 @@ static mrb_value CCNode_scheduleUpdateWithPriorityLua(mrb_state *mrb, mrb_value 
 }
 
 static void installCCNode(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCObject");
+  struct RClass* parent = getClass(mrb, "CCObject");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCNode", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "setPosition", CCNode_setPosition, MRB_ARGS_ANY());
@@ -586,7 +580,7 @@ static mrb_value CCNodeRGBA_setColor(mrb_state *mrb, mrb_value self) {
 }
 
 static void installCCNodeRGBA(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNode");
+  struct RClass* parent = getClass(mrb, "CCNode");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCNodeRGBA", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "setColor", CCNodeRGBA_setColor, MRB_ARGS_ANY());
@@ -608,7 +602,7 @@ static mrb_value CCTextureCache_sharedTextureCache(mrb_state *mrb, mrb_value sel
 
   
   CCTextureCache* retval = CCTextureCache::sharedTextureCache();
-  return wrap(mrb, retval, "CCTextureCache");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCTextureCache"));
 }
 
 static mrb_value CCTextureCache_addImage(mrb_state *mrb, mrb_value self) {
@@ -618,7 +612,7 @@ static mrb_value CCTextureCache_addImage(mrb_state *mrb, mrb_value self) {
   const char* p0 = mrb_string_value_ptr(mrb, args[0]);
   CCTextureCache* instance = static_cast<CCTextureCache*>(DATA_PTR(self));
   CCTexture2D* retval = instance->addImage(p0);
-  return wrap(mrb, retval, "CCTexture2D");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCTexture2D"));
 }
 
 static void installCCTextureCache(mrb_state *mrb, struct RClass *mod) {
@@ -640,7 +634,7 @@ static mrb_value CCSpriteFrame_create(mrb_state *mrb, mrb_value self) {
   const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
   
   CCSpriteFrame* retval = CCSpriteFrame::create(p0, p1);
-  return wrap(mrb, retval, "CCSpriteFrame");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSpriteFrame"));
 }
 
 static mrb_value CCSpriteFrame_createWithTexture(mrb_state *mrb, mrb_value self) {
@@ -651,11 +645,11 @@ static mrb_value CCSpriteFrame_createWithTexture(mrb_state *mrb, mrb_value self)
   const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
   
   CCSpriteFrame* retval = CCSpriteFrame::createWithTexture(p0, p1);
-  return wrap(mrb, retval, "CCSpriteFrame");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSpriteFrame"));
 }
 
 static void installCCSpriteFrame(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCObject");
+  struct RClass* parent = getClass(mrb, "CCObject");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCSpriteFrame", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCSpriteFrame_create, MRB_ARGS_ANY());
@@ -673,11 +667,11 @@ static mrb_value CCAnimation_createWithSpriteFrames(mrb_state *mrb, mrb_value se
   float p1 = get_float(args[1]);
   
   CCAnimation* retval = CCAnimation::createWithSpriteFrames(p0, p1);
-  return wrap(mrb, retval, "CCAnimation");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCAnimation"));
 }
 
 static void installCCAnimation(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCObject");
+  struct RClass* parent = getClass(mrb, "CCObject");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCAnimation", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "createWithSpriteFrames", CCAnimation_createWithSpriteFrames, MRB_ARGS_ANY());
@@ -693,11 +687,11 @@ static mrb_value CCAnimate_create(mrb_state *mrb, mrb_value self) {
   CCAnimation* p0 = static_cast<CCAnimation*>(DATA_PTR(args[0]));
   
   CCAnimate* retval = CCAnimate::create(p0);
-  return wrap(mrb, retval, "CCAnimate");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCAnimate"));
 }
 
 static void installCCAnimate(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCActionInterval");
+  struct RClass* parent = getClass(mrb, "CCActionInterval");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCAnimate", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCAnimate_create, MRB_ARGS_ANY());
@@ -713,11 +707,11 @@ static mrb_value CCRepeatForever_create(mrb_state *mrb, mrb_value self) {
   CCActionInterval* p0 = static_cast<CCActionInterval*>(DATA_PTR(args[0]));
   
   CCRepeatForever* retval = CCRepeatForever::create(p0);
-  return wrap(mrb, retval, "CCRepeatForever");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCRepeatForever"));
 }
 
 static void installCCRepeatForever(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCActionInterval");
+  struct RClass* parent = getClass(mrb, "CCActionInterval");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCRepeatForever", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCRepeatForever_create, MRB_ARGS_ANY());
@@ -734,18 +728,18 @@ static mrb_value CCSprite_create(mrb_state *mrb, mrb_value self) {
   
     
     CCSprite* retval = CCSprite::create();
-    return wrap(mrb, retval, "CCSprite");
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSprite"));
   } else if (arg_count == 1) {
     const char* p0 = mrb_string_value_ptr(mrb, args[0]);
     
     CCSprite* retval = CCSprite::create(p0);
-    return wrap(mrb, retval, "CCSprite");
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSprite"));
   } else if (arg_count == 2) {
     const char* p0 = mrb_string_value_ptr(mrb, args[0]);
     const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
     
     CCSprite* retval = CCSprite::create(p0, p1);
-    return wrap(mrb, retval, "CCSprite");
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSprite"));
   } else {
     // TODO: raise exception.
     return mrb_nil_value();
@@ -759,7 +753,7 @@ static mrb_value CCSprite_createWithSpriteFrame(mrb_state *mrb, mrb_value self) 
   CCSpriteFrame* p0 = static_cast<CCSpriteFrame*>(DATA_PTR(args[0]));
   
   CCSprite* retval = CCSprite::createWithSpriteFrame(p0);
-  return wrap(mrb, retval, "CCSprite");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSprite"));
 }
 
 static mrb_value CCSprite___ctor(mrb_state *mrb, mrb_value self) {
@@ -791,7 +785,7 @@ static mrb_value CCSprite_initWithTexture(mrb_state *mrb, mrb_value self) {
 }
 
 static void installCCSprite(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNodeRGBA");
+  struct RClass* parent = getClass(mrb, "CCNodeRGBA");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCSprite", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCSprite_create, MRB_ARGS_ANY());
@@ -819,12 +813,12 @@ static mrb_value CCSpriteBatchNode_create(mrb_state *mrb, mrb_value self) {
     unsigned int p1 = get_int(args[1]);
     
     CCSpriteBatchNode* retval = CCSpriteBatchNode::create(p0, p1);
-    return wrap(mrb, retval, "CCSpriteBatchNode");
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSpriteBatchNode"));
   } else if (arg_count == 1) {
     const char* p0 = mrb_string_value_ptr(mrb, args[0]);
     
     CCSpriteBatchNode* retval = CCSpriteBatchNode::create(p0);
-    return wrap(mrb, retval, "CCSpriteBatchNode");
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSpriteBatchNode"));
   } else {
     // TODO: raise exception.
     return mrb_nil_value();
@@ -835,11 +829,11 @@ static mrb_value CCSpriteBatchNode_getTexture(mrb_state *mrb, mrb_value self) {
 
   CCSpriteBatchNode* instance = static_cast<CCSpriteBatchNode*>(DATA_PTR(self));
   CCTexture2D* retval = instance->getTexture();
-  return wrap(mrb, retval, "CCTexture2D");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCTexture2D"));
 }
 
 static void installCCSpriteBatchNode(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNode");
+  struct RClass* parent = getClass(mrb, "CCNode");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCSpriteBatchNode", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "initialize", CCSpriteBatchNode___ctor, MRB_ARGS_ANY());
@@ -859,11 +853,11 @@ static mrb_value CCLabelTTF_create(mrb_state *mrb, mrb_value self) {
   float p2 = get_float(args[2]);
   
   CCLabelTTF* retval = CCLabelTTF::create(p0, p1, p2);
-  return wrap(mrb, retval, "CCLabelTTF");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLabelTTF"));
 }
 
 static void installCCLabelTTF(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCSprite");
+  struct RClass* parent = getClass(mrb, "CCSprite");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCLabelTTF", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCLabelTTF_create, MRB_ARGS_ANY());
@@ -883,7 +877,7 @@ static mrb_value CCLayer_create(mrb_state *mrb, mrb_value self) {
 
   
   CCLayer* retval = CCLayer::create();
-  return wrap(mrb, retval, "CCLayer");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLayer"));
 }
 
 static mrb_value CCLayer_registerScriptTouchHandler(mrb_state *mrb, mrb_value self) {
@@ -944,7 +938,7 @@ static mrb_value CCLayer_setAccelerometerEnabled(mrb_state *mrb, mrb_value self)
 }
 
 static void installCCLayer(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNode");
+  struct RClass* parent = getClass(mrb, "CCNode");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCLayer", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "initialize", CCLayer___ctor, MRB_ARGS_ANY());
@@ -958,7 +952,7 @@ static void installCCLayer(mrb_state *mrb, struct RClass *mod) {
 // CCLayerRGBA
 
 static void installCCLayerRGBA(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCLayer");
+  struct RClass* parent = getClass(mrb, "CCLayer");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCLayerRGBA", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
 }
@@ -970,11 +964,11 @@ static mrb_value CCScene_create(mrb_state *mrb, mrb_value self) {
 
   
   CCScene* retval = CCScene::create();
-  return wrap(mrb, retval, "CCScene");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCScene"));
 }
 
 static void installCCScene(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNode");
+  struct RClass* parent = getClass(mrb, "CCNode");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCScene", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCScene_create, MRB_ARGS_ANY());
@@ -1010,7 +1004,7 @@ static mrb_value CCDirector_sharedDirector(mrb_state *mrb, mrb_value self) {
 
   
   CCDirector* retval = CCDirector::sharedDirector();
-  return wrap(mrb, retval, "CCDirector");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCDirector"));
 }
 
 static mrb_value CCDirector_getWinSize(mrb_state *mrb, mrb_value self) {
@@ -1058,7 +1052,7 @@ static mrb_value CCDirector_getScheduler(mrb_state *mrb, mrb_value self) {
 
   CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
   CCScheduler* retval = instance->getScheduler();
-  return wrap(mrb, retval, "CCScheduler");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCScheduler"));
 }
 
 static void installCCDirector(mrb_state *mrb, struct RClass *mod) {
@@ -1081,7 +1075,7 @@ static mrb_value CCFileUtils_sharedFileUtils(mrb_state *mrb, mrb_value self) {
 
   
   CCFileUtils* retval = CCFileUtils::sharedFileUtils();
-  return wrap(mrb, retval, "CCFileUtils");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCFileUtils"));
 }
 
 static mrb_value CCFileUtils_fullPathForFilename(mrb_state *mrb, mrb_value self) {
@@ -1117,7 +1111,7 @@ static mrb_value CCMenuItem_registerScriptTapHandler(mrb_state *mrb, mrb_value s
 }
 
 static void installCCMenuItem(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCNodeRGBA");
+  struct RClass* parent = getClass(mrb, "CCNodeRGBA");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMenuItem", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "registerScriptTapHandler", CCMenuItem_registerScriptTapHandler, MRB_ARGS_ANY());
@@ -1127,7 +1121,7 @@ static void installCCMenuItem(mrb_state *mrb, struct RClass *mod) {
 // CCMenuItemSprite
 
 static void installCCMenuItemSprite(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCMenuItem");
+  struct RClass* parent = getClass(mrb, "CCMenuItem");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMenuItemSprite", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
 }
@@ -1143,11 +1137,11 @@ static mrb_value CCMenuItemImage_create(mrb_state *mrb, mrb_value self) {
   const char* p1 = mrb_string_value_ptr(mrb, args[1]);
   
   CCMenuItemImage* retval = CCMenuItemImage::create(p0, p1);
-  return wrap(mrb, retval, "CCMenuItemImage");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMenuItemImage"));
 }
 
 static void installCCMenuItemImage(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCMenuItemSprite");
+  struct RClass* parent = getClass(mrb, "CCMenuItemSprite");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMenuItemImage", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCMenuItemImage_create, MRB_ARGS_ANY());
@@ -1163,11 +1157,11 @@ static mrb_value CCMenu_createWithItem(mrb_state *mrb, mrb_value self) {
   CCMenuItem* p0 = static_cast<CCMenuItem*>(DATA_PTR(args[0]));
   
   CCMenu* retval = CCMenu::createWithItem(p0);
-  return wrap(mrb, retval, "CCMenu");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMenu"));
 }
 
 static void installCCMenu(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "CCLayerRGBA");
+  struct RClass* parent = getClass(mrb, "CCLayerRGBA");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMenu", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "createWithItem", CCMenu_createWithItem, MRB_ARGS_ANY());

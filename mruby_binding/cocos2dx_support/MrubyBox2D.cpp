@@ -39,20 +39,14 @@ static float get_float(mrb_value x) {
   }
 }
 
-static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className) {
-  mrb_sym sym = mrb_intern_cstr(mrb, "Box2D");
-  mrb_value mod = mrb_const_get(mrb, mrb_obj_value(mrb->kernel_module), sym);
-  mrb_value klass = mrb_iv_get(mrb, mod, mrb_intern_cstr(mrb, className));
-  return klass;
-}
-
-static struct RClass* getMrubyCocos2dClassPtr(mrb_state *mrb, const char* className) {
-  return mrb_class_ptr(getMrubyCocos2dClassValue(mrb, className));
+static struct RClass* getClass(mrb_state *mrb, const char* className) {
+  RClass* mod = mrb_class_get(mrb, "Box2D");
+  return mrb_class_get_under(mrb, mod, className);
 }
 
 template <class T>
 mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
-  struct RClass* tc = getMrubyCocos2dClassPtr(mrb, type);
+  struct RClass* tc = getClass(mrb, type);
   assert(tc != NULL);
   mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &dummy_type, NULL));
   DATA_TYPE(instance) = &dummy_type;
@@ -164,7 +158,7 @@ static mrb_value b2EdgeShape_Set(mrb_state *mrb, mrb_value self) {
 }
 
 static void installb2EdgeShape(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "b2Shape");
+  struct RClass* parent = getClass(mrb, "b2Shape");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "B2EdgeShape", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "initialize", b2EdgeShape___ctor, MRB_ARGS_ANY());
@@ -193,7 +187,7 @@ static mrb_value b2PolygonShape_SetAsBox(mrb_state *mrb, mrb_value self) {
 }
 
 static void installb2PolygonShape(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getMrubyCocos2dClassPtr(mrb, "b2Shape");
+  struct RClass* parent = getClass(mrb, "b2Shape");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "B2PolygonShape", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "initialize", b2PolygonShape___ctor, MRB_ARGS_ANY());

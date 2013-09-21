@@ -17,11 +17,11 @@ static void dummy(mrb_state *mrb, void *ptr) {
 // TODO: Use different data type for each class.
 static struct mrb_data_type dummy_type = { "Dummy", dummy };
 
-static float get_bool(mrb_value x) {
+static bool get_bool(mrb_value x) {
   return mrb_bool(x);
 }
 
-static float get_int(mrb_value x) {
+static int get_int(mrb_value x) {
   if (mrb_fixnum_p(x)) {
     return mrb_fixnum(x);
   } else if (mrb_float_p(x)) {
@@ -41,24 +41,18 @@ static float get_float(mrb_value x) {
   }
 }
 
-static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className) {
-  mrb_sym sym = mrb_intern_cstr(mrb, "CocosDenshion");
-  mrb_value mod = mrb_const_get(mrb, mrb_obj_value(mrb->kernel_module), sym);
-  mrb_value klass = mrb_iv_get(mrb, mod, mrb_intern_cstr(mrb, className));
-  return klass;
-}
-
-static struct RClass* getMrubyCocos2dClassPtr(mrb_state *mrb, const char* className) {
-  return mrb_class_ptr(getMrubyCocos2dClassValue(mrb, className));
+static struct RClass* getClass(mrb_state *mrb, const char* className) {
+  RClass* mod = mrb_class_get(mrb, "CocosDenshion");
+  return mrb_class_get_under(mrb, mod, className);
 }
 
 template <class T>
 mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
-  struct RClass* tc = getMrubyCocos2dClassPtr(mrb, type);
+  struct RClass* tc = getClass(mrb, type);
   assert(tc != NULL);
   mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &dummy_type, NULL));
   DATA_TYPE(instance) = &dummy_type;
-  DATA_PTR(instance) = ptr;
+  DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
 
@@ -69,7 +63,7 @@ static mrb_value SimpleAudioEngine_sharedEngine(mrb_state *mrb, mrb_value self) 
 
   
   SimpleAudioEngine* retval = SimpleAudioEngine::sharedEngine();
-  return wrap(mrb, retval, "SimpleAudioEngine");
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "SimpleAudioEngine"));
 }
 
 static mrb_value SimpleAudioEngine_playBackgroundMusic(mrb_state *mrb, mrb_value self) {
