@@ -220,8 +220,8 @@ int CCMrubyEngine::executeMenuItemEvent(CCMenuItem* pMenuItem)
   if (!nHandler) return 0;
 
   int arena = mrb_gc_arena_save(m_mrb);
-  mrb_value proc = getRegisteredProc(m_mrb, nHandler);
-  mrb_funcall(m_mrb, proc, "call", 0);
+  mrb_value block = getRegisteredProc(m_mrb, nHandler);
+  mrb_yield(m_mrb, block, mrb_nil_value());
   int exc = dumpException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;
@@ -244,8 +244,8 @@ int CCMrubyEngine::executeSchedule(int nHandler, float dt, CCNode* pNode)
   if (!nHandler) return FALSE;
 
   int arena = mrb_gc_arena_save(m_mrb);
-  mrb_value proc = getRegisteredProc(m_mrb, nHandler);
-  mrb_funcall(m_mrb, proc, "call", 1, mrb_float_value(m_mrb, dt));
+  mrb_value block = getRegisteredProc(m_mrb, nHandler);
+  mrb_yield(m_mrb, block, mrb_float_value(m_mrb, dt));
   int exc = dumpException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;
@@ -266,10 +266,12 @@ int CCMrubyEngine::executeLayerTouchEvent(CCLayer* pLayer, int eventType, CCTouc
   
   int arena = mrb_gc_arena_save(m_mrb);
   const CCPoint pt = CCDirector::sharedDirector()->convertToGL(pTouch->getLocationInView());
-  mrb_value x = mrb_float_value(m_mrb, pt.x);
-  mrb_value y = mrb_float_value(m_mrb, pt.y);
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
-  mrb_funcall(m_mrb, proc, "call", 3, mrb_fixnum_value(eventType), x, y);
+  mrb_value args[3];
+  args[0] = mrb_fixnum_value(eventType);
+  args[1] = mrb_float_value(m_mrb, pt.x);
+  args[2] = mrb_float_value(m_mrb, pt.y);
+  mrb_yield_argv(m_mrb, proc, 3, args);
   int exc = dumpException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;
