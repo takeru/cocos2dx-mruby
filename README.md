@@ -10,7 +10,9 @@ How to use
 * ./create_project.py -project HelloRuby -package com.example.helloruby -language cpp
 * Install MRuby.framework. https://github.com/carsonmcdonald/ios-ruby-embedded
 * (Run rake to re-generate stab files.)
-* Add generated/*cpp,h files to your project.
+* Add *.cpp,h files to your project.
+ * mruby_binding/cocos2dx_support/*.cpp,h
+ * generated/*.cpp,h
 * Put .rb script file into Resources.
 * Use CCMrubyEngine and start mruby script using `executeScriptFile()`
 
