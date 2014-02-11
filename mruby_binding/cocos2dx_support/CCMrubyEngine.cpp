@@ -7,14 +7,15 @@
 //
 
 #include "CCMrubyEngine.h"
-#include "mruby.h"
-#include "mruby/array.h"
-#include "mruby/class.h"
-#include "mruby/compile.h"
-#include "mruby/string.h"
-#include "mruby/variable.h"
+#include "mruby/mruby.h"
+#include "mruby/mruby/array.h"
+#include "mruby/mruby/class.h"
+#include "mruby/mruby/compile.h"
+#include "mruby/mruby/string.h"
+#include "mruby/mruby/variable.h"
 #include "MrubyCocos2d.h"
 #include "MrubyCocosDenshion.h"
+// #include "MrubyBox2D.h"
 
 extern "C" mrb_value mrb_get_backtrace(mrb_state*, mrb_value);
 
@@ -28,7 +29,7 @@ static const char* getBaseName(const char* fullpath) {
 }
 
 static struct RClass* getMrubyCocos2dClassPtr(mrb_state *mrb, const char* className) {
-  RClass* mod = mrb_class_get_under(mrb, mrb->kernel_module, "Cocos2d");
+  RClass* mod = mrb_module_get(mrb, "Cocos2d");
   return mrb_class_get_under(mrb, mod, className);
 }
 
@@ -137,6 +138,7 @@ bool CCMrubyEngine::init(void)
   // Installs cocos2d classes.
   installMrubyCocos2d(m_mrb);
   installMrubyCocosDenshion(m_mrb);
+  // installMrubyBox2D(m_mrb);
   
   // Installs helper functions.
   // This line must be after installing mruby bindings,
@@ -303,6 +305,11 @@ bool CCMrubyEngine::handleAssert(const char *msg)
 {
   CCLOGERROR("CCMrubyEngine::handleAssert has not implemented: %s", msg);
   return 0;
+}
+
+bool CCMrubyEngine::parseConfig(ConfigType type, const std::string& str)
+{
+    return false;
 }
 
 NS_CC_END

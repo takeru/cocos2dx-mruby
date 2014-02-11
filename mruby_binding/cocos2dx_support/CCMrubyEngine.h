@@ -10,7 +10,7 @@
 #define __CC_MRUBY_ENGINE_H__
 
 #include "cocos2d.h"
-#include "mruby.h"
+#include "mruby/mruby.h"
 
 NS_CC_BEGIN
 
@@ -71,6 +71,7 @@ public:
    */
   virtual bool handleAssert(const char *msg);
   
+  virtual bool parseConfig(ConfigType type, const std::string& str);
 private:
   CCMrubyEngine(void);
   bool init(void);
