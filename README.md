@@ -30,3 +30,7 @@ Example
 -------
 
 https://github.com/takeru/NyanGameRuby
+
+Blog
+----
+http://d.hatena.ne.jp/urekat/20140215/1392461897
