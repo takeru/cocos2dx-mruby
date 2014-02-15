@@ -261,7 +261,7 @@ EOD
     index = 0
     params.each do |type|
       a = if type == 'block'
-            ['int', 'blockHandler', 'registerProc(mrb, block)']
+            ['int', 'blockHandler', 'registerProc(mrb, self, block)']
           else
             i = index
             index += 1
@@ -399,10 +399,14 @@ EOD
 
   def c_value_to_mruby_value(type, varname)
     case type
-    when 'int'
+    when 'bool'
+      return "mrb_bool_value(#{varname})"
+    when 'int', 'unsigned int', 'short', 'unsinged short', 'long', 'unsigned long', 'char', 'unsigned char'
       return "mrb_fixnum_value(#{varname})"
     when 'float'
       return "mrb_float_value(mrb, #{varname})"
+    when 'double'
+      return "mrb_double_value(mrb, #{varname})"
     when 'std::string'
       return "mrb_str_new(mrb, #{varname}.c_str(), #{varname}.size())"
     else

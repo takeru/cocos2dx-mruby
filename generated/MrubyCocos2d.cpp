@@ -3,7 +3,7 @@
 #include "SimpleAudioEngine.h"
 #include "mruby/mruby.h"
 
-extern int registerProc(mrb_state *mrb, mrb_value proc);
+extern int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc);
 
 using namespace cocos2d;
 
@@ -68,7 +68,7 @@ mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
 
 static mrb_value CcColor3B_r(mrb_state *mrb, mrb_value self) {
   CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(unsigned char))) unsigned char(instance->r), "Unsigned char");
+  return mrb_fixnum_value(instance->r);
 }
 
 static mrb_value CcColor3B_set_r(mrb_state *mrb, mrb_value self) {
@@ -81,7 +81,7 @@ static mrb_value CcColor3B_set_r(mrb_state *mrb, mrb_value self) {
 
 static mrb_value CcColor3B_g(mrb_state *mrb, mrb_value self) {
   CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(unsigned char))) unsigned char(instance->g), "Unsigned char");
+  return mrb_fixnum_value(instance->g);
 }
 
 static mrb_value CcColor3B_set_g(mrb_state *mrb, mrb_value self) {
@@ -94,7 +94,7 @@ static mrb_value CcColor3B_set_g(mrb_state *mrb, mrb_value self) {
 
 static mrb_value CcColor3B_b(mrb_state *mrb, mrb_value self) {
   CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(unsigned char))) unsigned char(instance->b), "Unsigned char");
+  return mrb_fixnum_value(instance->b);
 }
 
 static mrb_value CcColor3B_set_b(mrb_state *mrb, mrb_value self) {
@@ -316,6 +316,16 @@ static mrb_value CCRect_set_size(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
+static mrb_value CCRect_containsPoint(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+  CCRect* instance = static_cast<CCRect*>(DATA_PTR(self));
+  bool retval = instance->containsPoint(p0);
+  return mrb_bool_value(retval);
+}
+
 static void installCCRect(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCRect", parent);
@@ -325,6 +335,7 @@ static void installCCRect(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "origin=", CCRect_set_origin, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, tc, "size", CCRect_size, MRB_ARGS_NONE());
   mrb_define_method(mrb, tc, "size=", CCRect_set_size, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "containsPoint", CCRect_containsPoint, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -540,11 +551,18 @@ static mrb_value CCNode_scheduleUpdateWithPriorityLua(mrb_state *mrb, mrb_value 
   int arg_count;
   mrb_value block;
   mrb_get_args(mrb, "*&", &args, &arg_count, &block);
-  int blockHandler = registerProc(mrb, block);
+  int blockHandler = registerProc(mrb, self, block);
   int p0 = get_int(args[0]);
   CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
   instance->scheduleUpdateWithPriorityLua(blockHandler, p0);
   return mrb_nil_value();
+}
+
+static mrb_value CCNode_boundingBox(mrb_state *mrb, mrb_value self) {
+
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  CCRect retval = instance->boundingBox();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCRect))) CCRect(retval), "CCRect");
 }
 
 static void installCCNode(mrb_state *mrb, struct RClass *mod) {
@@ -564,6 +582,7 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "setVisible", CCNode_setVisible, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "scheduleUpdate", CCNode_scheduleUpdate, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "scheduleUpdateWithPriorityLua", CCNode_scheduleUpdateWithPriorityLua, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "boundingBox", CCNode_boundingBox, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -886,25 +905,25 @@ static mrb_value CCLayer_registerScriptTouchHandler(mrb_state *mrb, mrb_value se
   mrb_value block;
   mrb_get_args(mrb, "*&", &args, &arg_count, &block);
   if (arg_count == 0) {
-    int blockHandler = registerProc(mrb, block);
+    int blockHandler = registerProc(mrb, self, block);
     CCLayer* instance = static_cast<CCLayer*>(DATA_PTR(self));
     instance->registerScriptTouchHandler(blockHandler);
     return mrb_nil_value();
   } else if (arg_count == 1) {
-    int blockHandler = registerProc(mrb, block);
+    int blockHandler = registerProc(mrb, self, block);
     bool p0 = get_bool(args[0]);
     CCLayer* instance = static_cast<CCLayer*>(DATA_PTR(self));
     instance->registerScriptTouchHandler(blockHandler, p0);
     return mrb_nil_value();
   } else if (arg_count == 2) {
-    int blockHandler = registerProc(mrb, block);
+    int blockHandler = registerProc(mrb, self, block);
     bool p0 = get_bool(args[0]);
     int p1 = get_int(args[1]);
     CCLayer* instance = static_cast<CCLayer*>(DATA_PTR(self));
     instance->registerScriptTouchHandler(blockHandler, p0, p1);
     return mrb_nil_value();
   } else if (arg_count == 3) {
-    int blockHandler = registerProc(mrb, block);
+    int blockHandler = registerProc(mrb, self, block);
     bool p0 = get_bool(args[0]);
     int p1 = get_int(args[1]);
     bool p2 = get_bool(args[2]);
@@ -937,6 +956,16 @@ static mrb_value CCLayer_setAccelerometerEnabled(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+static mrb_value CCLayer_setTouchMode(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  ccTouchesMode p0 = (ccTouchesMode)mrb_fixnum(args[0]);
+  CCLayer* instance = static_cast<CCLayer*>(DATA_PTR(self));
+  instance->setTouchMode(p0);
+  return mrb_nil_value();
+}
+
 static void installCCLayer(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCNode");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCLayer", parent);
@@ -946,6 +975,7 @@ static void installCCLayer(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "registerScriptTouchHandler", CCLayer_registerScriptTouchHandler, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setTouchEnabled", CCLayer_setTouchEnabled, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setAccelerometerEnabled", CCLayer_setAccelerometerEnabled, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setTouchMode", CCLayer_setTouchMode, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -982,7 +1012,7 @@ static mrb_value CCScheduler_scheduleScriptFunc(mrb_state *mrb, mrb_value self) 
   int arg_count;
   mrb_value block;
   mrb_get_args(mrb, "*&", &args, &arg_count, &block);
-  int blockHandler = registerProc(mrb, block);
+  int blockHandler = registerProc(mrb, self, block);
   float p0 = get_float(args[0]);
   bool p1 = get_bool(args[1]);
   CCScheduler* instance = static_cast<CCScheduler*>(DATA_PTR(self));
@@ -1055,6 +1085,16 @@ static mrb_value CCDirector_getScheduler(mrb_state *mrb, mrb_value self) {
   return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCScheduler"));
 }
 
+static mrb_value CCDirector_setContentScaleFactor(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  float p0 = get_float(args[0]);
+  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+  instance->setContentScaleFactor(p0);
+  return mrb_nil_value();
+}
+
 static void installCCDirector(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCDirector", parent);
@@ -1066,6 +1106,7 @@ static void installCCDirector(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "convertToGL", CCDirector_convertToGL, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "runWithScene", CCDirector_runWithScene, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getScheduler", CCDirector_getScheduler, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setContentScaleFactor", CCDirector_setContentScaleFactor, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1104,7 +1145,7 @@ static mrb_value CCMenuItem_registerScriptTapHandler(mrb_state *mrb, mrb_value s
   int arg_count;
   mrb_value block;
   mrb_get_args(mrb, "*&", &args, &arg_count, &block);
-  int blockHandler = registerProc(mrb, block);
+  int blockHandler = registerProc(mrb, self, block);
   CCMenuItem* instance = static_cast<CCMenuItem*>(DATA_PTR(self));
   instance->registerScriptTapHandler(blockHandler);
   return mrb_nil_value();
@@ -1246,6 +1287,8 @@ void installMrubyCocos2d(mrb_state *mrb) {
   mrb_define_const(mrb, mod, "KCCNodeOnEnterTransitionDidFinish", mrb_fixnum_value(kCCNodeOnEnterTransitionDidFinish));
   mrb_define_const(mrb, mod, "KCCNodeOnExitTransitionDidStart", mrb_fixnum_value(kCCNodeOnExitTransitionDidStart));
   mrb_define_const(mrb, mod, "KCCNodeOnCleanup", mrb_fixnum_value(kCCNodeOnCleanup));
+  mrb_define_const(mrb, mod, "KCCTouchesAllAtOnce", mrb_fixnum_value(kCCTouchesAllAtOnce));
+  mrb_define_const(mrb, mod, "KCCTouchesOneByOne", mrb_fixnum_value(kCCTouchesOneByOne));
   mrb_define_method(mrb, mod, "CCPointMake", CCPointMake__, MRB_ARGS_ANY());
   mrb_define_method(mrb, mod, "ccp", ccp__, MRB_ARGS_ANY());
   mrb_define_method(mrb, mod, "CCSizeMake", CCSizeMake__, MRB_ARGS_ANY());

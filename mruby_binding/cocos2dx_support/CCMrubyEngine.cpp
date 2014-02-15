@@ -37,7 +37,8 @@ static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className
   return mrb_obj_value(getMrubyCocos2dClassPtr(mrb, className));
 }
 
-int registerProc(mrb_state *mrb, mrb_value proc) {
+int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc) {
+  // TODO save self(=CCLayer) for send back from executeLayerTouchEvent to proc.
   mrb_value man = getMrubyCocos2dClassValue(mrb, "HandleManager");
   mrb_value result = mrb_funcall(mrb, man, "register", 1, proc);
   return mrb_fixnum(result);

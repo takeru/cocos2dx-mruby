@@ -6,7 +6,7 @@ Header = <<EOD
 #include "SimpleAudioEngine.h"
 #include "mruby/mruby.h"
 
-extern int registerProc(mrb_state *mrb, mrb_value proc);
+extern int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc);
 
 using namespace cocos2d;
 
@@ -24,6 +24,13 @@ Constants = [
   ['int', 'kCCNodeOnEnterTransitionDidFinish'],
   ['int', 'kCCNodeOnExitTransitionDidStart'],
   ['int', 'kCCNodeOnCleanup'],
+
+  # ccTouchesMode
+  ['int', 'kCCTouchesAllAtOnce'],
+  ['int', 'kCCTouchesOneByOne'],
+]
+Enums = [
+  "ccTouchesMode"
 ]
 
 Functions = [
@@ -70,6 +77,7 @@ Classes = {
                  [CONSTRUCTOR, ['const CCRect&']],
                  [ATTR_ACCESSOR, 'CCPoint&', 'origin'],
                  [ATTR_ACCESSOR, 'CCSize&', 'size'],
+                 [0, 'bool', 'containsPoint', ['const CCPoint&']],
                 ],
   },
   'CCObject' => {
@@ -115,6 +123,7 @@ Classes = {
                  [0, 'void', 'setVisible', ['bool']],
                  [0, 'void', 'scheduleUpdate', []],
                  [0, 'void', 'scheduleUpdateWithPriorityLua', ['block', 'int']],
+                 [0, 'CCRect', 'boundingBox', []],
                 ],
   },
   'CCNodeRGBA' => {
@@ -196,6 +205,7 @@ Classes = {
                  [0, 'void', 'registerScriptTouchHandler', ['block', 'bool', 'int', 'bool']],
                  [0, 'void', 'setTouchEnabled', ['bool']],
                  [0, 'void', 'setAccelerometerEnabled', ['bool']],
+                 [0, 'void', 'setTouchMode', ['ccTouchesMode']],
                 ],
   },
   'CCLayerRGBA' => {
@@ -223,6 +233,7 @@ Classes = {
                  [0, 'CCPoint', 'convertToGL', ['const CCPoint&']],
                  [0, 'void', 'runWithScene', ['CCScene*']],
                  [0, 'CCScheduler*', 'getScheduler', []],
+                 [0, 'void', 'setContentScaleFactor', ['float']]
                 ],
   },
   'CCFileUtils' => {
