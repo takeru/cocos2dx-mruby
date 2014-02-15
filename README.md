@@ -29,4 +29,4 @@ How to use
 Example
 -------
 
-(TODO)
+https://github.com/takeru/NyanGameRuby
