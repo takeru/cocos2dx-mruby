@@ -18,6 +18,7 @@
 // #include "MrubyBox2D.h"
 
 extern "C" mrb_value mrb_get_backtrace(mrb_state*, mrb_value);
+extern mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, cocos2d::CCTouch* ptr);
 
 static const char* getBaseName(const char* fullpath) {
   int len = strlen(fullpath);
@@ -91,7 +92,7 @@ static mrb_value _mrb_puts(mrb_state *mrb, mrb_value self) {
 static int dumpException(mrb_state *mrb) {
   if (!mrb->exc)
     return FALSE;
-  
+
   mrb_value exc = mrb_obj_value(mrb->exc);
   mrb_value backtrace = mrb_get_backtrace(mrb, exc);
   mrb_value s = mrb_funcall(mrb, exc, "inspect", 0);
@@ -130,7 +131,7 @@ CCMrubyEngine::CCMrubyEngine(void)
 bool CCMrubyEngine::init(void)
 {
   m_mrb = mrb_open();
-  
+
   // Installs general functions.
   mrb_define_method(m_mrb, m_mrb->kernel_module, "cclog", _mrb_puts, MRB_ARGS_ANY());
   mrb_define_method(m_mrb, m_mrb->kernel_module, "puts", _mrb_puts, MRB_ARGS_ANY());
@@ -140,12 +141,12 @@ bool CCMrubyEngine::init(void)
   installMrubyCocos2d(m_mrb);
   installMrubyCocosDenshion(m_mrb);
   // installMrubyBox2D(m_mrb);
-  
+
   // Installs helper functions.
   // This line must be after installing mruby bindings,
   // because it creates new module for `Cocos2d'.
   mrb_load_string(m_mrb, HelperFunctions);
-  
+
   return true;
 }
 
@@ -208,7 +209,7 @@ int CCMrubyEngine::executeNodeEvent(CCNode* pNode, int nAction)
 {
   int nHandler = pNode->getScriptHandler();
   if (!nHandler) return 0;
-  
+
   int arena = mrb_gc_arena_save(m_mrb);
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
   mrb_funcall(m_mrb, proc, "call", 1, mrb_fixnum_value(nAction));
@@ -266,15 +267,13 @@ int CCMrubyEngine::executeLayerTouchEvent(CCLayer* pLayer, int eventType, CCTouc
   if (!pScriptHandlerEntry) return FALSE;
   int nHandler = pScriptHandlerEntry->getHandler();
   if (!nHandler) return FALSE;
-  
+
   int arena = mrb_gc_arena_save(m_mrb);
-  const CCPoint pt = CCDirector::sharedDirector()->convertToGL(pTouch->getLocationInView());
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
-  mrb_value args[3];
+  mrb_value args[2];
   args[0] = mrb_fixnum_value(eventType);
-  args[1] = mrb_float_value(m_mrb, pt.x);
-  args[2] = mrb_float_value(m_mrb, pt.y);
-  mrb_yield_argv(m_mrb, proc, 3, args);
+  args[1] = wrap_Cocos2d_CCTouch(m_mrb, pTouch);
+  mrb_yield_argv(m_mrb, proc, 2, args);
   int exc = dumpException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;

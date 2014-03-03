@@ -9,6 +9,12 @@ using namespace cocos2d;
 
 typedef ccColor3B CcColor3B;
 
+template <class T>
+mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
+mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, CCTouch* ptr) {
+  return wrap(mrb, ptr, "CCTouch");
+}
+
 #include "mruby/mruby.h"
 #include "mruby/mruby/class.h"
 #include "mruby/mruby/data.h"
@@ -565,6 +571,16 @@ static mrb_value CCNode_boundingBox(mrb_state *mrb, mrb_value self) {
   return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCRect))) CCRect(retval), "CCRect");
 }
 
+static mrb_value CCNode_convertTouchToNodeSpace(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  CCTouch* p0 = static_cast<CCTouch*>(DATA_PTR(args[0]));
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  CCPoint retval = instance->convertTouchToNodeSpace(p0);
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+}
+
 static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCObject");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCNode", parent);
@@ -583,6 +599,7 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "scheduleUpdate", CCNode_scheduleUpdate, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "scheduleUpdateWithPriorityLua", CCNode_scheduleUpdateWithPriorityLua, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "boundingBox", CCNode_boundingBox, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "convertTouchToNodeSpace", CCNode_convertTouchToNodeSpace, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1209,6 +1226,79 @@ static void installCCMenu(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// CCTouch
+
+static mrb_value CCTouch_getLocation(mrb_state *mrb, mrb_value self) {
+
+  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+  CCPoint retval = instance->getLocation();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+}
+
+static mrb_value CCTouch_getPreviousLocation(mrb_state *mrb, mrb_value self) {
+
+  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+  CCPoint retval = instance->getPreviousLocation();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+}
+
+static mrb_value CCTouch_getStartLocation(mrb_state *mrb, mrb_value self) {
+
+  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+  CCPoint retval = instance->getStartLocation();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+}
+
+static mrb_value CCTouch_getDelta(mrb_state *mrb, mrb_value self) {
+
+  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+  CCPoint retval = instance->getDelta();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+}
+
+static mrb_value CCTouch_getLocationInView(mrb_state *mrb, mrb_value self) {
+
+  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+  CCPoint retval = instance->getLocationInView();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+}
+
+static mrb_value CCTouch_getPreviousLocationInView(mrb_state *mrb, mrb_value self) {
+
+  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+  CCPoint retval = instance->getPreviousLocationInView();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+}
+
+static mrb_value CCTouch_getStartLocationInView(mrb_state *mrb, mrb_value self) {
+
+  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+  CCPoint retval = instance->getStartLocationInView();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+}
+
+static mrb_value CCTouch_getID(mrb_state *mrb, mrb_value self) {
+
+  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+  int retval = instance->getID();
+  return mrb_fixnum_value(retval);
+}
+
+static void installCCTouch(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCObject");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCTouch", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_method(mrb, tc, "getLocation", CCTouch_getLocation, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getPreviousLocation", CCTouch_getPreviousLocation, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getStartLocation", CCTouch_getStartLocation, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getDelta", CCTouch_getDelta, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getLocationInView", CCTouch_getLocationInView, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getPreviousLocationInView", CCTouch_getPreviousLocationInView, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getStartLocationInView", CCTouch_getStartLocationInView, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getID", CCTouch_getID, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
 // Functions.
 
 static mrb_value CCPointMake__(mrb_state *mrb, mrb_value self) {
@@ -1324,4 +1414,5 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCMenuItemSprite(mrb, mod);
   installCCMenuItemImage(mrb, mod);
   installCCMenu(mrb, mod);
+  installCCTouch(mrb, mod);
 }

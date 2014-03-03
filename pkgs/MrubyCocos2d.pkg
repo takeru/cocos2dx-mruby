@@ -11,6 +11,12 @@ extern int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc);
 using namespace cocos2d;
 
 typedef ccColor3B CcColor3B;
+
+template <class T>
+mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
+mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, CCTouch* ptr) {
+  return wrap(mrb, ptr, "CCTouch");
+}
 EOD
 
 Constants = [
@@ -124,6 +130,7 @@ Classes = {
                  [0, 'void', 'scheduleUpdate', []],
                  [0, 'void', 'scheduleUpdateWithPriorityLua', ['block', 'int']],
                  [0, 'CCRect', 'boundingBox', []],
+                 [0, 'CCPoint', 'convertTouchToNodeSpace', ['CCTouch*']],
                 ],
   },
   'CCNodeRGBA' => {
@@ -264,6 +271,19 @@ Classes = {
     :parent => 'CCLayerRGBA',
     :methods => [
                  [STATIC, 'CCMenu*', 'createWithItem', ['CCMenuItem*']],
+                ],
+  },
+  'CCTouch' => {
+    :parent => 'CCObject',
+    :methods => [
+                 [0, 'CCPoint', 'getLocation', []],
+                 [0, 'CCPoint', 'getPreviousLocation', []],
+                 [0, 'CCPoint', 'getStartLocation', []],
+                 [0, 'CCPoint', 'getDelta', []],
+                 [0, 'CCPoint', 'getLocationInView', []],
+                 [0, 'CCPoint', 'getPreviousLocationInView', []],
+                 [0, 'CCPoint', 'getStartLocationInView', []],
+                 [0, 'int', 'getID', []]
                 ],
   },
 }
