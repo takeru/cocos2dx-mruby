@@ -30,7 +30,8 @@
 
       </header>
       <section>
-        <p>Download cocos2d-x-2.2.3.zip, and unzip.</p>
+<p>Download cocos2d-x-2.2.x.zip, and unzip.</p>
+<p><a href="http://www.cocos2d-x.org/download">http://www.cocos2d-x.org/download</a></p>
 
 <p>Create new cocos2dx cpp project.</p>
 
@@ -95,7 +96,9 @@ drwxr-xr-x  6 takeru  staff  204  3 21 00:05 MRuby.framework
 <p>Install MRuby.framework
 <a href="https://github.com/carsonmcdonald/ios-ruby-embedded#install">https://github.com/carsonmcdonald/ios-ruby-embedded#install</a></p>
 
-<p>[img]</p>
+<p><img src="images/scr1.png"></p>
+<p><img src="images/scr2.png"></p>
+<p><img src="images/scr3.png"></p>
 
 <p>Clone cocos2dx-mruby and generate stub files.</p>
 
@@ -114,11 +117,14 @@ MrubyCocosDenshion.cpp  MrubyCocosDenshion.h
 
 <p>Add *.cpp/h files into Classes.</p>
 
-<p>[img]</p>
+<p><img src="images/scr4.png"></p>
+<p><img src="images/scr5.png"></p>
+
 
 <p>Edit AppDelegate.cpp</p>
 
-<pre><code>#include "CCMrubyEngine.h"
+<pre><code>
+#include "CCMrubyEngine.h"
 
   CCMrubyEngine* pEngine = CCMrubyEngine::defaultEngine();
   CCScriptEngineManager::sharedManager()-&gt;setScriptEngine(pEngine);
@@ -126,8 +132,8 @@ MrubyCocosDenshion.cpp  MrubyCocosDenshion.h
   std::string path = CCFileUtils::sharedFileUtils()-&gt;fullPathForFilename("hello.rb");
   pEngine-&gt;executeScriptFile(path.c_str());
 </code></pre>
+<p><img src="images/scr6.png"></p>
 
-<p>[img]</p>
 
 <p>Put hello.rb into Resources.</p>
 
@@ -145,13 +151,14 @@ d.runWithScene(scene)
 
 <p>And, click Run button.</p>
 
-<p>[img]</p>
+<p><img src="images/scr7.png"></p>
+
       </section>
       <footer>
         <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
       </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		
+
   </body>
 </html>
