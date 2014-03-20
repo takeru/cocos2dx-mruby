@@ -1,12 +1,14 @@
 cocos2dx-mruby
 ==============
 
-mruby binding for Cocos2d-x(2.2.2)
+mruby binding for Cocos2d-x(2.2.x)
 
 Working in progress, very limited classes and methods are implemented.
 
 How to use
 ----------
+http://takeru.github.io/cocos2dx-mruby/
+
 * ./create_project.py -project HelloRuby -package com.example.helloruby -language cpp
 * Install MRuby.framework. https://github.com/carsonmcdonald/ios-ruby-embedded
 * (Run rake to re-generate stab files.)
@@ -28,7 +30,6 @@ How to use
 
 Example
 -------
-
 https://github.com/takeru/NyanGameRuby
 
 Blog
