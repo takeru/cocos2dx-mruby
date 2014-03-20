@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>cocos2dx-mruby by takeru</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">cocos2dx-mruby</h1>
+        <p class="header">mruby binding for cocos2d-x</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/takeru/cocos2dx-mruby/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/takeru/cocos2dx-mruby/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/takeru/cocos2dx-mruby">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/takeru">takeru</a></p>
+
+
+      </header>
+      <section>
+        <p>Download cocos2d-x-2.2.3.zip, and unzip.</p>
+
+<p>Create new cocos2dx cpp project.</p>
+
+<pre><code>tkrmb2:~% cd ~/proj/cocos2d-x-2.2.3/tools/project-creator
+
+tkrmb2:~/proj/.../tools/project-creator% ./create_project.py -project HelloRuby -package com.example.helloruby -language cpp
+proj.ios        : Done!
+proj.android        : Done!
+proj.win32      : Done!
+proj.winrt      : Done!
+proj.wp8        : Done!
+proj.mac        : Done!
+proj.blackberry     : Done!
+proj.linux      : Done!
+proj.marmalade      : Done!
+proj.tizen      : Done!
+proj.wp8-xaml       : Done!
+New project has been created in this path: /Users/takeru/proj/cocos2d-x-2.2.3/projects/HelloRuby
+Have Fun!
+
+tkrmb2:~/proj/.../tools/project-creator% cd /Users/takeru/proj/cocos2d-x-2.2.3/projects/HelloRuby
+
+tkrmb2:~/proj/.../projects/HelloRuby% open ./proj.ios/HelloRuby.xcodeproj
+</code></pre>
+
+<p>Clone and Build MRuby.framework
+<a href="https://github.com/carsonmcdonald/ios-ruby-embedded#build">https://github.com/carsonmcdonald/ios-ruby-embedded#build</a></p>
+
+<pre><code>tkrmb2:~/proj% git clone git://github.com/carsonmcdonald/ios-ruby-embedded.git
+Cloning into 'ios-ruby-embedded'...
+remote: Reusing existing pack: 304, done.
+remote: Counting objects: 3, done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 307 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (307/307), 40.97 KiB | 0 bytes/s, done.
+Resolving deltas: 100% (139/139), done.
+Checking connectivity... done.
+
+tkrmb2:~/proj% cd ios-ruby-embedded
+
+tkrmb2:~/proj/ios-ruby-embedded% git submodule init
+Submodule 'mruby' (https://github.com/mruby/mruby.git) registered for path 'mruby'
+
+tkrmb2:~/proj/ios-ruby-embedded% git submodule update
+Cloning into 'mruby'...
+remote: Reusing existing pack: 21866, done.
+remote: Counting objects: 45, done.
+remote: Compressing objects: 100% (39/39), done.
+remote: Total 21911 (delta 15), reused 0 (delta 0)
+Receiving objects: 100% (21911/21911), 5.97 MiB | 1.05 MiB/s, done.
+Resolving deltas: 100% (13118/13118), done.
+Checking connectivity... done.
+Submodule path 'mruby': checked out '873fae9f4505a5f2b5146f969917e8b083269f36'
+
+tkrmb2:~/proj/ios-ruby-embedded% rake    ## (maybe to fix Rakefile '7.0' to '7.1')
+(...snip...)
+
+tkrmb2:~/proj/ios-ruby-embedded% ls -dl MRuby.framework
+drwxr-xr-x  6 takeru  staff  204  3 21 00:05 MRuby.framework
+</code></pre>
+
+<p>Install MRuby.framework
+<a href="https://github.com/carsonmcdonald/ios-ruby-embedded#install">https://github.com/carsonmcdonald/ios-ruby-embedded#install</a></p>
+
+<p>[img]</p>
+
+<p>Clone cocos2dx-mruby and generate stub files.</p>
+
+<pre><code>tkrmb2:~/proj% git clone git@github.com:takeru/cocos2dx-mruby.git
+
+tkrmb2:~/proj% cd cocos2dx-mruby
+
+tkrmb2:~/proj/cocos2dx-mruby% rm generated/*
+
+tkrmb2:~/proj/cocos2dx-mruby% rake
+
+tkrmb2:~/proj/cocos2dx-mruby% ls generated
+MrubyBox2D.cpp      MrubyBox2D.h        MrubyCocos2d.cpp    MrubyCocos2d.h
+MrubyCocosDenshion.cpp  MrubyCocosDenshion.h
+</code></pre>
+
+<p>Add *.cpp/h files into Classes.</p>
+
+<p>[img]</p>
+
+<p>Edit AppDelegate.cpp</p>
+
+<pre><code>#include "CCMrubyEngine.h"
+
+  CCMrubyEngine* pEngine = CCMrubyEngine::defaultEngine();
+  CCScriptEngineManager::sharedManager()-&gt;setScriptEngine(pEngine);
+
+  std::string path = CCFileUtils::sharedFileUtils()-&gt;fullPathForFilename("hello.rb");
+  pEngine-&gt;executeScriptFile(path.c_str());
+</code></pre>
+
+<p>[img]</p>
+
+<p>Put hello.rb into Resources.</p>
+
+<pre><code># hello.rb
+puts 'hello!!'
+include Cocos2d
+d = CCDirector.sharedDirector
+win_size = d.getWinSize
+sprite = CCSprite.create("Icon-114.png")
+sprite.setPosition(win_size.width/2, win_size.height/2)
+scene = CCScene.create
+scene.addChild(sprite)
+d.runWithScene(scene)
+</code></pre>
+
+<p>And, click Run button.</p>
+
+<p>[img]</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="http://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
