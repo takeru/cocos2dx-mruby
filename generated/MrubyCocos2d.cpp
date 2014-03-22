@@ -361,12 +361,17 @@ static mrb_value CCObject_autorelease(mrb_state *mrb, mrb_value self) {
   return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCObject"));
 }
 
+static mrb_value CCObject_dataptr(mrb_state *mrb, mrb_value self) {
+  return mrb_fixnum_value((int)DATA_PTR(self));
+}
+
 static void installCCObject(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCObject", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "release", CCObject_release, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "autorelease", CCObject_autorelease, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "dataptr", CCObject_dataptr, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -581,6 +586,23 @@ static mrb_value CCNode_convertTouchToNodeSpace(mrb_state *mrb, mrb_value self) 
   return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
 }
 
+static mrb_value CCNode_getTag(mrb_state *mrb, mrb_value self) {
+
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  int retval = instance->getTag();
+  return mrb_fixnum_value(retval);
+}
+
+static mrb_value CCNode_setTag(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  int p0 = get_int(args[0]);
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  instance->setTag(p0);
+  return mrb_nil_value();
+}
+
 static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCObject");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCNode", parent);
@@ -600,6 +622,8 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "scheduleUpdateWithPriorityLua", CCNode_scheduleUpdateWithPriorityLua, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "boundingBox", CCNode_boundingBox, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "convertTouchToNodeSpace", CCNode_convertTouchToNodeSpace, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getTag", CCNode_getTag, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setTag", CCNode_setTag, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////

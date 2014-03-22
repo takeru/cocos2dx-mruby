@@ -90,6 +90,7 @@ Classes = {
     :methods => [
                  [0, 'void', 'release', []],
                  [0, 'CCObject*', 'autorelease', []],
+                 [CUSTOM, 'int', 'dataptr', [], :code=>"  return mrb_fixnum_value((int)DATA_PTR(self));"]
                 ],
   },
   'CCArray' => {
@@ -131,6 +132,8 @@ Classes = {
                  [0, 'void', 'scheduleUpdateWithPriorityLua', ['block', 'int']],
                  [0, 'CCRect', 'boundingBox', []],
                  [0, 'CCPoint', 'convertTouchToNodeSpace', ['CCTouch*']],
+                 [0, 'int', 'getTag', []],
+                 [0, 'void', 'setTag', ['int']],
                 ],
   },
   'CCNodeRGBA' => {

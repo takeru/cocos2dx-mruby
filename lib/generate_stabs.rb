@@ -4,6 +4,7 @@
 STATIC = 1 << 0
 ATTR_ACCESSOR = 1 << 1
 CONSTRUCTOR = 1 << 2
+CUSTOM = 1 << 3
 
 def is_static?(flag)
   return flag & STATIC != 0
@@ -15,6 +16,10 @@ end
 
 def is_constructor?(flag)
   return flag & CONSTRUCTOR != 0
+end
+
+def is_custom?(flag)
+  return flag & CUSTOM != 0
 end
 
 def get_plain_type(type)
@@ -234,16 +239,16 @@ EOD
     end
 
     if methods.size == 1
-      flag, return_type, params = methods[0]
-      declare_exec_method(klass, method_name, flag, return_type, params, 0);
+      flag, return_type, params, opts = methods[0]
+      declare_exec_method(klass, method_name, flag, return_type, params, opts, 0);
     else
       methods.each_with_index do |method, i|
-        flag, return_type, params = method
+        flag, return_type, params, opts = method
         block_required = params.include?('block')
         arg_count = params.size - (block_required ? 1 : 0)
         has_else = i == 0 ? '' : '} else '
         puts "  #{has_else}if (arg_count == #{arg_count}) {"
-        declare_exec_method(klass, method_name, flag, return_type, params, 1);
+        declare_exec_method(klass, method_name, flag, return_type, params, opts, 1);
       end
       print <<EOD
   } else {
@@ -256,7 +261,12 @@ EOD
     puts "}"
   end
 
-  def declare_exec_method(klass, method_name, flag, return_type, params, indent)
+  def declare_exec_method(klass, method_name, flag, return_type, params, opts, indent)
+    if is_custom?(flag)
+      puts opts[:code];
+      return
+    end
+
     converted_params = []  # 0=type, 1=name, 2=value
     index = 0
     params.each do |type|
