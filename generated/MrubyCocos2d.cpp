@@ -603,6 +603,16 @@ static mrb_value CCNode_setTag(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
+static mrb_value CCNode_removeFromParentAndCleanup(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  bool p0 = get_bool(args[0]);
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  instance->removeFromParentAndCleanup(p0);
+  return mrb_nil_value();
+}
+
 static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCObject");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCNode", parent);
@@ -624,6 +634,7 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "convertTouchToNodeSpace", CCNode_convertTouchToNodeSpace, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getTag", CCNode_getTag, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setTag", CCNode_setTag, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "removeFromParentAndCleanup", CCNode_removeFromParentAndCleanup, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////

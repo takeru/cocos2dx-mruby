@@ -134,6 +134,7 @@ Classes = {
                  [0, 'CCPoint', 'convertTouchToNodeSpace', ['CCTouch*']],
                  [0, 'int', 'getTag', []],
                  [0, 'void', 'setTag', ['int']],
+                 [0, 'void', 'removeFromParentAndCleanup', ['bool']],
                 ],
   },
   'CCNodeRGBA' => {
