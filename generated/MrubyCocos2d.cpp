@@ -1441,12 +1441,12 @@ void installMrubyCocos2d(mrb_state *mrb) {
   mrb_define_const(mrb, mod, "KCCNodeOnCleanup", mrb_fixnum_value(kCCNodeOnCleanup));
   mrb_define_const(mrb, mod, "KCCTouchesAllAtOnce", mrb_fixnum_value(kCCTouchesAllAtOnce));
   mrb_define_const(mrb, mod, "KCCTouchesOneByOne", mrb_fixnum_value(kCCTouchesOneByOne));
-  mrb_define_method(mrb, mod, "CCPointMake", CCPointMake__, MRB_ARGS_ANY());
-  mrb_define_method(mrb, mod, "ccp", ccp__, MRB_ARGS_ANY());
-  mrb_define_method(mrb, mod, "CCSizeMake", CCSizeMake__, MRB_ARGS_ANY());
-  mrb_define_method(mrb, mod, "CCRectMake", CCRectMake__, MRB_ARGS_ANY());
-  mrb_define_method(mrb, mod, "ccc3", ccc3__, MRB_ARGS_ANY());
-  mrb_define_method(mrb, mod, "CCRANDOM_0_1", CCRANDOM_0_1__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "CCPointMake", CCPointMake__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "ccp", ccp__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "CCSizeMake", CCSizeMake__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "CCRectMake", CCRectMake__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "ccc3", ccc3__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "CCRANDOM_0_1", CCRANDOM_0_1__, MRB_ARGS_ANY());
   installCcColor3B(mrb, mod);
   installCCPoint(mrb, mod);
   installCCSize(mrb, mod);

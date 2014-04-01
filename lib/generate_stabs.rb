@@ -171,7 +171,7 @@ EOD
 
     # TODO: Define functions under module.
     functions.each do |return_type, func_name, params|
-      puts %!  mrb_define_method(mrb, mod, "#{func_name}", #{func_name}__, MRB_ARGS_ANY());!
+      puts %!  mrb_define_module_function(mrb, mod, "#{func_name}", #{func_name}__, MRB_ARGS_ANY());!
     end
 
     classes.each do |klass, _|

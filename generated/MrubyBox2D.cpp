@@ -467,7 +467,7 @@ void installMrubyBox2D(mrb_state *mrb) {
   mrb_define_const(mrb, mod, "B2_staticBody", mrb_fixnum_value(b2_staticBody));
   mrb_define_const(mrb, mod, "B2_kinematicBody", mrb_fixnum_value(b2_kinematicBody));
   mrb_define_const(mrb, mod, "B2_dynamicBody", mrb_fixnum_value(b2_dynamicBody));
-  mrb_define_method(mrb, mod, "b2Vec2", b2Vec2__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "b2Vec2", b2Vec2__, MRB_ARGS_ANY());
   installb2Vec2(mrb, mod);
   installb2Shape(mrb, mod);
   installb2EdgeShape(mrb, mod);
