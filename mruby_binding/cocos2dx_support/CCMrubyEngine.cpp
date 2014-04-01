@@ -254,8 +254,15 @@ int CCMrubyEngine::executeNotificationEvent(CCNotificationCenter* pNotificationC
 
 int CCMrubyEngine::executeCallFuncActionEvent(CCCallFunc* pAction, CCObject* pTarget)
 {
-  CCLOGERROR("CCMrubyEngine::executeCallFuncActionEvent has not implemented: %p, %p", pAction, pTarget);
-  return 0;
+  int nHandler = pAction->getScriptHandler();
+  if (!nHandler) return 0;
+
+  int arena = mrb_gc_arena_save(m_mrb);
+  mrb_value proc = getRegisteredProc(m_mrb, nHandler);
+  mrb_yield(m_mrb, proc, mrb_nil_value());
+  int exc = dumpException(m_mrb);
+  mrb_gc_arena_restore(m_mrb, arena);
+  return !exc;
 }
 
 int CCMrubyEngine::executeSchedule(int nHandler, float dt, CCNode* pNode)

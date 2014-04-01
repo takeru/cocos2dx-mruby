@@ -111,8 +111,20 @@ Classes = {
                   # TODO
                 ],
   },
-  'CCActionInterval' => {
+  'CCFiniteTimeAction' => {
     :parent => 'CCAction',
+    :methods => [
+                  # TODO
+                ],
+  },
+  'CCActionInterval' => {
+    :parent => 'CCFiniteTimeAction',
+    :methods => [
+                  # TODO
+                ],
+  },
+  'CCActionInstant' => {
+    :parent => 'CCFiniteTimeAction',
     :methods => [
                   # TODO
                 ],
@@ -182,6 +194,30 @@ Classes = {
     :parent => 'CCActionInterval',
     :methods => [
                  [STATIC, 'CCRepeatForever*', 'create', ['CCActionInterval*']],
+                ],
+  },
+  'CCScaleTo' => {
+    :parent => 'CCActionInterval',
+    :methods => [
+                 [STATIC, 'CCScaleTo*', 'create', ['float', 'float']],
+                ],
+  },
+  'CCCallFunc' => {
+    :parent => 'CCActionInstant',
+    :methods => [
+                 [STATIC, 'CCCallFunc*', 'create', ['block']],
+                ],
+  },
+  'CCSequence' => {
+    :parent => 'CCActionInterval',
+    :methods => [
+                 [STATIC, 'CCActionInterval*', 'createWithTwoActions', ['CCFiniteTimeAction*', 'CCFiniteTimeAction*']],
+                ],
+  },
+  'CCSpawn' => {
+    :parent => 'CCActionInterval',
+    :methods => [
+                 [STATIC, 'CCActionInterval*', 'createWithTwoActions', ['CCFiniteTimeAction*', 'CCFiniteTimeAction*']],
                 ],
   },
   'CCSprite' => {

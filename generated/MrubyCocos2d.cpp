@@ -439,11 +439,29 @@ static void installCCAction(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// CCFiniteTimeAction
+
+static void installCCFiniteTimeAction(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCAction");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCFiniteTimeAction", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+}
+
+////////////////////////////////////////////////////////////////
 // CCActionInterval
 
 static void installCCActionInterval(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getClass(mrb, "CCAction");
+  struct RClass* parent = getClass(mrb, "CCFiniteTimeAction");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCActionInterval", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+}
+
+////////////////////////////////////////////////////////////////
+// CCActionInstant
+
+static void installCCActionInstant(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCFiniteTimeAction");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCActionInstant", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
 }
 
@@ -813,6 +831,90 @@ static void installCCRepeatForever(mrb_state *mrb, struct RClass *mod) {
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCRepeatForever", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCRepeatForever_create, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
+// CCScaleTo
+
+static mrb_value CCScaleTo_create(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  float p0 = get_float(args[0]);
+  float p1 = get_float(args[1]);
+  
+  CCScaleTo* retval = CCScaleTo::create(p0, p1);
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCScaleTo"));
+}
+
+static void installCCScaleTo(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCActionInterval");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCScaleTo", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "create", CCScaleTo_create, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
+// CCCallFunc
+
+static mrb_value CCCallFunc_create(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_value block;
+  mrb_get_args(mrb, "*&", &args, &arg_count, &block);
+  int blockHandler = registerProc(mrb, self, block);
+  
+  CCCallFunc* retval = CCCallFunc::create(blockHandler);
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCCallFunc"));
+}
+
+static void installCCCallFunc(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCActionInstant");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCCallFunc", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "create", CCCallFunc_create, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
+// CCSequence
+
+static mrb_value CCSequence_createWithTwoActions(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  CCFiniteTimeAction* p0 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[0]));
+  CCFiniteTimeAction* p1 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[1]));
+  
+  CCActionInterval* retval = CCSequence::createWithTwoActions(p0, p1);
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCActionInterval"));
+}
+
+static void installCCSequence(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCActionInterval");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCSequence", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "createWithTwoActions", CCSequence_createWithTwoActions, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
+// CCSpawn
+
+static mrb_value CCSpawn_createWithTwoActions(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  CCFiniteTimeAction* p0 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[0]));
+  CCFiniteTimeAction* p1 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[1]));
+  
+  CCActionInterval* retval = CCSpawn::createWithTwoActions(p0, p1);
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCActionInterval"));
+}
+
+static void installCCSpawn(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCActionInterval");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCSpawn", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "createWithTwoActions", CCSpawn_createWithTwoActions, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1454,7 +1556,9 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCObject(mrb, mod);
   installCCArray(mrb, mod);
   installCCAction(mrb, mod);
+  installCCFiniteTimeAction(mrb, mod);
   installCCActionInterval(mrb, mod);
+  installCCActionInstant(mrb, mod);
   installCCNode(mrb, mod);
   installCCNodeRGBA(mrb, mod);
   installCCTexture2D(mrb, mod);
@@ -1463,6 +1567,10 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCAnimation(mrb, mod);
   installCCAnimate(mrb, mod);
   installCCRepeatForever(mrb, mod);
+  installCCScaleTo(mrb, mod);
+  installCCCallFunc(mrb, mod);
+  installCCSequence(mrb, mod);
+  installCCSpawn(mrb, mod);
   installCCSprite(mrb, mod);
   installCCSpriteBatchNode(mrb, mod);
   installCCLabelTTF(mrb, mod);
