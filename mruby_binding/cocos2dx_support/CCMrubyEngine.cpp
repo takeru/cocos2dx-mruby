@@ -19,6 +19,7 @@
 
 extern "C" mrb_value mrb_get_backtrace(mrb_state*, mrb_value);
 extern mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, cocos2d::CCTouch* ptr);
+extern mrb_value wrap_Cocos2d_CCObject(mrb_state *mrb, cocos2d::CCObject* ptr);
 
 static const char* getBaseName(const char* fullpath) {
   int len = strlen(fullpath);
@@ -72,6 +73,15 @@ static const char HelperFunctions[] =
 
 "    def self.getProc(id)\n"
 "      return @@id2proc[id]\n"
+"    end\n"
+"  end\n"
+"  class Callback\n"
+"    @@removeScriptObject = nil\n"
+"    def self.removeScriptObject=(proc)\n"
+"      @@removeScriptObject = proc\n"
+"    end\n"
+"    def self._removeScriptObject(obj)\n"
+"      @@removeScriptObject.call(obj) if @@removeScriptObject\n"
 "    end\n"
 "  end\n"
 "end\n";
@@ -153,7 +163,12 @@ bool CCMrubyEngine::init(void)
 /** Remove script object. */
 void CCMrubyEngine::removeScriptObjectByCCObject(CCObject* pObj)
 {
-  CCLOGERROR("CCMrubyEngine::removeScriptObjectByCCObject has not implemented: %p", pObj);
+  int arena = mrb_gc_arena_save(m_mrb);
+  mrb_value obj = wrap_Cocos2d_CCObject(m_mrb, pObj);
+  mrb_value cb  = getMrubyCocos2dClassValue(m_mrb, "Callback");
+  mrb_funcall(m_mrb, cb, "_removeScriptObject", 1, obj);
+  dumpException(m_mrb);
+  mrb_gc_arena_restore(m_mrb, arena);
 }
 
 int CCMrubyEngine::executeString(const char* codes)

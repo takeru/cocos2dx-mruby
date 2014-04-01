@@ -14,6 +14,10 @@ mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
 mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, CCTouch* ptr) {
   return wrap(mrb, ptr, "CCTouch");
 }
+mrb_value wrap_Cocos2d_CCObject(mrb_state *mrb, CCObject* ptr) {
+  return wrap(mrb, ptr, "CCObject");
+}
+
 
 #include "mruby/mruby.h"
 #include "mruby/mruby/class.h"
@@ -361,6 +365,26 @@ static mrb_value CCObject_autorelease(mrb_state *mrb, mrb_value self) {
   return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCObject"));
 }
 
+static mrb_value CCObject_retainCount(mrb_state *mrb, mrb_value self) {
+
+  CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
+  unsigned int retval = instance->retainCount();
+  return mrb_fixnum_value(retval);
+}
+
+static mrb_value CCObject_m_nLuaID(mrb_state *mrb, mrb_value self) {
+  CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
+  return mrb_fixnum_value(instance->m_nLuaID);
+}
+
+static mrb_value CCObject_set_m_nLuaID(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
+  instance->m_nLuaID = get_int(o);
+  return mrb_nil_value();
+}
+
 static mrb_value CCObject_dataptr(mrb_state *mrb, mrb_value self) {
   return mrb_fixnum_value((int)DATA_PTR(self));
 }
@@ -371,6 +395,9 @@ static void installCCObject(mrb_state *mrb, struct RClass *mod) {
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "release", CCObject_release, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "autorelease", CCObject_autorelease, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "retainCount", CCObject_retainCount, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "m_nLuaID", CCObject_m_nLuaID, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "m_nLuaID=", CCObject_set_m_nLuaID, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, tc, "dataptr", CCObject_dataptr, MRB_ARGS_ANY());
 }
 

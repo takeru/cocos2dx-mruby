@@ -17,6 +17,10 @@ mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
 mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, CCTouch* ptr) {
   return wrap(mrb, ptr, "CCTouch");
 }
+mrb_value wrap_Cocos2d_CCObject(mrb_state *mrb, CCObject* ptr) {
+  return wrap(mrb, ptr, "CCObject");
+}
+
 EOD
 
 Constants = [
@@ -90,6 +94,8 @@ Classes = {
     :methods => [
                  [0, 'void', 'release', []],
                  [0, 'CCObject*', 'autorelease', []],
+                 [0, 'unsigned int', 'retainCount', []],
+                 [ATTR_ACCESSOR, 'int', 'm_nLuaID'],
                  [CUSTOM, 'int', 'dataptr', [], :code=>"  return mrb_fixnum_value((int)DATA_PTR(self));"]
                 ],
   },
