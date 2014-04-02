@@ -855,6 +855,48 @@ static void installCCScaleTo(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// CCMoveBy
+
+static mrb_value CCMoveBy_create(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  float p0 = get_float(args[0]);
+  const CCPoint& p1 = *static_cast<CCPoint*>(DATA_PTR(args[1]));
+  
+  CCMoveBy* retval = CCMoveBy::create(p0, p1);
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMoveBy"));
+}
+
+static void installCCMoveBy(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCActionInterval");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMoveBy", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "create", CCMoveBy_create, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
+// CCMoveTo
+
+static mrb_value CCMoveTo_create(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  float p0 = get_float(args[0]);
+  const CCPoint& p1 = *static_cast<CCPoint*>(DATA_PTR(args[1]));
+  
+  CCMoveTo* retval = CCMoveTo::create(p0, p1);
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMoveTo"));
+}
+
+static void installCCMoveTo(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCMoveBy");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMoveTo", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "create", CCMoveTo_create, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
 // CCCallFunc
 
 static mrb_value CCCallFunc_create(mrb_state *mrb, mrb_value self) {
@@ -1568,6 +1610,8 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCAnimate(mrb, mod);
   installCCRepeatForever(mrb, mod);
   installCCScaleTo(mrb, mod);
+  installCCMoveBy(mrb, mod);
+  installCCMoveTo(mrb, mod);
   installCCCallFunc(mrb, mod);
   installCCSequence(mrb, mod);
   installCCSpawn(mrb, mod);
