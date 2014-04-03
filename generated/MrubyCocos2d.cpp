@@ -1239,8 +1239,18 @@ static mrb_value CCScheduler_scheduleScriptFunc(mrb_state *mrb, mrb_value self) 
   float p0 = get_float(args[0]);
   bool p1 = get_bool(args[1]);
   CCScheduler* instance = static_cast<CCScheduler*>(DATA_PTR(self));
-  int retval = instance->scheduleScriptFunc(blockHandler, p0, p1);
+  unsigned int retval = instance->scheduleScriptFunc(blockHandler, p0, p1);
   return mrb_fixnum_value(retval);
+}
+
+static mrb_value CCScheduler_unscheduleScriptEntry(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  unsigned int p0 = get_int(args[0]);
+  CCScheduler* instance = static_cast<CCScheduler*>(DATA_PTR(self));
+  instance->unscheduleScriptEntry(p0);
+  return mrb_nil_value();
 }
 
 static void installCCScheduler(mrb_state *mrb, struct RClass *mod) {
@@ -1248,6 +1258,7 @@ static void installCCScheduler(mrb_state *mrb, struct RClass *mod) {
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCScheduler", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "scheduleScriptFunc", CCScheduler_scheduleScriptFunc, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "unscheduleScriptEntry", CCScheduler_unscheduleScriptEntry, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////

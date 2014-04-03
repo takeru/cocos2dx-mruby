@@ -286,7 +286,8 @@ Classes = {
   },
   'CCScheduler' => {
     :methods => [
-                 [0, 'int', 'scheduleScriptFunc', ['block', 'float', 'bool']],
+                 [0, 'unsigned int', 'scheduleScriptFunc', ['block', 'float', 'bool']],
+                 [0, 'void', 'unscheduleScriptEntry', ['unsigned int']],
                 ],
   },
   'CCDirector' => {
