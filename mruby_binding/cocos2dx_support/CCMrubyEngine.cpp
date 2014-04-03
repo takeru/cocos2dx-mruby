@@ -295,10 +295,13 @@ int CCMrubyEngine::executeLayerTouchEvent(CCLayer* pLayer, int eventType, CCTouc
   mrb_value args[2];
   args[0] = mrb_fixnum_value(eventType);
   args[1] = wrap_Cocos2d_CCTouch(m_mrb, pTouch);
-  mrb_yield_argv(m_mrb, proc, 2, args);
+  mrb_value ret = mrb_yield_argv(m_mrb, proc, 2, args);
+
   int exc = dumpException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
-  return !exc;
+  if(exc){ return 0; }
+
+  return mrb_bool(ret) ? 1 : 0;
 }
 
 int CCMrubyEngine::executeLayerKeypadEvent(CCLayer* pLayer, int eventType)
