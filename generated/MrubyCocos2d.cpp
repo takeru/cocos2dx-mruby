@@ -1582,6 +1582,47 @@ static void installCCTouch(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// CCUserDefault
+
+static mrb_value CCUserDefault_sharedUserDefault(mrb_state *mrb, mrb_value self) {
+
+  
+  CCUserDefault* retval = CCUserDefault::sharedUserDefault();
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCUserDefault"));
+}
+
+static mrb_value CCUserDefault_getIntegerForKey(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  int p1 = get_int(args[1]);
+  CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+  int retval = instance->getIntegerForKey(p0, p1);
+  return mrb_fixnum_value(retval);
+}
+
+static mrb_value CCUserDefault_setIntegerForKey(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  int p1 = get_int(args[1]);
+  CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+  instance->setIntegerForKey(p0, p1);
+  return mrb_nil_value();
+}
+
+static void installCCUserDefault(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = mrb->object_class;
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCUserDefault", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "sharedUserDefault", CCUserDefault_sharedUserDefault, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getIntegerForKey", CCUserDefault_getIntegerForKey, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setIntegerForKey", CCUserDefault_setIntegerForKey, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
 // Functions.
 
 static mrb_value CCPointMake__(mrb_state *mrb, mrb_value self) {
@@ -1707,4 +1748,5 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCMenuItemImage(mrb, mod);
   installCCMenu(mrb, mod);
   installCCTouch(mrb, mod);
+  installCCUserDefault(mrb, mod);
 }

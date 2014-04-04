@@ -355,4 +355,11 @@ Classes = {
                  [0, 'int', 'getID', []]
                 ],
   },
+  'CCUserDefault' => {
+    :methods => [
+                 [STATIC, 'CCUserDefault*', 'sharedUserDefault', []],
+                 [0, 'int', 'getIntegerForKey', ['const char*', 'int']],
+                 [0, 'void', 'setIntegerForKey', ['const char*', 'int']],
+                ],
+  }
 }
