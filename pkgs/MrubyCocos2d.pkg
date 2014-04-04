@@ -265,8 +265,6 @@ Classes = {
                  [STATIC, 'CCLabelBMFont*', 'create', ['const char*', 'const char*', 'float']],
                  [STATIC, 'CCLabelBMFont*', 'create', ['const char*', 'const char*']],
                  [0, 'void', 'setString', ['const char*']],
-                 [0, 'void', 'setPosition', ['const CCPoint&']],
-                 [0, 'void', 'setPosition', ['float', 'float']],
                 ],
   },
   'CCLayer' => {
@@ -308,6 +306,7 @@ Classes = {
                  [0, 'CCSize', 'getVisibleSize', []],
                  [0, 'CCPoint', 'convertToGL', ['const CCPoint&']],
                  [0, 'void', 'runWithScene', ['CCScene*']],
+                 [0, 'void', 'replaceScene', ['CCScene*']],
                  [0, 'CCScheduler*', 'getScheduler', []],
                  [0, 'void', 'setContentScaleFactor', ['float']]
                 ],

@@ -1141,34 +1141,12 @@ static mrb_value CCLabelBMFont_setString(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
-static mrb_value CCLabelBMFont_setPosition(mrb_state *mrb, mrb_value self) {
-  mrb_value* args;
-  int arg_count;
-  mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 1) {
-    const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
-    CCLabelBMFont* instance = static_cast<CCLabelBMFont*>(DATA_PTR(self));
-    instance->setPosition(p0);
-    return mrb_nil_value();
-  } else if (arg_count == 2) {
-    float p0 = get_float(args[0]);
-    float p1 = get_float(args[1]);
-    CCLabelBMFont* instance = static_cast<CCLabelBMFont*>(DATA_PTR(self));
-    instance->setPosition(p0, p1);
-    return mrb_nil_value();
-  } else {
-    // TODO: raise exception.
-    return mrb_nil_value();
-  }
-}
-
 static void installCCLabelBMFont(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCSpriteBatchNode");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCLabelBMFont", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCLabelBMFont_create, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setString", CCLabelBMFont_setString, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "setPosition", CCLabelBMFont_setPosition, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1378,6 +1356,16 @@ static mrb_value CCDirector_runWithScene(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
+static mrb_value CCDirector_replaceScene(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  CCScene* p0 = static_cast<CCScene*>(DATA_PTR(args[0]));
+  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+  instance->replaceScene(p0);
+  return mrb_nil_value();
+}
+
 static mrb_value CCDirector_getScheduler(mrb_state *mrb, mrb_value self) {
 
   CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
@@ -1405,6 +1393,7 @@ static void installCCDirector(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "getVisibleSize", CCDirector_getVisibleSize, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "convertToGL", CCDirector_convertToGL, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "runWithScene", CCDirector_runWithScene, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "replaceScene", CCDirector_replaceScene, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getScheduler", CCDirector_getScheduler, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setContentScaleFactor", CCDirector_setContentScaleFactor, MRB_ARGS_ANY());
 }
