@@ -259,6 +259,16 @@ Classes = {
                  [STATIC, 'CCLabelTTF*', 'create', ['const char*', 'const char*', 'float']],
                 ],
   },
+  'CCLabelBMFont' => {
+    :parent => 'CCSpriteBatchNode',
+    :methods => [
+                 [STATIC, 'CCLabelBMFont*', 'create', ['const char*', 'const char*', 'float']],
+                 [STATIC, 'CCLabelBMFont*', 'create', ['const char*', 'const char*']],
+                 [0, 'void', 'setString', ['const char*']],
+                 [0, 'void', 'setPosition', ['const CCPoint&']],
+                 [0, 'void', 'setPosition', ['float', 'float']],
+                ],
+  },
   'CCLayer' => {
     :parent => 'CCNode',
     :methods => [

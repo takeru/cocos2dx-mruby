@@ -1106,6 +1106,72 @@ static void installCCLabelTTF(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// CCLabelBMFont
+
+static mrb_value CCLabelBMFont_create(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 3) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    const char* p1 = mrb_string_value_ptr(mrb, args[1]);
+    float p2 = get_float(args[2]);
+    
+    CCLabelBMFont* retval = CCLabelBMFont::create(p0, p1, p2);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLabelBMFont"));
+  } else if (arg_count == 2) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    const char* p1 = mrb_string_value_ptr(mrb, args[1]);
+    
+    CCLabelBMFont* retval = CCLabelBMFont::create(p0, p1);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLabelBMFont"));
+  } else {
+    // TODO: raise exception.
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCLabelBMFont_setString(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  CCLabelBMFont* instance = static_cast<CCLabelBMFont*>(DATA_PTR(self));
+  instance->setString(p0);
+  return mrb_nil_value();
+}
+
+static mrb_value CCLabelBMFont_setPosition(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 1) {
+    const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+    CCLabelBMFont* instance = static_cast<CCLabelBMFont*>(DATA_PTR(self));
+    instance->setPosition(p0);
+    return mrb_nil_value();
+  } else if (arg_count == 2) {
+    float p0 = get_float(args[0]);
+    float p1 = get_float(args[1]);
+    CCLabelBMFont* instance = static_cast<CCLabelBMFont*>(DATA_PTR(self));
+    instance->setPosition(p0, p1);
+    return mrb_nil_value();
+  } else {
+    // TODO: raise exception.
+    return mrb_nil_value();
+  }
+}
+
+static void installCCLabelBMFont(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCSpriteBatchNode");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCLabelBMFont", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "create", CCLabelBMFont_create, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setString", CCLabelBMFont_setString, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setPosition", CCLabelBMFont_setPosition, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
 // CCLayer
 
 static mrb_value CCLayer___ctor(mrb_state *mrb, mrb_value self) {
@@ -1629,6 +1695,7 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCSprite(mrb, mod);
   installCCSpriteBatchNode(mrb, mod);
   installCCLabelTTF(mrb, mod);
+  installCCLabelBMFont(mrb, mod);
   installCCLayer(mrb, mod);
   installCCLayerRGBA(mrb, mod);
   installCCScene(mrb, mod);
