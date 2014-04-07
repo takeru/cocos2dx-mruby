@@ -174,15 +174,15 @@ void CCMrubyEngine::removeScriptObjectByCCObject(CCObject* pObj)
 int CCMrubyEngine::executeString(const char* codes)
 {
   int arena = mrb_gc_arena_save(m_mrb);
-#if DEBUG
-  mrbc_context *cxt = mrbc_context_new(m_mrb);
-  mrbc_filename(m_mrb, cxt, getBaseName("*main*"));
-  mrb_load_string_cxt(m_mrb, codes, cxt);
-  mrbc_context_free(m_mrb, cxt);
-#else
-  // No debug info.
-  mrb_load_string(m_mrb, codes);
-#endif
+  if(executeWithDebugInfo){
+    mrbc_context *cxt = mrbc_context_new(m_mrb);
+    mrbc_filename(m_mrb, cxt, getBaseName("*main*"));
+    mrb_load_string_cxt(m_mrb, codes, cxt);
+    mrbc_context_free(m_mrb, cxt);
+  }else{
+    // No debug info.
+    mrb_load_string(m_mrb, codes);
+  }
   int exc = dumpException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;
@@ -196,15 +196,15 @@ int CCMrubyEngine::executeScriptFile(const char* filename)
     return FALSE;
 
   int arena = mrb_gc_arena_save(m_mrb);
-#if DEBUG
-  mrbc_context *cxt = mrbc_context_new(m_mrb);
-  mrbc_filename(m_mrb, cxt, getBaseName(filename));
-  mrb_load_nstring_cxt(m_mrb, reinterpret_cast<const char*>(pBuffer), nSize, cxt);
-  mrbc_context_free(m_mrb, cxt);
-#else
-  // No debug info.
-  mrb_load_nstring(m_mrb, reinterpret_cast<const char*>(pBuffer), nSize);
-#endif
+  if(executeWithDebugInfo){
+    mrbc_context *cxt = mrbc_context_new(m_mrb);
+    mrbc_filename(m_mrb, cxt, getBaseName(filename));
+    mrb_load_nstring_cxt(m_mrb, reinterpret_cast<const char*>(pBuffer), nSize, cxt);
+    mrbc_context_free(m_mrb, cxt);
+  }else{
+    // No debug info.
+    mrb_load_nstring(m_mrb, reinterpret_cast<const char*>(pBuffer), nSize);
+  }
   delete[] pBuffer;
   int exc = dumpException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);

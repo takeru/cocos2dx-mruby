@@ -72,6 +72,10 @@ public:
   virtual bool handleAssert(const char *msg);
   
   virtual bool parseConfig(ConfigType type, const std::string& str);
+
+  mrb_state* getMrbState(void){ return m_mrb; };
+
+  bool executeWithDebugInfo = TRUE;
 private:
   CCMrubyEngine(void);
   bool init(void);

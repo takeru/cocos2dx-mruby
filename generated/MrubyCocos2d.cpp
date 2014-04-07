@@ -1366,6 +1366,16 @@ static mrb_value CCDirector_replaceScene(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
+static mrb_value CCDirector_pushScene(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  CCScene* p0 = static_cast<CCScene*>(DATA_PTR(args[0]));
+  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+  instance->pushScene(p0);
+  return mrb_nil_value();
+}
+
 static mrb_value CCDirector_getScheduler(mrb_state *mrb, mrb_value self) {
 
   CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
@@ -1383,6 +1393,16 @@ static mrb_value CCDirector_setContentScaleFactor(mrb_state *mrb, mrb_value self
   return mrb_nil_value();
 }
 
+static mrb_value CCDirector_setDisplayStats(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  bool p0 = get_bool(args[0]);
+  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+  instance->setDisplayStats(p0);
+  return mrb_nil_value();
+}
+
 static void installCCDirector(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCDirector", parent);
@@ -1394,8 +1414,10 @@ static void installCCDirector(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "convertToGL", CCDirector_convertToGL, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "runWithScene", CCDirector_runWithScene, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "replaceScene", CCDirector_replaceScene, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "pushScene", CCDirector_pushScene, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getScheduler", CCDirector_getScheduler, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setContentScaleFactor", CCDirector_setContentScaleFactor, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setDisplayStats", CCDirector_setDisplayStats, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
