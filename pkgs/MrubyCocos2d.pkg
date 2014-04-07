@@ -337,9 +337,21 @@ Classes = {
                  [STATIC, 'CCMenuItemImage*', 'create', ['const char*', 'const char*']],
                 ],
   },
+  'CCMenuItemLabel' => {
+    :parent => 'CCMenuItem',
+    :methods => [
+                ],
+  },
+  'CCMenuItemFont' => {
+    :parent => 'CCMenuItemLabel',
+    :methods => [
+                 [STATIC, 'CCMenuItemFont*', 'create', ['const char*']],
+                ],
+  },
   'CCMenu' => {
     :parent => 'CCLayerRGBA',
     :methods => [
+                 [STATIC, 'CCMenu*', 'create', []],
                  [STATIC, 'CCMenu*', 'createWithItem', ['CCMenuItem*']],
                 ],
   },

@@ -1500,7 +1500,43 @@ static void installCCMenuItemImage(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// CCMenuItemLabel
+
+static void installCCMenuItemLabel(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCMenuItem");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMenuItemLabel", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+}
+
+////////////////////////////////////////////////////////////////
+// CCMenuItemFont
+
+static mrb_value CCMenuItemFont_create(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  
+  CCMenuItemFont* retval = CCMenuItemFont::create(p0);
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMenuItemFont"));
+}
+
+static void installCCMenuItemFont(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCMenuItemLabel");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMenuItemFont", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "create", CCMenuItemFont_create, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
 // CCMenu
+
+static mrb_value CCMenu_create(mrb_state *mrb, mrb_value self) {
+
+  
+  CCMenu* retval = CCMenu::create();
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMenu"));
+}
 
 static mrb_value CCMenu_createWithItem(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -1516,6 +1552,7 @@ static void installCCMenu(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCLayerRGBA");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMenu", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "create", CCMenu_create, MRB_ARGS_ANY());
   mrb_define_class_method(mrb, tc, "createWithItem", CCMenu_createWithItem, MRB_ARGS_ANY());
 }
 
@@ -1757,6 +1794,8 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCMenuItem(mrb, mod);
   installCCMenuItemSprite(mrb, mod);
   installCCMenuItemImage(mrb, mod);
+  installCCMenuItemLabel(mrb, mod);
+  installCCMenuItemFont(mrb, mod);
   installCCMenu(mrb, mod);
   installCCTouch(mrb, mod);
   installCCUserDefault(mrb, mod);
