@@ -20,6 +20,7 @@
 extern "C" mrb_value mrb_get_backtrace(mrb_state*, mrb_value);
 extern mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, cocos2d::CCTouch* ptr);
 extern mrb_value wrap_Cocos2d_CCObject(mrb_state *mrb, cocos2d::CCObject* ptr);
+extern mrb_value wrap_Cocos2d_CCNode(mrb_state *mrb, cocos2d::CCNode* ptr);
 
 static const char* getBaseName(const char* fullpath) {
   int len = strlen(fullpath);
@@ -227,7 +228,9 @@ int CCMrubyEngine::executeNodeEvent(CCNode* pNode, int nAction)
 
   int arena = mrb_gc_arena_save(m_mrb);
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
-  mrb_funcall(m_mrb, proc, "call", 1, mrb_fixnum_value(nAction));
+  mrb_value node = wrap_Cocos2d_CCNode(m_mrb, pNode);
+
+  mrb_funcall(m_mrb, proc, "call", 2, node, mrb_fixnum_value(nAction));
   int exc = dumpException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;
@@ -271,7 +274,8 @@ int CCMrubyEngine::executeSchedule(int nHandler, float dt, CCNode* pNode)
 
   int arena = mrb_gc_arena_save(m_mrb);
   mrb_value block = getRegisteredProc(m_mrb, nHandler);
-  mrb_yield(m_mrb, block, mrb_float_value(m_mrb, dt));
+  mrb_value node = wrap_Cocos2d_CCNode(m_mrb, pNode);
+  mrb_funcall(m_mrb, block, "call", 2, mrb_float_value(m_mrb, dt), node);
   int exc = dumpException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;

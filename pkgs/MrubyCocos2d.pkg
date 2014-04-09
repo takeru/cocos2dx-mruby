@@ -20,6 +20,9 @@ mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, CCTouch* ptr) {
 mrb_value wrap_Cocos2d_CCObject(mrb_state *mrb, CCObject* ptr) {
   return wrap(mrb, ptr, "CCObject");
 }
+mrb_value wrap_Cocos2d_CCNode(mrb_state *mrb, CCNode* ptr) {
+  return wrap(mrb, ptr, "CCNode");
+}
 
 EOD
 
@@ -153,6 +156,9 @@ Classes = {
                  [0, 'int', 'getTag', []],
                  [0, 'void', 'setTag', ['int']],
                  [0, 'void', 'removeFromParentAndCleanup', ['bool']],
+                 [0, 'void', 'registerScriptHandler', ['block']],
+                 [0, 'void', 'unregisterScriptHandler', []],
+                 [0, 'int', 'getScriptHandler', []]
                 ],
   },
   'CCNodeRGBA' => {

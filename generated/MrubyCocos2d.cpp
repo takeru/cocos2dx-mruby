@@ -17,6 +17,9 @@ mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, CCTouch* ptr) {
 mrb_value wrap_Cocos2d_CCObject(mrb_state *mrb, CCObject* ptr) {
   return wrap(mrb, ptr, "CCObject");
 }
+mrb_value wrap_Cocos2d_CCNode(mrb_state *mrb, CCNode* ptr) {
+  return wrap(mrb, ptr, "CCNode");
+}
 
 
 #include "mruby/mruby.h"
@@ -658,6 +661,31 @@ static mrb_value CCNode_removeFromParentAndCleanup(mrb_state *mrb, mrb_value sel
   return mrb_nil_value();
 }
 
+static mrb_value CCNode_registerScriptHandler(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_value block;
+  mrb_get_args(mrb, "*&", &args, &arg_count, &block);
+  int blockHandler = registerProc(mrb, self, block);
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  instance->registerScriptHandler(blockHandler);
+  return mrb_nil_value();
+}
+
+static mrb_value CCNode_unregisterScriptHandler(mrb_state *mrb, mrb_value self) {
+
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  instance->unregisterScriptHandler();
+  return mrb_nil_value();
+}
+
+static mrb_value CCNode_getScriptHandler(mrb_state *mrb, mrb_value self) {
+
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  int retval = instance->getScriptHandler();
+  return mrb_fixnum_value(retval);
+}
+
 static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCObject");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCNode", parent);
@@ -680,6 +708,9 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "getTag", CCNode_getTag, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setTag", CCNode_setTag, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "removeFromParentAndCleanup", CCNode_removeFromParentAndCleanup, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "registerScriptHandler", CCNode_registerScriptHandler, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "unregisterScriptHandler", CCNode_unregisterScriptHandler, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getScriptHandler", CCNode_getScriptHandler, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
