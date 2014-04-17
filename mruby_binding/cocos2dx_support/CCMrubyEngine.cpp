@@ -14,6 +14,7 @@
 #include "mruby/mruby/string.h"
 #include "mruby/mruby/variable.h"
 #include "MrubyCocos2d.h"
+#include "MrubyCocos2d_WebSocket.h"
 #include "MrubyCocosDenshion.h"
 // #include "MrubyBox2D.h"
 
@@ -150,6 +151,7 @@ bool CCMrubyEngine::init(void)
 
   // Installs cocos2d classes.
   installMrubyCocos2d(m_mrb);
+  installMrubyCocos2d_WebSocket(m_mrb);
   installMrubyCocosDenshion(m_mrb);
   // installMrubyBox2D(m_mrb);
 
@@ -326,6 +328,32 @@ int CCMrubyEngine::executeEvent(int nHandler, const char* pEventName, CCObject* 
   return 0;
 }
 
+int CCMrubyEngine::executeEventWithArgs(int nHandler, CCArray* pArgs)
+{
+    if (!nHandler) return FALSE;
+    
+    int arena = mrb_gc_arena_save(m_mrb);
+    mrb_value block = getRegisteredProc(m_mrb, nHandler);
+
+    mrb_value* args = new mrb_value[pArgs->count()];
+    for(int i=0; i<pArgs->count(); i++){
+        CCObject* arg = pArgs->objectAtIndex(i);
+        if(CCString* s = dynamic_cast<CCString*>(arg)){
+            args[i] = mrb_str_buf_new(m_mrb, s->length());
+            mrb_str_buf_cat(m_mrb, args[i], s->getCString(), s->length());
+        }else if(CCInteger* cci = dynamic_cast<CCInteger*>(arg)){
+            args[i] = mrb_fixnum_value(cci->getValue());
+        }else{
+          args[i] = mrb_nil_value();
+        }
+    }
+    mrb_funcall_argv(m_mrb, block, mrb_intern_cstr(m_mrb,"call"), pArgs->count(), args);
+    delete args;
+
+    int exc = dumpException(m_mrb);
+    mrb_gc_arena_restore(m_mrb, arena);
+    return !exc;
+}
 
 /** called by CCAssert to allow scripting engine to handle failed assertions
  * @return true if the assert was handled by the script engine, false otherwise.

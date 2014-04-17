@@ -396,6 +396,8 @@ EOD
       return "get_double(#{varname})"
     when 'const char*'
       return "mrb_string_value_ptr(mrb, #{varname})"
+    when 'const std::string&'
+      return "std::string(mrb_string_value_ptr(mrb, #{varname}))"
     when 'block'
       return "get_bool(#{varname})"
     else

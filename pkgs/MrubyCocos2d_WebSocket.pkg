@@ -1,0 +1,22 @@
+ModuleName = 'Cocos2d'
+
+Header = <<EOD
+#include "WebSocket.h"
+#include "mruby/mruby.h"
+
+extern int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc);
+USING_NS_CC_EXT;
+
+// TODO release WebSocket object.
+EOD
+
+Classes = {
+  'WebSocket' => {
+    :methods => [
+                 [CONSTRUCTOR, []],
+                 [0, 'bool', 'init', ['block', 'const std::string&']],
+                 [0, 'void', 'send', ['const std::string&']],
+                 [0, 'void', 'close', []],
+                ],
+  },
+}
