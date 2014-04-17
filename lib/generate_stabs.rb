@@ -171,7 +171,11 @@ EOD
 
     # TODO: Define functions under module.
     functions.each do |return_type, func_name, params|
-      puts %!  mrb_define_module_function(mrb, mod, "#{func_name}", #{func_name}__, MRB_ARGS_ANY());!
+      ruby_func_name = func_name
+      if ruby_func_name[0] =~ /[A-Z]{1}/
+        ruby_func_name = "_" + ruby_func_name
+      end
+      puts %!  mrb_define_module_function(mrb, mod, "#{ruby_func_name}", #{func_name}__, MRB_ARGS_ANY());!
     end
 
     classes.each do |klass, _|
@@ -205,12 +209,12 @@ EOD
     end
 
     get_args = true
-    if methods.size == 1
-      get_arg_count = ''
-      if methods[0][2].empty?
-        get_args = false
-      end
-    end
+    #if methods.size == 1
+    #  get_arg_count = ''
+    #  if methods[0][2].empty?
+    #    get_args = false
+    #  end
+    #end
 
     block_required = false
     methods.each do |_, _, params|
@@ -238,7 +242,7 @@ EOD
       end
     end
 
-    if methods.size == 1
+    if false && methods.size == 1
       flag, return_type, params, opts = methods[0]
       declare_exec_method(klass, method_name, flag, return_type, params, opts, 0);
     else
@@ -252,7 +256,8 @@ EOD
       end
       print <<EOD
   } else {
-    // TODO: raise exception.
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "#{klass}\##{method_name}");
     return mrb_nil_value();
   }
 EOD

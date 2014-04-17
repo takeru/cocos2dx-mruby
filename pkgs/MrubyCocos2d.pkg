@@ -27,23 +27,34 @@ mrb_value wrap_Cocos2d_CCNode(mrb_state *mrb, CCNode* ptr) {
 EOD
 
 Constants = [
+  # enum
   ['int', 'CCTOUCHBEGAN'],
   ['int', 'CCTOUCHMOVED'],
   ['int', 'CCTOUCHENDED'],
   ['int', 'CCTOUCHCANCELLED'],
 
+  # enum
   ['int', 'kCCNodeOnEnter'],
   ['int', 'kCCNodeOnExit'],
   ['int', 'kCCNodeOnEnterTransitionDidFinish'],
   ['int', 'kCCNodeOnExitTransitionDidStart'],
   ['int', 'kCCNodeOnCleanup'],
 
-  # ccTouchesMode
+  # enum ccTouchesMode
   ['int', 'kCCTouchesAllAtOnce'],
   ['int', 'kCCTouchesOneByOne'],
+
+  # enum ResolutionPolicy
+  ['int', 'kResolutionExactFit'],
+  ['int', 'kResolutionNoBorder'],
+  ['int', 'kResolutionShowAll'],
+  ['int', 'kResolutionFixedHeight'],
+  ['int', 'kResolutionFixedWidth'],
+  ['int', 'kResolutionUnKnown'],
 ]
 Enums = [
-  "ccTouchesMode"
+  "ccTouchesMode",
+  "ResolutionPolicy"
 ]
 
 Functions = [
@@ -91,6 +102,7 @@ Classes = {
                  [ATTR_ACCESSOR, 'CCPoint&', 'origin'],
                  [ATTR_ACCESSOR, 'CCSize&', 'size'],
                  [0, 'bool', 'containsPoint', ['const CCPoint&']],
+                 [0, 'bool', 'intersectsRect', ['const CCRect&']],
                 ],
   },
   'CCObject' => {
@@ -142,6 +154,8 @@ Classes = {
                  [0, 'void', 'setPositionY', ['float']],
                  [0, 'float', 'getPositionY', []],
                  [0, 'const CCPoint&', 'getPosition', []],
+                 [0, 'void', 'setAnchorPoint', ['const CCPoint&']],
+                 [0, 'const CCPoint&', 'getAnchorPoint', []],
                  [0, 'void', 'addChild', ['CCNode*']],
                  [0, 'void', 'addChild', ['CCNode*', 'int']],
                  [0, 'void', 'addChild', ['CCNode*', 'int', 'int']],
@@ -245,9 +259,13 @@ Classes = {
                  [STATIC, 'CCSprite*', 'create', ['const char*']],
                  [STATIC, 'CCSprite*', 'create', ['const char*', 'const CCRect&']],
                  [STATIC, 'CCSprite*', 'createWithSpriteFrame', ['CCSpriteFrame*']],
+                 [STATIC, 'CCSprite*', 'createWithTexture', ['CCTexture2D*']],
+                 [STATIC, 'CCSprite*', 'createWithTexture', ['CCTexture2D*', 'const CCRect&']],
                  [CONSTRUCTOR, []],
                  [0, 'void', 'initWithTexture', ['CCTexture2D*']],
                  [0, 'void', 'initWithTexture', ['CCTexture2D*', 'const CCRect&']],
+                 [0, 'void', 'setTextureRect', ['const CCRect&']],
+                 [0, 'void', 'setTextureRect', ['const CCRect&', 'bool', 'const CCSize&']],
                 ],
   },
   'CCSpriteBatchNode' => {
@@ -317,6 +335,13 @@ Classes = {
                  [0, 'CCScheduler*', 'getScheduler', []],
                  [0, 'void', 'setContentScaleFactor', ['float']],
                  [0, 'void', 'setDisplayStats', ['bool']]
+                ],
+  },
+  'CCEGLView' => {
+    :methods => [
+                 [STATIC, 'CCEGLView*', 'sharedOpenGLView', []],
+                 [0, 'const CCSize&', 'getDesignResolutionSize', []],
+                 [0, 'void', 'setDesignResolutionSize', ['float', 'float', 'ResolutionPolicy']],
                 ],
   },
   'CCFileUtils' => {

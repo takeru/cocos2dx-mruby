@@ -159,7 +159,8 @@ static mrb_value CCPoint___ctor(mrb_state *mrb, mrb_value self) {
     CCPoint* retval = new CCPoint(p0);
     DATA_PTR(self) = retval; return self;
   } else {
-    // TODO: raise exception.
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCPoint#__ctor");
     return mrb_nil_value();
   }
 }
@@ -230,7 +231,8 @@ static mrb_value CCSize___ctor(mrb_state *mrb, mrb_value self) {
     CCSize* retval = new CCSize(p0);
     DATA_PTR(self) = retval; return self;
   } else {
-    // TODO: raise exception.
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSize#__ctor");
     return mrb_nil_value();
   }
 }
@@ -298,7 +300,8 @@ static mrb_value CCRect___ctor(mrb_state *mrb, mrb_value self) {
     CCRect* retval = new CCRect(p0);
     DATA_PTR(self) = retval; return self;
   } else {
-    // TODO: raise exception.
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCRect#__ctor");
     return mrb_nil_value();
   }
 }
@@ -333,10 +336,32 @@ static mrb_value CCRect_containsPoint(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
-  CCRect* instance = static_cast<CCRect*>(DATA_PTR(self));
-  bool retval = instance->containsPoint(p0);
-  return mrb_bool_value(retval);
+  if (arg_count == 1) {
+    const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+    CCRect* instance = static_cast<CCRect*>(DATA_PTR(self));
+    bool retval = instance->containsPoint(p0);
+    return mrb_bool_value(retval);
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCRect#containsPoint");
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCRect_intersectsRect(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 1) {
+    const CCRect& p0 = *static_cast<CCRect*>(DATA_PTR(args[0]));
+    CCRect* instance = static_cast<CCRect*>(DATA_PTR(self));
+    bool retval = instance->intersectsRect(p0);
+    return mrb_bool_value(retval);
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCRect#intersectsRect");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCRect(mrb_state *mrb, struct RClass *mod) {
@@ -349,30 +374,58 @@ static void installCCRect(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "size", CCRect_size, MRB_ARGS_NONE());
   mrb_define_method(mrb, tc, "size=", CCRect_set_size, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, tc, "containsPoint", CCRect_containsPoint, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "intersectsRect", CCRect_intersectsRect, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
 // CCObject
 
 static mrb_value CCObject_release(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
+    instance->release();
+    return mrb_nil_value();
+  } else {
 
-  CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
-  instance->release();
-  return mrb_nil_value();
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCObject#release");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCObject_autorelease(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
+    CCObject* retval = instance->autorelease();
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCObject"));
+  } else {
 
-  CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
-  CCObject* retval = instance->autorelease();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCObject"));
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCObject#autorelease");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCObject_retainCount(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
+    unsigned int retval = instance->retainCount();
+    return mrb_fixnum_value(retval);
+  } else {
 
-  CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
-  unsigned int retval = instance->retainCount();
-  return mrb_fixnum_value(retval);
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCObject#retainCount");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCObject_m_nLuaID(mrb_state *mrb, mrb_value self) {
@@ -389,7 +442,16 @@ static mrb_value CCObject_set_m_nLuaID(mrb_state *mrb, mrb_value self) {
 }
 
 static mrb_value CCObject_dataptr(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   return mrb_fixnum_value((int)DATA_PTR(self));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCObject#dataptr");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCObject(mrb_state *mrb, struct RClass *mod) {
@@ -408,20 +470,35 @@ static void installCCObject(mrb_state *mrb, struct RClass *mod) {
 // CCArray
 
 static mrb_value CCArray_create(mrb_state *mrb, mrb_value self) {
-
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   
-  CCArray* retval = CCArray::create();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCArray"));
+    
+    CCArray* retval = CCArray::create();
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCArray"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCArray#create");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCArray_addObject(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCObject* p0 = static_cast<CCObject*>(DATA_PTR(args[0]));
-  CCArray* instance = static_cast<CCArray*>(DATA_PTR(self));
-  instance->addObject(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    CCObject* p0 = static_cast<CCObject*>(DATA_PTR(args[0]));
+    CCArray* instance = static_cast<CCArray*>(DATA_PTR(self));
+    instance->addObject(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCArray#addObject");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCArray(mrb_state *mrb, struct RClass *mod) {
@@ -487,7 +564,8 @@ static mrb_value CCNode_setPosition(mrb_state *mrb, mrb_value self) {
     instance->setPosition(p0, p1);
     return mrb_nil_value();
   } else {
-    // TODO: raise exception.
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#setPosition");
     return mrb_nil_value();
   }
 }
@@ -496,41 +574,112 @@ static mrb_value CCNode_setPositionX(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  float p0 = get_float(args[0]);
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  instance->setPositionX(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    float p0 = get_float(args[0]);
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    instance->setPositionX(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#setPositionX");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_getPositionX(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    float retval = instance->getPositionX();
+    return mrb_float_value(mrb, retval);
+  } else {
 
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  float retval = instance->getPositionX();
-  return mrb_float_value(mrb, retval);
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#getPositionX");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_setPositionY(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  float p0 = get_float(args[0]);
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  instance->setPositionY(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    float p0 = get_float(args[0]);
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    instance->setPositionY(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#setPositionY");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_getPositionY(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    float retval = instance->getPositionY();
+    return mrb_float_value(mrb, retval);
+  } else {
 
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  float retval = instance->getPositionY();
-  return mrb_float_value(mrb, retval);
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#getPositionY");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_getPosition(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    const CCPoint& retval = instance->getPosition();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
 
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  const CCPoint& retval = instance->getPosition();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#getPosition");
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCNode_setAnchorPoint(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 1) {
+    const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    instance->setAnchorPoint(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#setAnchorPoint");
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCNode_getAnchorPoint(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    const CCPoint& retval = instance->getAnchorPoint();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#getAnchorPoint");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_addChild(mrb_state *mrb, mrb_value self) {
@@ -556,7 +705,8 @@ static mrb_value CCNode_addChild(mrb_state *mrb, mrb_value self) {
     instance->addChild(p0, p1, p2);
     return mrb_nil_value();
   } else {
-    // TODO: raise exception.
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#addChild");
     return mrb_nil_value();
   }
 }
@@ -565,44 +715,80 @@ static mrb_value CCNode_getChildByTag(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  int p0 = get_int(args[0]);
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  CCNode* retval = instance->getChildByTag(p0);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCNode"));
+  if (arg_count == 1) {
+    int p0 = get_int(args[0]);
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    CCNode* retval = instance->getChildByTag(p0);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCNode"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#getChildByTag");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_runAction(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCAction* p0 = static_cast<CCAction*>(DATA_PTR(args[0]));
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  instance->runAction(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    CCAction* p0 = static_cast<CCAction*>(DATA_PTR(args[0]));
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    instance->runAction(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#runAction");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_getContentSize(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    const CCSize& retval = instance->getContentSize();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+  } else {
 
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  const CCSize& retval = instance->getContentSize();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#getContentSize");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_setVisible(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  bool p0 = get_bool(args[0]);
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  instance->setVisible(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    bool p0 = get_bool(args[0]);
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    instance->setVisible(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#setVisible");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_scheduleUpdate(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    instance->scheduleUpdate();
+    return mrb_nil_value();
+  } else {
 
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  instance->scheduleUpdate();
-  return mrb_nil_value();
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#scheduleUpdate");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_scheduleUpdateWithPriorityLua(mrb_state *mrb, mrb_value self) {
@@ -610,55 +796,97 @@ static mrb_value CCNode_scheduleUpdateWithPriorityLua(mrb_state *mrb, mrb_value 
   int arg_count;
   mrb_value block;
   mrb_get_args(mrb, "*&", &args, &arg_count, &block);
-  int blockHandler = registerProc(mrb, self, block);
-  int p0 = get_int(args[0]);
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  instance->scheduleUpdateWithPriorityLua(blockHandler, p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    int blockHandler = registerProc(mrb, self, block);
+    int p0 = get_int(args[0]);
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    instance->scheduleUpdateWithPriorityLua(blockHandler, p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#scheduleUpdateWithPriorityLua");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_boundingBox(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    CCRect retval = instance->boundingBox();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCRect))) CCRect(retval), "CCRect");
+  } else {
 
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  CCRect retval = instance->boundingBox();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCRect))) CCRect(retval), "CCRect");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#boundingBox");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_convertTouchToNodeSpace(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCTouch* p0 = static_cast<CCTouch*>(DATA_PTR(args[0]));
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  CCPoint retval = instance->convertTouchToNodeSpace(p0);
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  if (arg_count == 1) {
+    CCTouch* p0 = static_cast<CCTouch*>(DATA_PTR(args[0]));
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    CCPoint retval = instance->convertTouchToNodeSpace(p0);
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#convertTouchToNodeSpace");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_getTag(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    int retval = instance->getTag();
+    return mrb_fixnum_value(retval);
+  } else {
 
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  int retval = instance->getTag();
-  return mrb_fixnum_value(retval);
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#getTag");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_setTag(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  int p0 = get_int(args[0]);
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  instance->setTag(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    int p0 = get_int(args[0]);
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    instance->setTag(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#setTag");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_removeFromParentAndCleanup(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  bool p0 = get_bool(args[0]);
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  instance->removeFromParentAndCleanup(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    bool p0 = get_bool(args[0]);
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    instance->removeFromParentAndCleanup(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#removeFromParentAndCleanup");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_registerScriptHandler(mrb_state *mrb, mrb_value self) {
@@ -666,24 +894,48 @@ static mrb_value CCNode_registerScriptHandler(mrb_state *mrb, mrb_value self) {
   int arg_count;
   mrb_value block;
   mrb_get_args(mrb, "*&", &args, &arg_count, &block);
-  int blockHandler = registerProc(mrb, self, block);
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  instance->registerScriptHandler(blockHandler);
-  return mrb_nil_value();
+  if (arg_count == 0) {
+    int blockHandler = registerProc(mrb, self, block);
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    instance->registerScriptHandler(blockHandler);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#registerScriptHandler");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_unregisterScriptHandler(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    instance->unregisterScriptHandler();
+    return mrb_nil_value();
+  } else {
 
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  instance->unregisterScriptHandler();
-  return mrb_nil_value();
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#unregisterScriptHandler");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCNode_getScriptHandler(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+    int retval = instance->getScriptHandler();
+    return mrb_fixnum_value(retval);
+  } else {
 
-  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
-  int retval = instance->getScriptHandler();
-  return mrb_fixnum_value(retval);
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#getScriptHandler");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCNode(mrb_state *mrb, struct RClass *mod) {
@@ -696,6 +948,8 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "setPositionY", CCNode_setPositionY, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getPositionY", CCNode_getPositionY, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getPosition", CCNode_getPosition, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setAnchorPoint", CCNode_setAnchorPoint, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getAnchorPoint", CCNode_getAnchorPoint, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "addChild", CCNode_addChild, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getChildByTag", CCNode_getChildByTag, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "runAction", CCNode_runAction, MRB_ARGS_ANY());
@@ -720,10 +974,16 @@ static mrb_value CCNodeRGBA_setColor(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const CcColor3B& p0 = *static_cast<CcColor3B*>(DATA_PTR(args[0]));
-  CCNodeRGBA* instance = static_cast<CCNodeRGBA*>(DATA_PTR(self));
-  instance->setColor(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    const CcColor3B& p0 = *static_cast<CcColor3B*>(DATA_PTR(args[0]));
+    CCNodeRGBA* instance = static_cast<CCNodeRGBA*>(DATA_PTR(self));
+    instance->setColor(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNodeRGBA#setColor");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCNodeRGBA(mrb_state *mrb, struct RClass *mod) {
@@ -746,20 +1006,35 @@ static void installCCTexture2D(mrb_state *mrb, struct RClass *mod) {
 // CCTextureCache
 
 static mrb_value CCTextureCache_sharedTextureCache(mrb_state *mrb, mrb_value self) {
-
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   
-  CCTextureCache* retval = CCTextureCache::sharedTextureCache();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCTextureCache"));
+    
+    CCTextureCache* retval = CCTextureCache::sharedTextureCache();
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCTextureCache"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCTextureCache#sharedTextureCache");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCTextureCache_addImage(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-  CCTextureCache* instance = static_cast<CCTextureCache*>(DATA_PTR(self));
-  CCTexture2D* retval = instance->addImage(p0);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCTexture2D"));
+  if (arg_count == 1) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    CCTextureCache* instance = static_cast<CCTextureCache*>(DATA_PTR(self));
+    CCTexture2D* retval = instance->addImage(p0);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCTexture2D"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCTextureCache#addImage");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCTextureCache(mrb_state *mrb, struct RClass *mod) {
@@ -777,22 +1052,34 @@ static mrb_value CCSpriteFrame_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-  const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
-  
-  CCSpriteFrame* retval = CCSpriteFrame::create(p0, p1);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSpriteFrame"));
+  if (arg_count == 2) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
+    
+    CCSpriteFrame* retval = CCSpriteFrame::create(p0, p1);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSpriteFrame"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSpriteFrame#create");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCSpriteFrame_createWithTexture(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCTexture2D* p0 = static_cast<CCTexture2D*>(DATA_PTR(args[0]));
-  const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
-  
-  CCSpriteFrame* retval = CCSpriteFrame::createWithTexture(p0, p1);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSpriteFrame"));
+  if (arg_count == 2) {
+    CCTexture2D* p0 = static_cast<CCTexture2D*>(DATA_PTR(args[0]));
+    const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
+    
+    CCSpriteFrame* retval = CCSpriteFrame::createWithTexture(p0, p1);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSpriteFrame"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSpriteFrame#createWithTexture");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCSpriteFrame(mrb_state *mrb, struct RClass *mod) {
@@ -810,11 +1097,17 @@ static mrb_value CCAnimation_createWithSpriteFrames(mrb_state *mrb, mrb_value se
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCArray* p0 = static_cast<CCArray*>(DATA_PTR(args[0]));
-  float p1 = get_float(args[1]);
-  
-  CCAnimation* retval = CCAnimation::createWithSpriteFrames(p0, p1);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCAnimation"));
+  if (arg_count == 2) {
+    CCArray* p0 = static_cast<CCArray*>(DATA_PTR(args[0]));
+    float p1 = get_float(args[1]);
+    
+    CCAnimation* retval = CCAnimation::createWithSpriteFrames(p0, p1);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCAnimation"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCAnimation#createWithSpriteFrames");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCAnimation(mrb_state *mrb, struct RClass *mod) {
@@ -831,10 +1124,16 @@ static mrb_value CCAnimate_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCAnimation* p0 = static_cast<CCAnimation*>(DATA_PTR(args[0]));
-  
-  CCAnimate* retval = CCAnimate::create(p0);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCAnimate"));
+  if (arg_count == 1) {
+    CCAnimation* p0 = static_cast<CCAnimation*>(DATA_PTR(args[0]));
+    
+    CCAnimate* retval = CCAnimate::create(p0);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCAnimate"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCAnimate#create");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCAnimate(mrb_state *mrb, struct RClass *mod) {
@@ -851,10 +1150,16 @@ static mrb_value CCRepeatForever_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCActionInterval* p0 = static_cast<CCActionInterval*>(DATA_PTR(args[0]));
-  
-  CCRepeatForever* retval = CCRepeatForever::create(p0);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCRepeatForever"));
+  if (arg_count == 1) {
+    CCActionInterval* p0 = static_cast<CCActionInterval*>(DATA_PTR(args[0]));
+    
+    CCRepeatForever* retval = CCRepeatForever::create(p0);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCRepeatForever"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCRepeatForever#create");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCRepeatForever(mrb_state *mrb, struct RClass *mod) {
@@ -871,11 +1176,17 @@ static mrb_value CCScaleTo_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  float p0 = get_float(args[0]);
-  float p1 = get_float(args[1]);
-  
-  CCScaleTo* retval = CCScaleTo::create(p0, p1);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCScaleTo"));
+  if (arg_count == 2) {
+    float p0 = get_float(args[0]);
+    float p1 = get_float(args[1]);
+    
+    CCScaleTo* retval = CCScaleTo::create(p0, p1);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCScaleTo"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCScaleTo#create");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCScaleTo(mrb_state *mrb, struct RClass *mod) {
@@ -892,11 +1203,17 @@ static mrb_value CCMoveBy_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  float p0 = get_float(args[0]);
-  const CCPoint& p1 = *static_cast<CCPoint*>(DATA_PTR(args[1]));
-  
-  CCMoveBy* retval = CCMoveBy::create(p0, p1);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMoveBy"));
+  if (arg_count == 2) {
+    float p0 = get_float(args[0]);
+    const CCPoint& p1 = *static_cast<CCPoint*>(DATA_PTR(args[1]));
+    
+    CCMoveBy* retval = CCMoveBy::create(p0, p1);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMoveBy"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCMoveBy#create");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCMoveBy(mrb_state *mrb, struct RClass *mod) {
@@ -913,11 +1230,17 @@ static mrb_value CCMoveTo_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  float p0 = get_float(args[0]);
-  const CCPoint& p1 = *static_cast<CCPoint*>(DATA_PTR(args[1]));
-  
-  CCMoveTo* retval = CCMoveTo::create(p0, p1);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMoveTo"));
+  if (arg_count == 2) {
+    float p0 = get_float(args[0]);
+    const CCPoint& p1 = *static_cast<CCPoint*>(DATA_PTR(args[1]));
+    
+    CCMoveTo* retval = CCMoveTo::create(p0, p1);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMoveTo"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCMoveTo#create");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCMoveTo(mrb_state *mrb, struct RClass *mod) {
@@ -935,10 +1258,16 @@ static mrb_value CCCallFunc_create(mrb_state *mrb, mrb_value self) {
   int arg_count;
   mrb_value block;
   mrb_get_args(mrb, "*&", &args, &arg_count, &block);
-  int blockHandler = registerProc(mrb, self, block);
-  
-  CCCallFunc* retval = CCCallFunc::create(blockHandler);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCCallFunc"));
+  if (arg_count == 0) {
+    int blockHandler = registerProc(mrb, self, block);
+    
+    CCCallFunc* retval = CCCallFunc::create(blockHandler);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCCallFunc"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCCallFunc#create");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCCallFunc(mrb_state *mrb, struct RClass *mod) {
@@ -955,11 +1284,17 @@ static mrb_value CCSequence_createWithTwoActions(mrb_state *mrb, mrb_value self)
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCFiniteTimeAction* p0 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[0]));
-  CCFiniteTimeAction* p1 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[1]));
-  
-  CCActionInterval* retval = CCSequence::createWithTwoActions(p0, p1);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCActionInterval"));
+  if (arg_count == 2) {
+    CCFiniteTimeAction* p0 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[0]));
+    CCFiniteTimeAction* p1 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[1]));
+    
+    CCActionInterval* retval = CCSequence::createWithTwoActions(p0, p1);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCActionInterval"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSequence#createWithTwoActions");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCSequence(mrb_state *mrb, struct RClass *mod) {
@@ -976,11 +1311,17 @@ static mrb_value CCSpawn_createWithTwoActions(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCFiniteTimeAction* p0 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[0]));
-  CCFiniteTimeAction* p1 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[1]));
-  
-  CCActionInterval* retval = CCSpawn::createWithTwoActions(p0, p1);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCActionInterval"));
+  if (arg_count == 2) {
+    CCFiniteTimeAction* p0 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[0]));
+    CCFiniteTimeAction* p1 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[1]));
+    
+    CCActionInterval* retval = CCSpawn::createWithTwoActions(p0, p1);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCActionInterval"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSpawn#createWithTwoActions");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCSpawn(mrb_state *mrb, struct RClass *mod) {
@@ -1014,7 +1355,8 @@ static mrb_value CCSprite_create(mrb_state *mrb, mrb_value self) {
     CCSprite* retval = CCSprite::create(p0, p1);
     return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSprite"));
   } else {
-    // TODO: raise exception.
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSprite#create");
     return mrb_nil_value();
   }
 }
@@ -1023,17 +1365,54 @@ static mrb_value CCSprite_createWithSpriteFrame(mrb_state *mrb, mrb_value self) 
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCSpriteFrame* p0 = static_cast<CCSpriteFrame*>(DATA_PTR(args[0]));
-  
-  CCSprite* retval = CCSprite::createWithSpriteFrame(p0);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSprite"));
+  if (arg_count == 1) {
+    CCSpriteFrame* p0 = static_cast<CCSpriteFrame*>(DATA_PTR(args[0]));
+    
+    CCSprite* retval = CCSprite::createWithSpriteFrame(p0);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSprite"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSprite#createWithSpriteFrame");
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCSprite_createWithTexture(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 1) {
+    CCTexture2D* p0 = static_cast<CCTexture2D*>(DATA_PTR(args[0]));
+    
+    CCSprite* retval = CCSprite::createWithTexture(p0);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSprite"));
+  } else if (arg_count == 2) {
+    CCTexture2D* p0 = static_cast<CCTexture2D*>(DATA_PTR(args[0]));
+    const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
+    
+    CCSprite* retval = CCSprite::createWithTexture(p0, p1);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSprite"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSprite#createWithTexture");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCSprite___ctor(mrb_state *mrb, mrb_value self) {
-
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   
-  CCSprite* retval = new CCSprite();
-  DATA_PTR(self) = retval; return self;
+    
+    CCSprite* retval = new CCSprite();
+    DATA_PTR(self) = retval; return self;
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSprite#__ctor");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCSprite_initWithTexture(mrb_state *mrb, mrb_value self) {
@@ -1052,7 +1431,31 @@ static mrb_value CCSprite_initWithTexture(mrb_state *mrb, mrb_value self) {
     instance->initWithTexture(p0, p1);
     return mrb_nil_value();
   } else {
-    // TODO: raise exception.
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSprite#initWithTexture");
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCSprite_setTextureRect(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 1) {
+    const CCRect& p0 = *static_cast<CCRect*>(DATA_PTR(args[0]));
+    CCSprite* instance = static_cast<CCSprite*>(DATA_PTR(self));
+    instance->setTextureRect(p0);
+    return mrb_nil_value();
+  } else if (arg_count == 3) {
+    const CCRect& p0 = *static_cast<CCRect*>(DATA_PTR(args[0]));
+    bool p1 = get_bool(args[1]);
+    const CCSize& p2 = *static_cast<CCSize*>(DATA_PTR(args[2]));
+    CCSprite* instance = static_cast<CCSprite*>(DATA_PTR(self));
+    instance->setTextureRect(p0, p1, p2);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSprite#setTextureRect");
     return mrb_nil_value();
   }
 }
@@ -1063,18 +1466,29 @@ static void installCCSprite(mrb_state *mrb, struct RClass *mod) {
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCSprite_create, MRB_ARGS_ANY());
   mrb_define_class_method(mrb, tc, "createWithSpriteFrame", CCSprite_createWithSpriteFrame, MRB_ARGS_ANY());
+  mrb_define_class_method(mrb, tc, "createWithTexture", CCSprite_createWithTexture, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "initialize", CCSprite___ctor, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "initWithTexture", CCSprite_initWithTexture, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setTextureRect", CCSprite_setTextureRect, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
 // CCSpriteBatchNode
 
 static mrb_value CCSpriteBatchNode___ctor(mrb_state *mrb, mrb_value self) {
-
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   
-  CCSpriteBatchNode* retval = new CCSpriteBatchNode();
-  DATA_PTR(self) = retval; return self;
+    
+    CCSpriteBatchNode* retval = new CCSpriteBatchNode();
+    DATA_PTR(self) = retval; return self;
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSpriteBatchNode#__ctor");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCSpriteBatchNode_create(mrb_state *mrb, mrb_value self) {
@@ -1093,16 +1507,26 @@ static mrb_value CCSpriteBatchNode_create(mrb_state *mrb, mrb_value self) {
     CCSpriteBatchNode* retval = CCSpriteBatchNode::create(p0);
     return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSpriteBatchNode"));
   } else {
-    // TODO: raise exception.
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSpriteBatchNode#create");
     return mrb_nil_value();
   }
 }
 
 static mrb_value CCSpriteBatchNode_getTexture(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCSpriteBatchNode* instance = static_cast<CCSpriteBatchNode*>(DATA_PTR(self));
+    CCTexture2D* retval = instance->getTexture();
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCTexture2D"));
+  } else {
 
-  CCSpriteBatchNode* instance = static_cast<CCSpriteBatchNode*>(DATA_PTR(self));
-  CCTexture2D* retval = instance->getTexture();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCTexture2D"));
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSpriteBatchNode#getTexture");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCSpriteBatchNode(mrb_state *mrb, struct RClass *mod) {
@@ -1121,12 +1545,18 @@ static mrb_value CCLabelTTF_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-  const char* p1 = mrb_string_value_ptr(mrb, args[1]);
-  float p2 = get_float(args[2]);
-  
-  CCLabelTTF* retval = CCLabelTTF::create(p0, p1, p2);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLabelTTF"));
+  if (arg_count == 3) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    const char* p1 = mrb_string_value_ptr(mrb, args[1]);
+    float p2 = get_float(args[2]);
+    
+    CCLabelTTF* retval = CCLabelTTF::create(p0, p1, p2);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLabelTTF"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLabelTTF#create");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCLabelTTF(mrb_state *mrb, struct RClass *mod) {
@@ -1157,7 +1587,8 @@ static mrb_value CCLabelBMFont_create(mrb_state *mrb, mrb_value self) {
     CCLabelBMFont* retval = CCLabelBMFont::create(p0, p1);
     return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLabelBMFont"));
   } else {
-    // TODO: raise exception.
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLabelBMFont#create");
     return mrb_nil_value();
   }
 }
@@ -1166,10 +1597,16 @@ static mrb_value CCLabelBMFont_setString(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-  CCLabelBMFont* instance = static_cast<CCLabelBMFont*>(DATA_PTR(self));
-  instance->setString(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    CCLabelBMFont* instance = static_cast<CCLabelBMFont*>(DATA_PTR(self));
+    instance->setString(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLabelBMFont#setString");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCLabelBMFont(mrb_state *mrb, struct RClass *mod) {
@@ -1184,17 +1621,35 @@ static void installCCLabelBMFont(mrb_state *mrb, struct RClass *mod) {
 // CCLayer
 
 static mrb_value CCLayer___ctor(mrb_state *mrb, mrb_value self) {
-
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   
-  CCLayer* retval = new CCLayer();
-  DATA_PTR(self) = retval; return self;
+    
+    CCLayer* retval = new CCLayer();
+    DATA_PTR(self) = retval; return self;
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLayer#__ctor");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCLayer_create(mrb_state *mrb, mrb_value self) {
-
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   
-  CCLayer* retval = CCLayer::create();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLayer"));
+    
+    CCLayer* retval = CCLayer::create();
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLayer"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLayer#create");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCLayer_registerScriptTouchHandler(mrb_state *mrb, mrb_value self) {
@@ -1229,7 +1684,8 @@ static mrb_value CCLayer_registerScriptTouchHandler(mrb_state *mrb, mrb_value se
     instance->registerScriptTouchHandler(blockHandler, p0, p1, p2);
     return mrb_nil_value();
   } else {
-    // TODO: raise exception.
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLayer#registerScriptTouchHandler");
     return mrb_nil_value();
   }
 }
@@ -1238,30 +1694,48 @@ static mrb_value CCLayer_setTouchEnabled(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  bool p0 = get_bool(args[0]);
-  CCLayer* instance = static_cast<CCLayer*>(DATA_PTR(self));
-  instance->setTouchEnabled(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    bool p0 = get_bool(args[0]);
+    CCLayer* instance = static_cast<CCLayer*>(DATA_PTR(self));
+    instance->setTouchEnabled(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLayer#setTouchEnabled");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCLayer_setAccelerometerEnabled(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  bool p0 = get_bool(args[0]);
-  CCLayer* instance = static_cast<CCLayer*>(DATA_PTR(self));
-  instance->setAccelerometerEnabled(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    bool p0 = get_bool(args[0]);
+    CCLayer* instance = static_cast<CCLayer*>(DATA_PTR(self));
+    instance->setAccelerometerEnabled(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLayer#setAccelerometerEnabled");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCLayer_setTouchMode(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  ccTouchesMode p0 = (ccTouchesMode)mrb_fixnum(args[0]);
-  CCLayer* instance = static_cast<CCLayer*>(DATA_PTR(self));
-  instance->setTouchMode(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    ccTouchesMode p0 = (ccTouchesMode)mrb_fixnum(args[0]);
+    CCLayer* instance = static_cast<CCLayer*>(DATA_PTR(self));
+    instance->setTouchMode(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLayer#setTouchMode");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCLayer(mrb_state *mrb, struct RClass *mod) {
@@ -1289,10 +1763,19 @@ static void installCCLayerRGBA(mrb_state *mrb, struct RClass *mod) {
 // CCScene
 
 static mrb_value CCScene_create(mrb_state *mrb, mrb_value self) {
-
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   
-  CCScene* retval = CCScene::create();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCScene"));
+    
+    CCScene* retval = CCScene::create();
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCScene"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCScene#create");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCScene(mrb_state *mrb, struct RClass *mod) {
@@ -1310,22 +1793,34 @@ static mrb_value CCScheduler_scheduleScriptFunc(mrb_state *mrb, mrb_value self) 
   int arg_count;
   mrb_value block;
   mrb_get_args(mrb, "*&", &args, &arg_count, &block);
-  int blockHandler = registerProc(mrb, self, block);
-  float p0 = get_float(args[0]);
-  bool p1 = get_bool(args[1]);
-  CCScheduler* instance = static_cast<CCScheduler*>(DATA_PTR(self));
-  unsigned int retval = instance->scheduleScriptFunc(blockHandler, p0, p1);
-  return mrb_fixnum_value(retval);
+  if (arg_count == 2) {
+    int blockHandler = registerProc(mrb, self, block);
+    float p0 = get_float(args[0]);
+    bool p1 = get_bool(args[1]);
+    CCScheduler* instance = static_cast<CCScheduler*>(DATA_PTR(self));
+    unsigned int retval = instance->scheduleScriptFunc(blockHandler, p0, p1);
+    return mrb_fixnum_value(retval);
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCScheduler#scheduleScriptFunc");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCScheduler_unscheduleScriptEntry(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  unsigned int p0 = get_int(args[0]);
-  CCScheduler* instance = static_cast<CCScheduler*>(DATA_PTR(self));
-  instance->unscheduleScriptEntry(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    unsigned int p0 = get_int(args[0]);
+    CCScheduler* instance = static_cast<CCScheduler*>(DATA_PTR(self));
+    instance->unscheduleScriptEntry(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCScheduler#unscheduleScriptEntry");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCScheduler(mrb_state *mrb, struct RClass *mod) {
@@ -1340,98 +1835,179 @@ static void installCCScheduler(mrb_state *mrb, struct RClass *mod) {
 // CCDirector
 
 static mrb_value CCDirector_sharedDirector(mrb_state *mrb, mrb_value self) {
-
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   
-  CCDirector* retval = CCDirector::sharedDirector();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCDirector"));
+    
+    CCDirector* retval = CCDirector::sharedDirector();
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCDirector"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCDirector#sharedDirector");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCDirector_getWinSize(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+    CCSize retval = instance->getWinSize();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+  } else {
 
-  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
-  CCSize retval = instance->getWinSize();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCDirector#getWinSize");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCDirector_getVisibleOrigin(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+    CCPoint retval = instance->getVisibleOrigin();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
 
-  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
-  CCPoint retval = instance->getVisibleOrigin();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCDirector#getVisibleOrigin");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCDirector_getVisibleSize(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+    CCSize retval = instance->getVisibleSize();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+  } else {
 
-  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
-  CCSize retval = instance->getVisibleSize();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCDirector#getVisibleSize");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCDirector_convertToGL(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
-  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
-  CCPoint retval = instance->convertToGL(p0);
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  if (arg_count == 1) {
+    const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+    CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+    CCPoint retval = instance->convertToGL(p0);
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCDirector#convertToGL");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCDirector_runWithScene(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCScene* p0 = static_cast<CCScene*>(DATA_PTR(args[0]));
-  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
-  instance->runWithScene(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    CCScene* p0 = static_cast<CCScene*>(DATA_PTR(args[0]));
+    CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+    instance->runWithScene(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCDirector#runWithScene");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCDirector_replaceScene(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCScene* p0 = static_cast<CCScene*>(DATA_PTR(args[0]));
-  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
-  instance->replaceScene(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    CCScene* p0 = static_cast<CCScene*>(DATA_PTR(args[0]));
+    CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+    instance->replaceScene(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCDirector#replaceScene");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCDirector_pushScene(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCScene* p0 = static_cast<CCScene*>(DATA_PTR(args[0]));
-  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
-  instance->pushScene(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    CCScene* p0 = static_cast<CCScene*>(DATA_PTR(args[0]));
+    CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+    instance->pushScene(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCDirector#pushScene");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCDirector_getScheduler(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+    CCScheduler* retval = instance->getScheduler();
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCScheduler"));
+  } else {
 
-  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
-  CCScheduler* retval = instance->getScheduler();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCScheduler"));
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCDirector#getScheduler");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCDirector_setContentScaleFactor(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  float p0 = get_float(args[0]);
-  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
-  instance->setContentScaleFactor(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    float p0 = get_float(args[0]);
+    CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+    instance->setContentScaleFactor(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCDirector#setContentScaleFactor");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCDirector_setDisplayStats(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  bool p0 = get_bool(args[0]);
-  CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
-  instance->setDisplayStats(p0);
-  return mrb_nil_value();
+  if (arg_count == 1) {
+    bool p0 = get_bool(args[0]);
+    CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
+    instance->setDisplayStats(p0);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCDirector#setDisplayStats");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCDirector(mrb_state *mrb, struct RClass *mod) {
@@ -1452,23 +2028,100 @@ static void installCCDirector(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// CCEGLView
+
+static mrb_value CCEGLView_sharedOpenGLView(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    
+    CCEGLView* retval = CCEGLView::sharedOpenGLView();
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCEGLView"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCEGLView#sharedOpenGLView");
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCEGLView_getDesignResolutionSize(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCEGLView* instance = static_cast<CCEGLView*>(DATA_PTR(self));
+    const CCSize& retval = instance->getDesignResolutionSize();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCEGLView#getDesignResolutionSize");
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCEGLView_setDesignResolutionSize(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 3) {
+    float p0 = get_float(args[0]);
+    float p1 = get_float(args[1]);
+    ResolutionPolicy p2 = (ResolutionPolicy)mrb_fixnum(args[2]);
+    CCEGLView* instance = static_cast<CCEGLView*>(DATA_PTR(self));
+    instance->setDesignResolutionSize(p0, p1, p2);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCEGLView#setDesignResolutionSize");
+    return mrb_nil_value();
+  }
+}
+
+static void installCCEGLView(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = mrb->object_class;
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCEGLView", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "sharedOpenGLView", CCEGLView_sharedOpenGLView, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getDesignResolutionSize", CCEGLView_getDesignResolutionSize, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setDesignResolutionSize", CCEGLView_setDesignResolutionSize, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
 // CCFileUtils
 
 static mrb_value CCFileUtils_sharedFileUtils(mrb_state *mrb, mrb_value self) {
-
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   
-  CCFileUtils* retval = CCFileUtils::sharedFileUtils();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCFileUtils"));
+    
+    CCFileUtils* retval = CCFileUtils::sharedFileUtils();
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCFileUtils"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCFileUtils#sharedFileUtils");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCFileUtils_fullPathForFilename(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-  CCFileUtils* instance = static_cast<CCFileUtils*>(DATA_PTR(self));
-  std::string retval = instance->fullPathForFilename(p0);
-  return mrb_str_new(mrb, retval.c_str(), retval.size());
+  if (arg_count == 1) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    CCFileUtils* instance = static_cast<CCFileUtils*>(DATA_PTR(self));
+    std::string retval = instance->fullPathForFilename(p0);
+    return mrb_str_new(mrb, retval.c_str(), retval.size());
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCFileUtils#fullPathForFilename");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCFileUtils(mrb_state *mrb, struct RClass *mod) {
@@ -1487,10 +2140,16 @@ static mrb_value CCMenuItem_registerScriptTapHandler(mrb_state *mrb, mrb_value s
   int arg_count;
   mrb_value block;
   mrb_get_args(mrb, "*&", &args, &arg_count, &block);
-  int blockHandler = registerProc(mrb, self, block);
-  CCMenuItem* instance = static_cast<CCMenuItem*>(DATA_PTR(self));
-  instance->registerScriptTapHandler(blockHandler);
-  return mrb_nil_value();
+  if (arg_count == 0) {
+    int blockHandler = registerProc(mrb, self, block);
+    CCMenuItem* instance = static_cast<CCMenuItem*>(DATA_PTR(self));
+    instance->registerScriptTapHandler(blockHandler);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCMenuItem#registerScriptTapHandler");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCMenuItem(mrb_state *mrb, struct RClass *mod) {
@@ -1516,11 +2175,17 @@ static mrb_value CCMenuItemImage_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-  const char* p1 = mrb_string_value_ptr(mrb, args[1]);
-  
-  CCMenuItemImage* retval = CCMenuItemImage::create(p0, p1);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMenuItemImage"));
+  if (arg_count == 2) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    const char* p1 = mrb_string_value_ptr(mrb, args[1]);
+    
+    CCMenuItemImage* retval = CCMenuItemImage::create(p0, p1);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMenuItemImage"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCMenuItemImage#create");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCMenuItemImage(mrb_state *mrb, struct RClass *mod) {
@@ -1546,10 +2211,16 @@ static mrb_value CCMenuItemFont_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-  
-  CCMenuItemFont* retval = CCMenuItemFont::create(p0);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMenuItemFont"));
+  if (arg_count == 1) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    
+    CCMenuItemFont* retval = CCMenuItemFont::create(p0);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMenuItemFont"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCMenuItemFont#create");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCMenuItemFont(mrb_state *mrb, struct RClass *mod) {
@@ -1563,20 +2234,35 @@ static void installCCMenuItemFont(mrb_state *mrb, struct RClass *mod) {
 // CCMenu
 
 static mrb_value CCMenu_create(mrb_state *mrb, mrb_value self) {
-
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   
-  CCMenu* retval = CCMenu::create();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMenu"));
+    
+    CCMenu* retval = CCMenu::create();
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMenu"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCMenu#create");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCMenu_createWithItem(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCMenuItem* p0 = static_cast<CCMenuItem*>(DATA_PTR(args[0]));
-  
-  CCMenu* retval = CCMenu::createWithItem(p0);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMenu"));
+  if (arg_count == 1) {
+    CCMenuItem* p0 = static_cast<CCMenuItem*>(DATA_PTR(args[0]));
+    
+    CCMenu* retval = CCMenu::createWithItem(p0);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCMenu"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCMenu#createWithItem");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCMenu(mrb_state *mrb, struct RClass *mod) {
@@ -1591,59 +2277,131 @@ static void installCCMenu(mrb_state *mrb, struct RClass *mod) {
 // CCTouch
 
 static mrb_value CCTouch_getLocation(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+    CCPoint retval = instance->getLocation();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
 
-  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
-  CCPoint retval = instance->getLocation();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCTouch#getLocation");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCTouch_getPreviousLocation(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+    CCPoint retval = instance->getPreviousLocation();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
 
-  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
-  CCPoint retval = instance->getPreviousLocation();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCTouch#getPreviousLocation");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCTouch_getStartLocation(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+    CCPoint retval = instance->getStartLocation();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
 
-  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
-  CCPoint retval = instance->getStartLocation();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCTouch#getStartLocation");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCTouch_getDelta(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+    CCPoint retval = instance->getDelta();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
 
-  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
-  CCPoint retval = instance->getDelta();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCTouch#getDelta");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCTouch_getLocationInView(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+    CCPoint retval = instance->getLocationInView();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
 
-  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
-  CCPoint retval = instance->getLocationInView();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCTouch#getLocationInView");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCTouch_getPreviousLocationInView(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+    CCPoint retval = instance->getPreviousLocationInView();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
 
-  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
-  CCPoint retval = instance->getPreviousLocationInView();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCTouch#getPreviousLocationInView");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCTouch_getStartLocationInView(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+    CCPoint retval = instance->getStartLocationInView();
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
 
-  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
-  CCPoint retval = instance->getStartLocationInView();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCTouch#getStartLocationInView");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCTouch_getID(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
+  
+    CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
+    int retval = instance->getID();
+    return mrb_fixnum_value(retval);
+  } else {
 
-  CCTouch* instance = static_cast<CCTouch*>(DATA_PTR(self));
-  int retval = instance->getID();
-  return mrb_fixnum_value(retval);
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCTouch#getID");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCTouch(mrb_state *mrb, struct RClass *mod) {
@@ -1664,32 +2422,53 @@ static void installCCTouch(mrb_state *mrb, struct RClass *mod) {
 // CCUserDefault
 
 static mrb_value CCUserDefault_sharedUserDefault(mrb_state *mrb, mrb_value self) {
-
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   
-  CCUserDefault* retval = CCUserDefault::sharedUserDefault();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCUserDefault"));
+    
+    CCUserDefault* retval = CCUserDefault::sharedUserDefault();
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCUserDefault"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCUserDefault#sharedUserDefault");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCUserDefault_getIntegerForKey(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-  int p1 = get_int(args[1]);
-  CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
-  int retval = instance->getIntegerForKey(p0, p1);
-  return mrb_fixnum_value(retval);
+  if (arg_count == 2) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    int p1 = get_int(args[1]);
+    CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+    int retval = instance->getIntegerForKey(p0, p1);
+    return mrb_fixnum_value(retval);
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCUserDefault#getIntegerForKey");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCUserDefault_setIntegerForKey(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-  int p1 = get_int(args[1]);
-  CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
-  instance->setIntegerForKey(p0, p1);
-  return mrb_nil_value();
+  if (arg_count == 2) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    int p1 = get_int(args[1]);
+    CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+    instance->setIntegerForKey(p0, p1);
+    return mrb_nil_value();
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCUserDefault#setIntegerForKey");
+    return mrb_nil_value();
+  }
 }
 
 static void installCCUserDefault(mrb_state *mrb, struct RClass *mod) {
@@ -1708,65 +2487,104 @@ static mrb_value CCPointMake__(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  float p0 = get_float(args[0]);
-  float p1 = get_float(args[1]);
-  
-  CCPoint retval = CCPointMake(p0, p1);
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  if (arg_count == 2) {
+    float p0 = get_float(args[0]);
+    float p1 = get_float(args[1]);
+    
+    CCPoint retval = CCPointMake(p0, p1);
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "#CCPointMake");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value ccp__(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  float p0 = get_float(args[0]);
-  float p1 = get_float(args[1]);
-  
-  CCPoint retval = ccp(p0, p1);
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  if (arg_count == 2) {
+    float p0 = get_float(args[0]);
+    float p1 = get_float(args[1]);
+    
+    CCPoint retval = ccp(p0, p1);
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "#ccp");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCSizeMake__(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  float p0 = get_float(args[0]);
-  float p1 = get_float(args[1]);
-  
-  CCSize retval = CCSizeMake(p0, p1);
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+  if (arg_count == 2) {
+    float p0 = get_float(args[0]);
+    float p1 = get_float(args[1]);
+    
+    CCSize retval = CCSizeMake(p0, p1);
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "#CCSizeMake");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCRectMake__(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  float p0 = get_float(args[0]);
-  float p1 = get_float(args[1]);
-  float p2 = get_float(args[2]);
-  float p3 = get_float(args[3]);
-  
-  CCRect retval = CCRectMake(p0, p1, p2, p3);
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCRect))) CCRect(retval), "CCRect");
+  if (arg_count == 4) {
+    float p0 = get_float(args[0]);
+    float p1 = get_float(args[1]);
+    float p2 = get_float(args[2]);
+    float p3 = get_float(args[3]);
+    
+    CCRect retval = CCRectMake(p0, p1, p2, p3);
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCRect))) CCRect(retval), "CCRect");
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "#CCRectMake");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value ccc3__(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  unsigned char p0 = get_int(args[0]);
-  unsigned char p1 = get_int(args[1]);
-  unsigned char p2 = get_int(args[2]);
-  
-  CcColor3B retval = ccc3(p0, p1, p2);
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CcColor3B))) CcColor3B(retval), "CcColor3B");
+  if (arg_count == 3) {
+    unsigned char p0 = get_int(args[0]);
+    unsigned char p1 = get_int(args[1]);
+    unsigned char p2 = get_int(args[2]);
+    
+    CcColor3B retval = ccc3(p0, p1, p2);
+    return wrap(mrb, new(mrb_malloc(mrb, sizeof(CcColor3B))) CcColor3B(retval), "CcColor3B");
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "#ccc3");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCRANDOM_0_1__(mrb_state *mrb, mrb_value self) {
-
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 0) {
   
-  float retval = CCRANDOM_0_1();
-  return mrb_float_value(mrb, retval);
+    
+    float retval = CCRANDOM_0_1();
+    return mrb_float_value(mrb, retval);
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "#CCRANDOM_0_1");
+    return mrb_nil_value();
+  }
 }
 
 void installMrubyCocos2d(mrb_state *mrb) {
@@ -1782,12 +2600,18 @@ void installMrubyCocos2d(mrb_state *mrb) {
   mrb_define_const(mrb, mod, "KCCNodeOnCleanup", mrb_fixnum_value(kCCNodeOnCleanup));
   mrb_define_const(mrb, mod, "KCCTouchesAllAtOnce", mrb_fixnum_value(kCCTouchesAllAtOnce));
   mrb_define_const(mrb, mod, "KCCTouchesOneByOne", mrb_fixnum_value(kCCTouchesOneByOne));
-  mrb_define_module_function(mrb, mod, "CCPointMake", CCPointMake__, MRB_ARGS_ANY());
+  mrb_define_const(mrb, mod, "KResolutionExactFit", mrb_fixnum_value(kResolutionExactFit));
+  mrb_define_const(mrb, mod, "KResolutionNoBorder", mrb_fixnum_value(kResolutionNoBorder));
+  mrb_define_const(mrb, mod, "KResolutionShowAll", mrb_fixnum_value(kResolutionShowAll));
+  mrb_define_const(mrb, mod, "KResolutionFixedHeight", mrb_fixnum_value(kResolutionFixedHeight));
+  mrb_define_const(mrb, mod, "KResolutionFixedWidth", mrb_fixnum_value(kResolutionFixedWidth));
+  mrb_define_const(mrb, mod, "KResolutionUnKnown", mrb_fixnum_value(kResolutionUnKnown));
+  mrb_define_module_function(mrb, mod, "_CCPointMake", CCPointMake__, MRB_ARGS_ANY());
   mrb_define_module_function(mrb, mod, "ccp", ccp__, MRB_ARGS_ANY());
-  mrb_define_module_function(mrb, mod, "CCSizeMake", CCSizeMake__, MRB_ARGS_ANY());
-  mrb_define_module_function(mrb, mod, "CCRectMake", CCRectMake__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "_CCSizeMake", CCSizeMake__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "_CCRectMake", CCRectMake__, MRB_ARGS_ANY());
   mrb_define_module_function(mrb, mod, "ccc3", ccc3__, MRB_ARGS_ANY());
-  mrb_define_module_function(mrb, mod, "CCRANDOM_0_1", CCRANDOM_0_1__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "_CCRANDOM_0_1", CCRANDOM_0_1__, MRB_ARGS_ANY());
   installCcColor3B(mrb, mod);
   installCCPoint(mrb, mod);
   installCCSize(mrb, mod);
@@ -1821,6 +2645,7 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCScene(mrb, mod);
   installCCScheduler(mrb, mod);
   installCCDirector(mrb, mod);
+  installCCEGLView(mrb, mod);
   installCCFileUtils(mrb, mod);
   installCCMenuItem(mrb, mod);
   installCCMenuItemSprite(mrb, mod);
