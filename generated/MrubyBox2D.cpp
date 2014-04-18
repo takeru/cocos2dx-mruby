@@ -109,17 +109,11 @@ static mrb_value b2Vec2_Set(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 2) {
-    float p0 = get_float(args[0]);
-    float p1 = get_float(args[1]);
-    b2Vec2* instance = static_cast<b2Vec2*>(DATA_PTR(self));
-    instance->Set(p0, p1);
-    return mrb_nil_value();
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2Vec2#Set");
-    return mrb_nil_value();
-  }
+  float p0 = get_float(args[0]);
+  float p1 = get_float(args[1]);
+  b2Vec2* instance = static_cast<b2Vec2*>(DATA_PTR(self));
+  instance->Set(p0, p1);
+  return mrb_nil_value();
 }
 
 static void installb2Vec2(mrb_state *mrb, struct RClass *mod) {
@@ -147,36 +141,21 @@ static void installb2Shape(mrb_state *mrb, struct RClass *mod) {
 // b2EdgeShape
 
 static mrb_value b2EdgeShape___ctor(mrb_state *mrb, mrb_value self) {
-  mrb_value* args;
-  int arg_count;
-  mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 0) {
-  
-    
-    b2EdgeShape* retval = new b2EdgeShape();
-    DATA_PTR(self) = retval; return self;
-  } else {
 
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2EdgeShape#__ctor");
-    return mrb_nil_value();
-  }
+  
+  b2EdgeShape* retval = new b2EdgeShape();
+  DATA_PTR(self) = retval; return self;
 }
 
 static mrb_value b2EdgeShape_Set(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 2) {
-    const b2Vec2& p0 = *static_cast<b2Vec2*>(DATA_PTR(args[0]));
-    const b2Vec2& p1 = *static_cast<b2Vec2*>(DATA_PTR(args[1]));
-    b2EdgeShape* instance = static_cast<b2EdgeShape*>(DATA_PTR(self));
-    instance->Set(p0, p1);
-    return mrb_nil_value();
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2EdgeShape#Set");
-    return mrb_nil_value();
-  }
+  const b2Vec2& p0 = *static_cast<b2Vec2*>(DATA_PTR(args[0]));
+  const b2Vec2& p1 = *static_cast<b2Vec2*>(DATA_PTR(args[1]));
+  b2EdgeShape* instance = static_cast<b2EdgeShape*>(DATA_PTR(self));
+  instance->Set(p0, p1);
+  return mrb_nil_value();
 }
 
 static void installb2EdgeShape(mrb_state *mrb, struct RClass *mod) {
@@ -191,36 +170,21 @@ static void installb2EdgeShape(mrb_state *mrb, struct RClass *mod) {
 // b2PolygonShape
 
 static mrb_value b2PolygonShape___ctor(mrb_state *mrb, mrb_value self) {
-  mrb_value* args;
-  int arg_count;
-  mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 0) {
-  
-    
-    b2PolygonShape* retval = new b2PolygonShape();
-    DATA_PTR(self) = retval; return self;
-  } else {
 
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2PolygonShape#__ctor");
-    return mrb_nil_value();
-  }
+  
+  b2PolygonShape* retval = new b2PolygonShape();
+  DATA_PTR(self) = retval; return self;
 }
 
 static mrb_value b2PolygonShape_SetAsBox(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 2) {
-    float p0 = get_float(args[0]);
-    float p1 = get_float(args[1]);
-    b2PolygonShape* instance = static_cast<b2PolygonShape*>(DATA_PTR(self));
-    instance->SetAsBox(p0, p1);
-    return mrb_nil_value();
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2PolygonShape#SetAsBox");
-    return mrb_nil_value();
-  }
+  float p0 = get_float(args[0]);
+  float p1 = get_float(args[1]);
+  b2PolygonShape* instance = static_cast<b2PolygonShape*>(DATA_PTR(self));
+  instance->SetAsBox(p0, p1);
+  return mrb_nil_value();
 }
 
 static void installb2PolygonShape(mrb_state *mrb, struct RClass *mod) {
@@ -235,19 +199,10 @@ static void installb2PolygonShape(mrb_state *mrb, struct RClass *mod) {
 // b2FixtureDef
 
 static mrb_value b2FixtureDef___ctor(mrb_state *mrb, mrb_value self) {
-  mrb_value* args;
-  int arg_count;
-  mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 0) {
-  
-    
-    b2FixtureDef* retval = new b2FixtureDef();
-    DATA_PTR(self) = retval; return self;
-  } else {
 
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2FixtureDef#__ctor");
-    return mrb_nil_value();
-  }
+  
+  b2FixtureDef* retval = new b2FixtureDef();
+  DATA_PTR(self) = retval; return self;
 }
 
 static mrb_value b2FixtureDef_shape(mrb_state *mrb, mrb_value self) {
@@ -330,19 +285,10 @@ static void installb2Fixture(mrb_state *mrb, struct RClass *mod) {
 // b2BodyDef
 
 static mrb_value b2BodyDef___ctor(mrb_state *mrb, mrb_value self) {
-  mrb_value* args;
-  int arg_count;
-  mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 0) {
-  
-    
-    b2BodyDef* retval = new b2BodyDef();
-    DATA_PTR(self) = retval; return self;
-  } else {
 
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2BodyDef#__ctor");
-    return mrb_nil_value();
-  }
+  
+  b2BodyDef* retval = new b2BodyDef();
+  DATA_PTR(self) = retval; return self;
 }
 
 static mrb_value b2BodyDef_type(mrb_state *mrb, mrb_value self) {
@@ -408,35 +354,17 @@ static mrb_value b2Body_CreateFixture(mrb_state *mrb, mrb_value self) {
 }
 
 static mrb_value b2Body_GetNext(mrb_state *mrb, mrb_value self) {
-  mrb_value* args;
-  int arg_count;
-  mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 0) {
-  
-    b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
-    b2Body* retval = instance->GetNext();
-    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "B2Body"));
-  } else {
 
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2Body#GetNext");
-    return mrb_nil_value();
-  }
+  b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
+  b2Body* retval = instance->GetNext();
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "B2Body"));
 }
 
 static mrb_value b2Body_GetUserData(mrb_state *mrb, mrb_value self) {
-  mrb_value* args;
-  int arg_count;
-  mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 0) {
-  
-    b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
-    void* retval = instance->GetUserData();
-    return (retval == NULL ? mrb_nil_value() : mrb_voidp_value(mrb, retval));
-  } else {
 
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2Body#GetUserData");
-    return mrb_nil_value();
-  }
+  b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
+  void* retval = instance->GetUserData();
+  return (retval == NULL ? mrb_nil_value() : mrb_voidp_value(mrb, retval));
 }
 
 static void installb2Body(mrb_state *mrb, struct RClass *mod) {
@@ -455,98 +383,59 @@ static mrb_value b2World___ctor(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 1) {
-    b2Vec2 p0 = *static_cast<b2Vec2*>(DATA_PTR(args[0]));
-    
-    b2World* retval = new b2World(p0);
-    DATA_PTR(self) = retval; return self;
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2World#__ctor");
-    return mrb_nil_value();
-  }
+  b2Vec2 p0 = *static_cast<b2Vec2*>(DATA_PTR(args[0]));
+  
+  b2World* retval = new b2World(p0);
+  DATA_PTR(self) = retval; return self;
 }
 
 static mrb_value b2World_SetAllowSleeping(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 1) {
-    bool p0 = get_bool(args[0]);
-    b2World* instance = static_cast<b2World*>(DATA_PTR(self));
-    instance->SetAllowSleeping(p0);
-    return mrb_nil_value();
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2World#SetAllowSleeping");
-    return mrb_nil_value();
-  }
+  bool p0 = get_bool(args[0]);
+  b2World* instance = static_cast<b2World*>(DATA_PTR(self));
+  instance->SetAllowSleeping(p0);
+  return mrb_nil_value();
 }
 
 static mrb_value b2World_SetContinuousPhysics(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 1) {
-    bool p0 = get_bool(args[0]);
-    b2World* instance = static_cast<b2World*>(DATA_PTR(self));
-    instance->SetContinuousPhysics(p0);
-    return mrb_nil_value();
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2World#SetContinuousPhysics");
-    return mrb_nil_value();
-  }
+  bool p0 = get_bool(args[0]);
+  b2World* instance = static_cast<b2World*>(DATA_PTR(self));
+  instance->SetContinuousPhysics(p0);
+  return mrb_nil_value();
 }
 
 static mrb_value b2World_CreateBody(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 1) {
-    const b2BodyDef* p0 = static_cast<b2BodyDef*>(DATA_PTR(args[0]));
-    b2World* instance = static_cast<b2World*>(DATA_PTR(self));
-    b2Body* retval = instance->CreateBody(p0);
-    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "B2Body"));
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2World#CreateBody");
-    return mrb_nil_value();
-  }
+  const b2BodyDef* p0 = static_cast<b2BodyDef*>(DATA_PTR(args[0]));
+  b2World* instance = static_cast<b2World*>(DATA_PTR(self));
+  b2Body* retval = instance->CreateBody(p0);
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "B2Body"));
 }
 
 static mrb_value b2World_Step(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 3) {
-    float p0 = get_float(args[0]);
-    int p1 = get_int(args[1]);
-    int p2 = get_int(args[2]);
-    b2World* instance = static_cast<b2World*>(DATA_PTR(self));
-    instance->Step(p0, p1, p2);
-    return mrb_nil_value();
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2World#Step");
-    return mrb_nil_value();
-  }
+  float p0 = get_float(args[0]);
+  int p1 = get_int(args[1]);
+  int p2 = get_int(args[2]);
+  b2World* instance = static_cast<b2World*>(DATA_PTR(self));
+  instance->Step(p0, p1, p2);
+  return mrb_nil_value();
 }
 
 static mrb_value b2World_GetBodyList(mrb_state *mrb, mrb_value self) {
-  mrb_value* args;
-  int arg_count;
-  mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 0) {
-  
-    b2World* instance = static_cast<b2World*>(DATA_PTR(self));
-    b2Body* retval = instance->GetBodyList();
-    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "B2Body"));
-  } else {
 
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2World#GetBodyList");
-    return mrb_nil_value();
-  }
+  b2World* instance = static_cast<b2World*>(DATA_PTR(self));
+  b2Body* retval = instance->GetBodyList();
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "B2Body"));
 }
 
 static void installb2World(mrb_state *mrb, struct RClass *mod) {
@@ -568,17 +457,11 @@ static mrb_value b2Vec2__(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 2) {
-    float p0 = get_float(args[0]);
-    float p1 = get_float(args[1]);
-    
-    b2Vec2 retval = b2Vec2(p0, p1);
-    return wrap(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(retval), "B2Vec2");
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "#b2Vec2");
-    return mrb_nil_value();
-  }
+  float p0 = get_float(args[0]);
+  float p1 = get_float(args[1]);
+  
+  b2Vec2 retval = b2Vec2(p0, p1);
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(retval), "B2Vec2");
 }
 
 void installMrubyBox2D(mrb_state *mrb) {

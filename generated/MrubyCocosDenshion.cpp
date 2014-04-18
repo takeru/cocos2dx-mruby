@@ -60,19 +60,10 @@ mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
 // SimpleAudioEngine
 
 static mrb_value SimpleAudioEngine_sharedEngine(mrb_state *mrb, mrb_value self) {
-  mrb_value* args;
-  int arg_count;
-  mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 0) {
-  
-    
-    SimpleAudioEngine* retval = SimpleAudioEngine::sharedEngine();
-    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "SimpleAudioEngine"));
-  } else {
 
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "SimpleAudioEngine#sharedEngine");
-    return mrb_nil_value();
-  }
+  
+  SimpleAudioEngine* retval = SimpleAudioEngine::sharedEngine();
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "SimpleAudioEngine"));
 }
 
 static mrb_value SimpleAudioEngine_playBackgroundMusic(mrb_state *mrb, mrb_value self) {
@@ -101,16 +92,10 @@ static mrb_value SimpleAudioEngine_preloadEffect(mrb_state *mrb, mrb_value self)
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 1) {
-    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-    SimpleAudioEngine* instance = static_cast<SimpleAudioEngine*>(DATA_PTR(self));
-    instance->preloadEffect(p0);
-    return mrb_nil_value();
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "SimpleAudioEngine#preloadEffect");
-    return mrb_nil_value();
-  }
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  SimpleAudioEngine* instance = static_cast<SimpleAudioEngine*>(DATA_PTR(self));
+  instance->preloadEffect(p0);
+  return mrb_nil_value();
 }
 
 static mrb_value SimpleAudioEngine_playEffect(mrb_state *mrb, mrb_value self) {
@@ -139,32 +124,17 @@ static mrb_value SimpleAudioEngine_stopEffect(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 1) {
-    unsigned int p0 = get_int(args[0]);
-    SimpleAudioEngine* instance = static_cast<SimpleAudioEngine*>(DATA_PTR(self));
-    instance->stopEffect(p0);
-    return mrb_nil_value();
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "SimpleAudioEngine#stopEffect");
-    return mrb_nil_value();
-  }
+  unsigned int p0 = get_int(args[0]);
+  SimpleAudioEngine* instance = static_cast<SimpleAudioEngine*>(DATA_PTR(self));
+  instance->stopEffect(p0);
+  return mrb_nil_value();
 }
 
 static mrb_value SimpleAudioEngine_stopAllEffects(mrb_state *mrb, mrb_value self) {
-  mrb_value* args;
-  int arg_count;
-  mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 0) {
-  
-    SimpleAudioEngine* instance = static_cast<SimpleAudioEngine*>(DATA_PTR(self));
-    instance->stopAllEffects();
-    return mrb_nil_value();
-  } else {
 
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "SimpleAudioEngine#stopAllEffects");
-    return mrb_nil_value();
-  }
+  SimpleAudioEngine* instance = static_cast<SimpleAudioEngine*>(DATA_PTR(self));
+  instance->stopAllEffects();
+  return mrb_nil_value();
 }
 
 static void installSimpleAudioEngine(mrb_state *mrb, struct RClass *mod) {

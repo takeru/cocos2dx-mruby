@@ -209,12 +209,12 @@ EOD
     end
 
     get_args = true
-    #if methods.size == 1
-    #  get_arg_count = ''
-    #  if methods[0][2].empty?
-    #    get_args = false
-    #  end
-    #end
+    if methods.size == 1
+      #get_arg_count = ''
+      if methods[0][2].empty?
+        get_args = false
+      end
+    end
 
     block_required = false
     methods.each do |_, _, params|
@@ -242,7 +242,7 @@ EOD
       end
     end
 
-    if false && methods.size == 1
+    if methods.size == 1
       flag, return_type, params, opts = methods[0]
       declare_exec_method(klass, method_name, flag, return_type, params, opts, 0);
     else

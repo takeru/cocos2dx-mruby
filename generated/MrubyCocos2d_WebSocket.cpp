@@ -64,19 +64,10 @@ mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
 // WebSocket
 
 static mrb_value WebSocket___ctor(mrb_state *mrb, mrb_value self) {
-  mrb_value* args;
-  int arg_count;
-  mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 0) {
-  
-    
-    WebSocket* retval = new WebSocket();
-    DATA_PTR(self) = retval; return self;
-  } else {
 
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "WebSocket#__ctor");
-    return mrb_nil_value();
-  }
+  
+  WebSocket* retval = new WebSocket();
+  DATA_PTR(self) = retval; return self;
 }
 
 static mrb_value WebSocket_init(mrb_state *mrb, mrb_value self) {
@@ -84,49 +75,28 @@ static mrb_value WebSocket_init(mrb_state *mrb, mrb_value self) {
   int arg_count;
   mrb_value block;
   mrb_get_args(mrb, "*&", &args, &arg_count, &block);
-  if (arg_count == 1) {
-    int blockHandler = registerProc(mrb, self, block);
-    const std::string& p0 = std::string(mrb_string_value_ptr(mrb, args[0]));
-    WebSocket* instance = static_cast<WebSocket*>(DATA_PTR(self));
-    bool retval = instance->init(blockHandler, p0);
-    return mrb_bool_value(retval);
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "WebSocket#init");
-    return mrb_nil_value();
-  }
+  int blockHandler = registerProc(mrb, self, block);
+  const std::string& p0 = std::string(mrb_string_value_ptr(mrb, args[0]));
+  WebSocket* instance = static_cast<WebSocket*>(DATA_PTR(self));
+  bool retval = instance->init(blockHandler, p0);
+  return mrb_bool_value(retval);
 }
 
 static mrb_value WebSocket_send(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 1) {
-    const std::string& p0 = std::string(mrb_string_value_ptr(mrb, args[0]));
-    WebSocket* instance = static_cast<WebSocket*>(DATA_PTR(self));
-    instance->send(p0);
-    return mrb_nil_value();
-  } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "WebSocket#send");
-    return mrb_nil_value();
-  }
+  const std::string& p0 = std::string(mrb_string_value_ptr(mrb, args[0]));
+  WebSocket* instance = static_cast<WebSocket*>(DATA_PTR(self));
+  instance->send(p0);
+  return mrb_nil_value();
 }
 
 static mrb_value WebSocket_close(mrb_state *mrb, mrb_value self) {
-  mrb_value* args;
-  int arg_count;
-  mrb_get_args(mrb, "*", &args, &arg_count);
-  if (arg_count == 0) {
-  
-    WebSocket* instance = static_cast<WebSocket*>(DATA_PTR(self));
-    instance->close();
-    return mrb_nil_value();
-  } else {
 
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "WebSocket#close");
-    return mrb_nil_value();
-  }
+  WebSocket* instance = static_cast<WebSocket*>(DATA_PTR(self));
+  instance->close();
+  return mrb_nil_value();
 }
 
 static void installWebSocket(mrb_state *mrb, struct RClass *mod) {
