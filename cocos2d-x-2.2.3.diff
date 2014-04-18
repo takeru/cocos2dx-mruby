@@ -1,0 +1,159 @@
+Only in cocos2d-x-2.2.3: .DS_Store
+Only in cocos2d-x-2.2.3/cocos2dx: .DS_Store
+diff -r orig/cocos2d-x-2.2.3/cocos2dx/kazmath/src/mat4.c cocos2d-x-2.2.3/cocos2dx/kazmath/src/mat4.c
+219c219
+< #if defined(__ARM_NEON__)
+---
+> #if defined(__ARM_NEON__XXXXX)
+diff -r orig/cocos2d-x-2.2.3/cocos2dx/kazmath/src/neon_matrix_impl.c cocos2d-x-2.2.3/cocos2dx/kazmath/src/neon_matrix_impl.c
+26c26
+< #if defined(__ARM_NEON__)
+---
+> #if defined(__ARM_NEON__XXXXX)
+Only in cocos2d-x-2.2.3/cocos2dx/platform: .DS_Store
+diff -r orig/cocos2d-x-2.2.3/cocos2dx/platform/ios/CCApplication.mm cocos2d-x-2.2.3/cocos2dx/platform/ios/CCApplication.mm
+50c50
+<     if (applicationDidFinishLaunching()) 
+---
+>     if (applicationDidFinishLaunching())
+diff -r orig/cocos2d-x-2.2.3/cocos2dx/platform/ios/CCEGLView.mm cocos2d-x-2.2.3/cocos2dx/platform/ios/CCEGLView.mm
+41d40
+< 
+64c63
+<     [[EAGLView sharedEGLView] removeFromSuperview];
+---
+>     //[[EAGLView sharedEGLView] removeFromSuperview];
+diff -r orig/cocos2d-x-2.2.3/cocos2dx/platform/ios/EAGLView.mm cocos2d-x-2.2.3/cocos2dx/platform/ios/EAGLView.mm
+408c408
+<         ids[i] = (int)touch;
+---
+>         ids[i] = *(int *)touch;
+428c428
+<         ids[i] = (int)touch;
+---
+>         ids[i] = *(int *)touch;
+449c449
+<         ids[i] = (int)touch;
+---
+>         ids[i] = *(int *)touch;
+470c470
+<         ids[i] = (int)touch;
+---
+>         ids[i] = *(int *)touch;
+Only in cocos2d-x-2.2.3/cocos2dx/platform/third_party: .DS_Store
+Only in cocos2d-x-2.2.3/cocos2dx/platform/third_party/ios: .DS_Store
+diff -r orig/cocos2d-x-2.2.3/cocos2dx/proj.ios/cocos2dx.xcodeproj/project.pbxproj cocos2d-x-2.2.3/cocos2dx/proj.ios/cocos2dx.xcodeproj/project.pbxproj
+1505c1505
+< 				LastUpgradeCheck = 0460;
+---
+> 				LastUpgradeCheck = 0510;
+1674c1674
+< 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+---
+> 				CLANG_WARN_BOOL_CONVERSION = YES;
+1675a1676
+> 				CLANG_WARN_EMPTY_BODY = YES;
+1688a1690
+> 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+1689a1692
+> 				GCC_WARN_UNDECLARED_SELECTOR = YES;
+1690a1694
+> 				GCC_WARN_UNUSED_FUNCTION = YES;
+1692a1697
+> 				ONLY_ACTIVE_ARCH = YES;
+1702c1707
+< 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+---
+> 				CLANG_WARN_BOOL_CONVERSION = YES;
+1703a1709
+> 				CLANG_WARN_EMPTY_BODY = YES;
+1713a1720
+> 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+1714a1722
+> 				GCC_WARN_UNDECLARED_SELECTOR = YES;
+1715a1724
+> 				GCC_WARN_UNUSED_FUNCTION = YES;
+Only in cocos2d-x-2.2.3/cocos2dx/proj.ios/cocos2dx.xcodeproj: xcuserdata
+diff -r orig/cocos2d-x-2.2.3/extensions/network/WebSocket.cpp cocos2d-x-2.2.3/extensions/network/WebSocket.cpp
+221a222,274
+> class WebSocketDelegateForScript : public WebSocket::Delegate
+> {
+> public:
+>     void onOpen(WebSocket* ws);
+>     void onMessage(WebSocket* ws, const WebSocket::Data& data);
+>     void onClose(WebSocket* ws);
+>     void onError(WebSocket* ws, const WebSocket::ErrorCode& error);
+> };
+> 
+> void WebSocketDelegateForScript::onOpen(WebSocket* ws)
+> {
+>     int nHandler = ws->getScriptHandler();
+>     if(nHandler == -1){ return; }
+>     
+>     CCArray* pArrayArgs = CCArray::createWithCapacity(1);
+>     pArrayArgs->addObject(CCString::create("open"));
+>     CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(nHandler, pArrayArgs);
+> }
+> 
+> void WebSocketDelegateForScript::onMessage(WebSocket* ws, const WebSocket::Data& data)
+> {
+>     int nHandler = ws->getScriptHandler();
+>     if(nHandler == -1){ return; }
+>     
+>     CCArray* pArrayArgs = CCArray::createWithCapacity(2);
+>     pArrayArgs->addObject(CCString::create("message"));
+>     pArrayArgs->addObject(CCString::createWithData((unsigned char*)data.bytes, data.len));
+>     CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(nHandler, pArrayArgs);
+> }
+> 
+> void WebSocketDelegateForScript::onClose(WebSocket* ws)
+> {
+>     int nHandler = ws->getScriptHandler();
+>     if(nHandler == -1){ return; }
+>     
+>     CCArray* pArrayArgs = CCArray::createWithCapacity(1);
+>     pArrayArgs->addObject(CCString::create("close"));
+>     CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(nHandler, pArrayArgs);
+> }
+> 
+> void WebSocketDelegateForScript::onError(WebSocket* ws, const WebSocket::ErrorCode& error)
+> {
+>     int nHandler = ws->getScriptHandler();
+>     if(nHandler == -1){ return; }
+>     
+>     CCArray* pArrayArgs = CCArray::createWithCapacity(2);
+>     pArrayArgs->addObject(CCString::create("error"));
+>     pArrayArgs->addObject(CCInteger::create(error));
+>     CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(nHandler, pArrayArgs);
+> }
+> 
+> WebSocketDelegateForScript singletonWebSocketDelegateForScript = WebSocketDelegateForScript();
+> 
+338a392,397
+> bool WebSocket::init(int nHandler, const std::string& url)
+> {
+>     this->_nHandler = nHandler;
+>     return init(singletonWebSocketDelegateForScript, url, NULL);
+> }
+> 
+387a447,450
+>     
+>     if(this->_nHandler != -1){
+>         // ...
+>     }
+Only in cocos2d-x-2.2.3/extensions/network: WebSocket.cpp.orig.txt
+diff -r orig/cocos2d-x-2.2.3/extensions/network/WebSocket.h cocos2d-x-2.2.3/extensions/network/WebSocket.h
+103a104,108
+> 
+>     /**
+>      *  @brief  The initialized method for websocket for script.
+>      */
+>     bool init(int nHandler, const std::string& url);
+134a140,141
+>     
+>     int getScriptHandler(){ return this->_nHandler; }
+161a169,170
+> 
+>     int _nHandler = -1;
+Only in cocos2d-x-2.2.3/extensions/network: WebSocket.h.orig.txt
+Only in cocos2d-x-2.2.3: projects

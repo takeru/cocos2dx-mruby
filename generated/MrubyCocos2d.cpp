@@ -441,6 +441,19 @@ static mrb_value CCObject_set_m_nLuaID(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
+static mrb_value CCObject_m_uID(mrb_state *mrb, mrb_value self) {
+  CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
+  return mrb_fixnum_value(instance->m_uID);
+}
+
+static mrb_value CCObject_set_m_uID(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  CCObject* instance = static_cast<CCObject*>(DATA_PTR(self));
+  instance->m_uID = get_int(o);
+  return mrb_nil_value();
+}
+
 static mrb_value CCObject_dataptr(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
@@ -463,6 +476,8 @@ static void installCCObject(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "retainCount", CCObject_retainCount, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "m_nLuaID", CCObject_m_nLuaID, MRB_ARGS_NONE());
   mrb_define_method(mrb, tc, "m_nLuaID=", CCObject_set_m_nLuaID, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "m_uID", CCObject_m_uID, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "m_uID=", CCObject_set_m_uID, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, tc, "dataptr", CCObject_dataptr, MRB_ARGS_ANY());
 }
 
