@@ -19,10 +19,6 @@ diff -r orig/cocos2d-x-2.2.3/cocos2dx/platform/ios/CCApplication.mm cocos2d-x-2.
 diff -r orig/cocos2d-x-2.2.3/cocos2dx/platform/ios/CCEGLView.mm cocos2d-x-2.2.3/cocos2dx/platform/ios/CCEGLView.mm
 41d40
 < 
-64c63
-<     [[EAGLView sharedEGLView] removeFromSuperview];
----
->     //[[EAGLView sharedEGLView] removeFromSuperview];
 diff -r orig/cocos2d-x-2.2.3/cocos2dx/platform/ios/EAGLView.mm cocos2d-x-2.2.3/cocos2dx/platform/ios/EAGLView.mm
 408c408
 <         ids[i] = (int)touch;
@@ -141,6 +137,8 @@ diff -r orig/cocos2d-x-2.2.3/extensions/network/WebSocket.cpp cocos2d-x-2.2.3/ex
 >     if(this->_nHandler != -1){
 >         // ...
 >     }
+423d485
+<     
 Only in cocos2d-x-2.2.3/extensions/network: WebSocket.cpp.orig.txt
 diff -r orig/cocos2d-x-2.2.3/extensions/network/WebSocket.h cocos2d-x-2.2.3/extensions/network/WebSocket.h
 103a104,108
