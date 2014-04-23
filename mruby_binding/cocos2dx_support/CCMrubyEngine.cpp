@@ -85,38 +85,83 @@ static const char HelperFunctions[] =
 "    def self._removeScriptObject(obj)\n"
 "      @@removeScriptObject.call(obj) if @@removeScriptObject\n"
 "    end\n"
+
+"    @@uncaughtException = nil\n"
+"    def self.uncaughtException=(proc)\n"
+"      @@uncaughtException = proc\n"
+"    end\n"
+"    def self._uncaughtException(e,bt)\n"
+"      @@uncaughtException.call(e,bt) if @@uncaughtException\n"
+"    end\n"
+
 "  end\n"
 "end\n";
 
 ////////////////////////////////////////////////////////////////
 // Misc.
+static mrb_value _mrb_cclog(mrb_state *mrb, mrb_value self) {
+    mrb_value* args;
+    int n;
+    mrb_get_args(mrb, "*", &args, &n);
+    for (int i = 0; i < n; ++i) {
+        mrb_value s = mrb_funcall(mrb, args[i], "to_s", 0);
+        CCLOG("%s", RSTRING_PTR(s));
+    }
+    return mrb_nil_value();
+}
+
 static mrb_value _mrb_puts(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int n;
   mrb_get_args(mrb, "*", &args, &n);
   for (int i = 0; i < n; ++i) {
     mrb_value s = mrb_funcall(mrb, args[i], "to_s", 0);
-    CCLOG("%s", RSTRING_PTR(s));
+    printf("%s\n", RSTRING_PTR(s));
   }
   return mrb_nil_value();
 }
 
-static int dumpException(mrb_state *mrb) {
-  if (!mrb->exc)
-    return FALSE;
-
-  mrb_value exc = mrb_obj_value(mrb->exc);
-  mrb_value backtrace = mrb_get_backtrace(mrb, exc);
-  mrb_value s = mrb_funcall(mrb, exc, "inspect", 0);
-  CCLOG("%s", RSTRING_PTR(s));
-  for (mrb_int n = mrb_ary_len(mrb, backtrace), i = 0; i < n; ++i) {
-    mrb_value v = mrb_ary_ref(mrb, backtrace, i);
-    CCLOG("  %s", RSTRING_PTR(v));
-  }
-  mrb->exc = 0;
-  return TRUE;
+static mrb_value _mrb_p(mrb_state *mrb, mrb_value self) {
+    mrb_value* args;
+    int n;
+    mrb_get_args(mrb, "*", &args, &n);
+    for (int i = 0; i < n; ++i) {
+        mrb_value s = mrb_funcall(mrb, args[i], "inspect", 0);
+        printf("%s\n", RSTRING_PTR(s));
+    }
+    return mrb_nil_value();
 }
 
+static bool _dumpException(mrb_state *mrb) {
+    if (!mrb->exc)
+        return FALSE;
+
+    mrb_value exc = mrb_obj_value(mrb->exc);
+    mrb_value backtrace = mrb_get_backtrace(mrb, exc);
+    mrb_value s = mrb_funcall(mrb, exc, "inspect", 0);
+    printf("Uncaught Exception: %s\n", RSTRING_PTR(s));
+    for (mrb_int n = mrb_ary_len(mrb, backtrace), i = 0; i < n; ++i) {
+        mrb_value v = mrb_ary_ref(mrb, backtrace, i);
+        printf("  %s\n", RSTRING_PTR(v));
+    }
+    mrb->exc = 0;
+    return TRUE;
+}
+
+static bool checkUncaughtException(mrb_state *mrb) {
+    if (!mrb->exc)
+        return FALSE;
+
+    int arena = mrb_gc_arena_save(mrb);
+    mrb_value exc = mrb_obj_value(mrb->exc);
+    mrb_value backtrace = mrb_get_backtrace(mrb, exc);
+    mrb->exc = 0;
+    mrb_value cb = getMrubyCocos2dClassValue(mrb, "Callback");
+    mrb_funcall(mrb, cb, "_uncaughtException", 2, exc, backtrace);
+    _dumpException(mrb);
+    mrb_gc_arena_restore(mrb, arena);
+    return TRUE;
+}
 
 CCMrubyEngine* CCMrubyEngine::m_defaultEngine = NULL;
 
@@ -145,9 +190,9 @@ bool CCMrubyEngine::init(void)
   m_mrb = mrb_open();
 
   // Installs general functions.
-  mrb_define_method(m_mrb, m_mrb->kernel_module, "cclog", _mrb_puts, MRB_ARGS_ANY());
-  mrb_define_method(m_mrb, m_mrb->kernel_module, "puts", _mrb_puts, MRB_ARGS_ANY());
-  mrb_define_method(m_mrb, m_mrb->kernel_module, "p", _mrb_puts, MRB_ARGS_ANY());
+  mrb_define_method(m_mrb, m_mrb->kernel_module, "cclog", _mrb_cclog, MRB_ARGS_ANY());
+  mrb_define_method(m_mrb, m_mrb->kernel_module, "puts",  _mrb_puts,  MRB_ARGS_ANY());
+  mrb_define_method(m_mrb, m_mrb->kernel_module, "p",     _mrb_p,     MRB_ARGS_ANY());
 
   // Installs cocos2d classes.
   installMrubyCocos2d(m_mrb);
@@ -170,7 +215,7 @@ void CCMrubyEngine::removeScriptObjectByCCObject(CCObject* pObj)
   mrb_value obj = wrap_Cocos2d_CCObject(m_mrb, pObj);
   mrb_value cb  = getMrubyCocos2dClassValue(m_mrb, "Callback");
   mrb_funcall(m_mrb, cb, "_removeScriptObject", 1, obj);
-  dumpException(m_mrb);
+  checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
 }
 
@@ -186,7 +231,7 @@ int CCMrubyEngine::executeString(const char* codes)
     // No debug info.
     mrb_load_string(m_mrb, codes);
   }
-  int exc = dumpException(m_mrb);
+  bool exc = checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;
 }
@@ -209,7 +254,7 @@ int CCMrubyEngine::executeScriptFile(const char* filename)
     mrb_load_nstring(m_mrb, reinterpret_cast<const char*>(pBuffer), nSize);
   }
   delete[] pBuffer;
-  int exc = dumpException(m_mrb);
+  bool exc = checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;
 }
@@ -218,7 +263,7 @@ int CCMrubyEngine::executeGlobalFunction(const char* functionName)
 {
   int arena = mrb_gc_arena_save(m_mrb);
   mrb_funcall(m_mrb, mrb_top_self(m_mrb), functionName, 0);
-  int exc = dumpException(m_mrb);
+  bool exc = checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;
 }
@@ -233,7 +278,7 @@ int CCMrubyEngine::executeNodeEvent(CCNode* pNode, int nAction)
   mrb_value node = wrap_Cocos2d_CCNode(m_mrb, pNode);
 
   mrb_funcall(m_mrb, proc, "call", 2, node, mrb_fixnum_value(nAction));
-  int exc = dumpException(m_mrb);
+  bool exc = checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;
 }
@@ -246,7 +291,7 @@ int CCMrubyEngine::executeMenuItemEvent(CCMenuItem* pMenuItem)
   int arena = mrb_gc_arena_save(m_mrb);
   mrb_value block = getRegisteredProc(m_mrb, nHandler);
   mrb_yield(m_mrb, block, mrb_nil_value());
-  int exc = dumpException(m_mrb);
+  bool exc = checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;
 }
@@ -265,7 +310,7 @@ int CCMrubyEngine::executeCallFuncActionEvent(CCCallFunc* pAction, CCObject* pTa
   int arena = mrb_gc_arena_save(m_mrb);
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
   mrb_yield(m_mrb, proc, mrb_nil_value());
-  int exc = dumpException(m_mrb);
+  bool exc = checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;
 }
@@ -278,7 +323,7 @@ int CCMrubyEngine::executeSchedule(int nHandler, float dt, CCNode* pNode)
   mrb_value block = getRegisteredProc(m_mrb, nHandler);
   mrb_value node = wrap_Cocos2d_CCNode(m_mrb, pNode);
   mrb_funcall(m_mrb, block, "call", 2, mrb_float_value(m_mrb, dt), node);
-  int exc = dumpException(m_mrb);
+  bool exc = checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   return !exc;
 }
@@ -303,7 +348,7 @@ int CCMrubyEngine::executeLayerTouchEvent(CCLayer* pLayer, int eventType, CCTouc
   args[1] = wrap_Cocos2d_CCTouch(m_mrb, pTouch);
   mrb_value ret = mrb_yield_argv(m_mrb, proc, 2, args);
 
-  int exc = dumpException(m_mrb);
+  bool exc = checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
   if(exc){ return 0; }
 
@@ -350,7 +395,7 @@ int CCMrubyEngine::executeEventWithArgs(int nHandler, CCArray* pArgs)
     mrb_funcall_argv(m_mrb, block, mrb_intern_cstr(m_mrb,"call"), pArgs->count(), args);
     delete args;
 
-    int exc = dumpException(m_mrb);
+    bool exc = checkUncaughtException(m_mrb);
     mrb_gc_arena_restore(m_mrb, arena);
     return !exc;
 }

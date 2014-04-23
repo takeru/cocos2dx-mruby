@@ -181,6 +181,8 @@ Classes = {
                  [0, 'CCPoint', 'convertTouchToNodeSpace', ['CCTouch*']],
                  [0, 'int', 'getTag', []],
                  [0, 'void', 'setTag', ['int']],
+                 [0, 'int', 'getZOrder', []],
+                 [0, 'void', 'setZOrder', ['int']],
                  [0, 'void', 'removeFromParentAndCleanup', ['bool']],
                  [0, 'void', 'registerScriptHandler', ['block']],
                  [0, 'void', 'unregisterScriptHandler', []],
