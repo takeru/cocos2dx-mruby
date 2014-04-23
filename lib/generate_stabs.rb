@@ -275,7 +275,8 @@ EOD
     converted_params = []  # 0=type, 1=name, 2=value
     index = 0
     params.each do |type|
-      a = if type == 'block'
+      a = case type
+          when 'block'
             ['int', 'blockHandler', 'registerProc(mrb, self, block)']
           else
             i = index

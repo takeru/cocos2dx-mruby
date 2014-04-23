@@ -2,12 +2,14 @@
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
 #include "mruby/mruby.h"
+#include "mruby/mruby/array.h"
 
 extern int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc);
 
 using namespace cocos2d;
 
 typedef ccColor3B CcColor3B;
+typedef ccColor4F CcColor4F;
 
 template <class T>
 mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
@@ -128,6 +130,75 @@ static void installCcColor3B(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "g=", CcColor3B_set_g, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, tc, "b", CcColor3B_b, MRB_ARGS_NONE());
   mrb_define_method(mrb, tc, "b=", CcColor3B_set_b, MRB_ARGS_REQ(1));
+}
+
+////////////////////////////////////////////////////////////////
+// CcColor4F
+
+static mrb_value CcColor4F_r(mrb_state *mrb, mrb_value self) {
+  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+  return mrb_float_value(mrb, instance->r);
+}
+
+static mrb_value CcColor4F_set_r(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+  instance->r = get_float(o);
+  return mrb_nil_value();
+}
+
+static mrb_value CcColor4F_g(mrb_state *mrb, mrb_value self) {
+  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+  return mrb_float_value(mrb, instance->g);
+}
+
+static mrb_value CcColor4F_set_g(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+  instance->g = get_float(o);
+  return mrb_nil_value();
+}
+
+static mrb_value CcColor4F_b(mrb_state *mrb, mrb_value self) {
+  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+  return mrb_float_value(mrb, instance->b);
+}
+
+static mrb_value CcColor4F_set_b(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+  instance->b = get_float(o);
+  return mrb_nil_value();
+}
+
+static mrb_value CcColor4F_a(mrb_state *mrb, mrb_value self) {
+  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+  return mrb_float_value(mrb, instance->a);
+}
+
+static mrb_value CcColor4F_set_a(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+  instance->a = get_float(o);
+  return mrb_nil_value();
+}
+
+static void installCcColor4F(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = mrb->object_class;
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CcColor4F", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_method(mrb, tc, "r", CcColor4F_r, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "r=", CcColor4F_set_r, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "g", CcColor4F_g, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "g=", CcColor4F_set_g, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "b", CcColor4F_b, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "b=", CcColor4F_set_b, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "a", CcColor4F_a, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "a=", CcColor4F_set_a, MRB_ARGS_REQ(1));
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1282,6 +1353,98 @@ static void installCCLabelBMFont(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// CCDrawNode
+
+static mrb_value CCDrawNode_create(mrb_state *mrb, mrb_value self) {
+
+  
+  CCDrawNode* retval = CCDrawNode::create();
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCDrawNode"));
+}
+
+static mrb_value CCDrawNode_drawDot(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+  float p1 = get_float(args[1]);
+  const ccColor4F& p2 = *static_cast<ccColor4F*>(DATA_PTR(args[2]));
+  CCDrawNode* instance = static_cast<CCDrawNode*>(DATA_PTR(self));
+  instance->drawDot(p0, p1, p2);
+  return mrb_nil_value();
+}
+
+static mrb_value CCDrawNode_drawSegment(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+  const CCPoint& p1 = *static_cast<CCPoint*>(DATA_PTR(args[1]));
+  float p2 = get_float(args[2]);
+  const ccColor4F& p3 = *static_cast<ccColor4F*>(DATA_PTR(args[3]));
+  CCDrawNode* instance = static_cast<CCDrawNode*>(DATA_PTR(self));
+  instance->drawSegment(p0, p1, p2, p3);
+  return mrb_nil_value();
+}
+
+static mrb_value CCDrawNode_drawPolygon(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  mrb_value array = args[0];
+  unsigned int p1 = mrb_ary_ptr(array)->len;
+  CCPoint* p0 = new CCPoint[p1];
+  for(int i=0; i<p1; i++){
+    CCPoint* p = static_cast<CCPoint*>(DATA_PTR(mrb_ary_ref(mrb,array,i)));
+    p0[i] = *p;
+  }
+  const ccColor4F& p2 = *static_cast<ccColor4F*>(DATA_PTR(args[1]));
+  float p3 = get_float(args[2]);
+  const ccColor4F& p4 = *static_cast<ccColor4F*>(DATA_PTR(args[3]));
+  CCDrawNode* instance = static_cast<CCDrawNode*>(DATA_PTR(self));
+  instance->drawPolygon(p0, p1, p2, p3, p4);
+  delete p0;
+  return mrb_nil_value();
+}
+
+static mrb_value CCDrawNode_clear(mrb_state *mrb, mrb_value self) {
+
+  CCDrawNode* instance = static_cast<CCDrawNode*>(DATA_PTR(self));
+  instance->clear();
+  return mrb_nil_value();
+}
+
+static mrb_value CCDrawNode_getBlendFunc(mrb_state *mrb, mrb_value self) {
+
+  CCDrawNode* instance = static_cast<CCDrawNode*>(DATA_PTR(self));
+  ccBlendFunc retval = instance->getBlendFunc();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(ccBlendFunc))) ccBlendFunc(retval), "CcBlendFunc");
+}
+
+static mrb_value CCDrawNode_setBlendFunc(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const ccBlendFunc& p0 = *static_cast<ccBlendFunc*>(DATA_PTR(args[0]));
+  CCDrawNode* instance = static_cast<CCDrawNode*>(DATA_PTR(self));
+  instance->setBlendFunc(p0);
+  return mrb_nil_value();
+}
+
+static void installCCDrawNode(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCNode");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCDrawNode", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "create", CCDrawNode_create, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "drawDot", CCDrawNode_drawDot, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "drawSegment", CCDrawNode_drawSegment, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "drawPolygon", CCDrawNode_drawPolygon, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "clear", CCDrawNode_clear, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getBlendFunc", CCDrawNode_getBlendFunc, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setBlendFunc", CCDrawNode_setBlendFunc, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
 // CCLayer
 
 static mrb_value CCLayer___ctor(mrb_state *mrb, mrb_value self) {
@@ -1909,6 +2072,19 @@ static mrb_value CCRANDOM_0_1__(mrb_state *mrb, mrb_value self) {
   return mrb_float_value(mrb, retval);
 }
 
+static mrb_value ccc4f__(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  float p0 = get_float(args[0]);
+  float p1 = get_float(args[1]);
+  float p2 = get_float(args[2]);
+  float p3 = get_float(args[3]);
+  
+  CcColor4F retval = ccc4f(p0, p1, p2, p3);
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CcColor4F))) CcColor4F(retval), "CcColor4F");
+}
+
 void installMrubyCocos2d(mrb_state *mrb) {
   struct RClass* mod = mrb_define_module(mrb, "Cocos2d");
   mrb_define_const(mrb, mod, "CCTOUCHBEGAN", mrb_fixnum_value(CCTOUCHBEGAN));
@@ -1934,7 +2110,9 @@ void installMrubyCocos2d(mrb_state *mrb) {
   mrb_define_module_function(mrb, mod, "_CCRectMake", CCRectMake__, MRB_ARGS_ANY());
   mrb_define_module_function(mrb, mod, "ccc3", ccc3__, MRB_ARGS_ANY());
   mrb_define_module_function(mrb, mod, "_CCRANDOM_0_1", CCRANDOM_0_1__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "ccc4f", ccc4f__, MRB_ARGS_ANY());
   installCcColor3B(mrb, mod);
+  installCcColor4F(mrb, mod);
   installCCPoint(mrb, mod);
   installCCSize(mrb, mod);
   installCCRect(mrb, mod);
@@ -1962,6 +2140,7 @@ void installMrubyCocos2d(mrb_state *mrb) {
   installCCSpriteBatchNode(mrb, mod);
   installCCLabelTTF(mrb, mod);
   installCCLabelBMFont(mrb, mod);
+  installCCDrawNode(mrb, mod);
   installCCLayer(mrb, mod);
   installCCLayerRGBA(mrb, mod);
   installCCScene(mrb, mod);

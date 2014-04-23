@@ -5,12 +5,14 @@ Header = <<EOD
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
 #include "mruby/mruby.h"
+#include "mruby/mruby/array.h"
 
 extern int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc);
 
 using namespace cocos2d;
 
 typedef ccColor3B CcColor3B;
+typedef ccColor4F CcColor4F;
 
 template <class T>
 mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
@@ -64,6 +66,7 @@ Functions = [
   ['CCRect', 'CCRectMake', ['float', 'float', 'float', 'float']],
   ['CcColor3B', 'ccc3', ['unsigned char', 'unsigned char', 'unsigned char']],
   ['float', 'CCRANDOM_0_1', []],
+  ['CcColor4F', 'ccc4f', ['float', 'float', 'float', 'float']]
 ]
 
 Classes = {
@@ -72,6 +75,14 @@ Classes = {
                  [ATTR_ACCESSOR, 'unsigned char', 'r'],
                  [ATTR_ACCESSOR, 'unsigned char', 'g'],
                  [ATTR_ACCESSOR, 'unsigned char', 'b'],
+                ],
+  },
+  'CcColor4F' => {
+    :methods => [
+                 [ATTR_ACCESSOR, 'float', 'r'],
+                 [ATTR_ACCESSOR, 'float', 'g'],
+                 [ATTR_ACCESSOR, 'float', 'b'],
+                 [ATTR_ACCESSOR, 'float', 'a'],
                 ],
   },
   'CCPoint' => {
@@ -290,6 +301,33 @@ Classes = {
                  [STATIC, 'CCLabelBMFont*', 'create', ['const char*', 'const char*', 'float']],
                  [STATIC, 'CCLabelBMFont*', 'create', ['const char*', 'const char*']],
                  [0, 'void', 'setString', ['const char*']],
+                ],
+  },
+  'CCDrawNode' => {
+    :parent => 'CCNode',
+    :methods => [
+                 [STATIC, 'CCDrawNode*', 'create', []],
+                 [0, 'void', 'drawDot', ['const CCPoint&', 'float', 'const ccColor4F&']],
+                 [0, 'void', 'drawSegment', ['const CCPoint&', 'const CCPoint&', 'float', 'const ccColor4F&']],
+                 [CUSTOM, 'void', 'drawPolygon', ['CCPoint*', 'unsigned int', 'const ccColor4F&', 'float', 'const ccColor4F&'], :code=><<END],
+  mrb_value array = args[0];
+  unsigned int p1 = mrb_ary_ptr(array)->len;
+  CCPoint* p0 = new CCPoint[p1];
+  for(int i=0; i<p1; i++){
+    CCPoint* p = static_cast<CCPoint*>(DATA_PTR(mrb_ary_ref(mrb,array,i)));
+    p0[i] = *p;
+  }
+  const ccColor4F& p2 = *static_cast<ccColor4F*>(DATA_PTR(args[1]));
+  float p3 = get_float(args[2]);
+  const ccColor4F& p4 = *static_cast<ccColor4F*>(DATA_PTR(args[3]));
+  CCDrawNode* instance = static_cast<CCDrawNode*>(DATA_PTR(self));
+  instance->drawPolygon(p0, p1, p2, p3, p4);
+  delete p0;
+  return mrb_nil_value();
+END
+                 [0, 'void', 'clear', []],
+                 [0, 'ccBlendFunc', 'getBlendFunc', []],
+                 [0, 'void', 'setBlendFunc', ['const ccBlendFunc&']],
                 ],
   },
   'CCLayer' => {
