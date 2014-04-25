@@ -64,6 +64,11 @@ Classes = {
                  [CONSTRUCTOR, []],
                  [ATTR_ACCESSOR, 'b2BodyType', 'type'],
                  [ATTR_ACCESSOR, 'b2Vec2', 'position'],
+                 [ATTR_ACCESSOR, 'float', 'angle'],
+                 [ATTR_ACCESSOR, 'b2Vec2', 'linearVelocity'],
+                 [ATTR_ACCESSOR, 'float', 'angularVelocity'],
+                 [ATTR_ACCESSOR, 'float', 'linearDamping'],
+                 [ATTR_ACCESSOR, 'float', 'angularDamping'],
                 ],
   },
   'b2Body' => {
@@ -72,6 +77,8 @@ Classes = {
                  [0, 'b2Fixture*', 'CreateFixture', ['const b2Shape*', 'float']],
                  [0, 'b2Body*', 'GetNext', []],
                  [0, 'void*', 'GetUserData', []],
+                 [0, 'const b2Vec2&', 'GetPosition', []],
+                 [0, 'float', 'GetAngle', []],
                 ],
   },
   'b2World' => {

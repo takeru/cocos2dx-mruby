@@ -634,6 +634,23 @@ static mrb_value CCNode_getPosition(mrb_state *mrb, mrb_value self) {
   return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval), "CCPoint");
 }
 
+static mrb_value CCNode_setRotation(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  float p0 = get_float(args[0]);
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  instance->setRotation(p0);
+  return mrb_nil_value();
+}
+
+static mrb_value CCNode_getRotation(mrb_state *mrb, mrb_value self) {
+
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  float retval = instance->getRotation();
+  return mrb_float_value(mrb, retval);
+}
+
 static mrb_value CCNode_setAnchorPoint(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
@@ -787,6 +804,23 @@ static mrb_value CCNode_setZOrder(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
+static mrb_value CCNode_getUserObject(mrb_state *mrb, mrb_value self) {
+
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  CCObject* retval = instance->getUserObject();
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCObject"));
+}
+
+static mrb_value CCNode_setUserObject(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  CCObject* p0 = static_cast<CCObject*>(DATA_PTR(args[0]));
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  instance->setUserObject(p0);
+  return mrb_nil_value();
+}
+
 static mrb_value CCNode_removeFromParentAndCleanup(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
@@ -832,6 +866,8 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "setPositionY", CCNode_setPositionY, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getPositionY", CCNode_getPositionY, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getPosition", CCNode_getPosition, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setRotation", CCNode_setRotation, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getRotation", CCNode_getRotation, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setAnchorPoint", CCNode_setAnchorPoint, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getAnchorPoint", CCNode_getAnchorPoint, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "addChild", CCNode_addChild, MRB_ARGS_ANY());
@@ -847,6 +883,8 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "setTag", CCNode_setTag, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getZOrder", CCNode_getZOrder, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setZOrder", CCNode_setZOrder, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getUserObject", CCNode_getUserObject, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setUserObject", CCNode_setUserObject, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "removeFromParentAndCleanup", CCNode_removeFromParentAndCleanup, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "registerScriptHandler", CCNode_registerScriptHandler, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "unregisterScriptHandler", CCNode_unregisterScriptHandler, MRB_ARGS_ANY());
@@ -1764,6 +1802,13 @@ static mrb_value CCEGLView_setDesignResolutionSize(mrb_state *mrb, mrb_value sel
   return mrb_nil_value();
 }
 
+static mrb_value CCEGLView_getFrameSize(mrb_state *mrb, mrb_value self) {
+
+  CCEGLView* instance = static_cast<CCEGLView*>(DATA_PTR(self));
+  const CCSize& retval = instance->getFrameSize();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval), "CCSize");
+}
+
 static void installCCEGLView(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCEGLView", parent);
@@ -1771,6 +1816,7 @@ static void installCCEGLView(mrb_state *mrb, struct RClass *mod) {
   mrb_define_class_method(mrb, tc, "sharedOpenGLView", CCEGLView_sharedOpenGLView, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getDesignResolutionSize", CCEGLView_getDesignResolutionSize, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setDesignResolutionSize", CCEGLView_setDesignResolutionSize, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getFrameSize", CCEGLView_getFrameSize, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -2123,12 +2169,12 @@ void installMrubyCocos2d(mrb_state *mrb) {
   mrb_define_const(mrb, mod, "KResolutionFixedHeight", mrb_fixnum_value(kResolutionFixedHeight));
   mrb_define_const(mrb, mod, "KResolutionFixedWidth", mrb_fixnum_value(kResolutionFixedWidth));
   mrb_define_const(mrb, mod, "KResolutionUnKnown", mrb_fixnum_value(kResolutionUnKnown));
-  mrb_define_module_function(mrb, mod, "_CCPointMake", CCPointMake__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "cCPointMake", CCPointMake__, MRB_ARGS_ANY());
   mrb_define_module_function(mrb, mod, "ccp", ccp__, MRB_ARGS_ANY());
-  mrb_define_module_function(mrb, mod, "_CCSizeMake", CCSizeMake__, MRB_ARGS_ANY());
-  mrb_define_module_function(mrb, mod, "_CCRectMake", CCRectMake__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "cCSizeMake", CCSizeMake__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "cCRectMake", CCRectMake__, MRB_ARGS_ANY());
   mrb_define_module_function(mrb, mod, "ccc3", ccc3__, MRB_ARGS_ANY());
-  mrb_define_module_function(mrb, mod, "_CCRANDOM_0_1", CCRANDOM_0_1__, MRB_ARGS_ANY());
+  mrb_define_module_function(mrb, mod, "cCRANDOM_0_1", CCRANDOM_0_1__, MRB_ARGS_ANY());
   mrb_define_module_function(mrb, mod, "ccc4f", ccc4f__, MRB_ARGS_ANY());
   installCcColor3B(mrb, mod);
   installCcColor4F(mrb, mod);

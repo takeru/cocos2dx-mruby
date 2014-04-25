@@ -34,6 +34,9 @@ class String
   def capitalize1
     self[0].upcase + self[1..-1]
   end
+  def down1
+    self[0].downcase + self[1..-1]
+  end
 end
 
 
@@ -171,11 +174,7 @@ EOD
 
     # TODO: Define functions under module.
     functions.each do |return_type, func_name, params|
-      ruby_func_name = func_name
-      if ruby_func_name[0] =~ /[A-Z]{1}/
-        ruby_func_name = "_" + ruby_func_name
-      end
-      puts %!  mrb_define_module_function(mrb, mod, "#{ruby_func_name}", #{func_name}__, MRB_ARGS_ANY());!
+      puts %!  mrb_define_module_function(mrb, mod, "#{func_name.down1}", #{func_name}__, MRB_ARGS_ANY());!
     end
 
     classes.each do |klass, _|
@@ -348,7 +347,7 @@ EOD
 
   def declare_class(klass, parent, methods)
     if parent
-      get_parent = "getClass(mrb, \"#{parent}\")";
+      get_parent = "getClass(mrb, \"#{parent.capitalize1}\")";
     else
       get_parent = 'mrb->object_class';
     end
@@ -363,12 +362,12 @@ EOD
       if is_constructor?(methods[0][0])
         puts %!  mrb_define_method(mrb, tc, "initialize", #{klass}_#{method_name}, MRB_ARGS_ANY());!
       elsif is_static?(methods[0][0]) && !is_constructor?(methods[0][0])
-        puts %!  mrb_define_class_method(mrb, tc, "#{method_name}", #{klass}_#{method_name}, MRB_ARGS_ANY());!
+        puts %!  mrb_define_class_method(mrb, tc, "#{method_name.down1}", #{klass}_#{method_name}, MRB_ARGS_ANY());!
       elsif is_attr_accessor?(methods[0][0])
-        puts %!  mrb_define_method(mrb, tc, "#{method_name}", #{klass}_#{method_name}, MRB_ARGS_NONE());!
-        puts %!  mrb_define_method(mrb, tc, "#{method_name}=", #{klass}_set_#{method_name}, MRB_ARGS_REQ(1));!
+        puts %!  mrb_define_method(mrb, tc, "#{method_name.down1}", #{klass}_#{method_name}, MRB_ARGS_NONE());!
+        puts %!  mrb_define_method(mrb, tc, "#{method_name.down1}=", #{klass}_set_#{method_name}, MRB_ARGS_REQ(1));!
       else
-        puts %!  mrb_define_method(mrb, tc, "#{method_name}", #{klass}_#{method_name}, MRB_ARGS_ANY());!
+        puts %!  mrb_define_method(mrb, tc, "#{method_name.down1}", #{klass}_#{method_name}, MRB_ARGS_ANY());!
       end
     end
     puts "}"

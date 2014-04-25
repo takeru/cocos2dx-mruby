@@ -125,7 +125,7 @@ static void installb2Vec2(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "x=", b2Vec2_set_x, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, tc, "y", b2Vec2_y, MRB_ARGS_NONE());
   mrb_define_method(mrb, tc, "y=", b2Vec2_set_y, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, tc, "Set", b2Vec2_Set, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "set", b2Vec2_Set, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -159,11 +159,11 @@ static mrb_value b2EdgeShape_Set(mrb_state *mrb, mrb_value self) {
 }
 
 static void installb2EdgeShape(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getClass(mrb, "b2Shape");
+  struct RClass* parent = getClass(mrb, "B2Shape");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "B2EdgeShape", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "initialize", b2EdgeShape___ctor, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "Set", b2EdgeShape_Set, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "set", b2EdgeShape_Set, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -188,11 +188,11 @@ static mrb_value b2PolygonShape_SetAsBox(mrb_state *mrb, mrb_value self) {
 }
 
 static void installb2PolygonShape(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = getClass(mrb, "b2Shape");
+  struct RClass* parent = getClass(mrb, "B2Shape");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "B2PolygonShape", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "initialize", b2PolygonShape___ctor, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "SetAsBox", b2PolygonShape_SetAsBox, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setAsBox", b2PolygonShape_SetAsBox, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -317,6 +317,71 @@ static mrb_value b2BodyDef_set_position(mrb_state *mrb, mrb_value self) {
   return mrb_nil_value();
 }
 
+static mrb_value b2BodyDef_angle(mrb_state *mrb, mrb_value self) {
+  b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
+  return mrb_float_value(mrb, instance->angle);
+}
+
+static mrb_value b2BodyDef_set_angle(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
+  instance->angle = get_float(o);
+  return mrb_nil_value();
+}
+
+static mrb_value b2BodyDef_linearVelocity(mrb_state *mrb, mrb_value self) {
+  b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(instance->linearVelocity), "B2Vec2");
+}
+
+static mrb_value b2BodyDef_set_linearVelocity(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
+  instance->linearVelocity = *static_cast<b2Vec2*>(DATA_PTR(o));
+  return mrb_nil_value();
+}
+
+static mrb_value b2BodyDef_angularVelocity(mrb_state *mrb, mrb_value self) {
+  b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
+  return mrb_float_value(mrb, instance->angularVelocity);
+}
+
+static mrb_value b2BodyDef_set_angularVelocity(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
+  instance->angularVelocity = get_float(o);
+  return mrb_nil_value();
+}
+
+static mrb_value b2BodyDef_linearDamping(mrb_state *mrb, mrb_value self) {
+  b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
+  return mrb_float_value(mrb, instance->linearDamping);
+}
+
+static mrb_value b2BodyDef_set_linearDamping(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
+  instance->linearDamping = get_float(o);
+  return mrb_nil_value();
+}
+
+static mrb_value b2BodyDef_angularDamping(mrb_state *mrb, mrb_value self) {
+  b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
+  return mrb_float_value(mrb, instance->angularDamping);
+}
+
+static mrb_value b2BodyDef_set_angularDamping(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
+  instance->angularDamping = get_float(o);
+  return mrb_nil_value();
+}
+
 static void installb2BodyDef(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "B2BodyDef", parent);
@@ -326,6 +391,16 @@ static void installb2BodyDef(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "type=", b2BodyDef_set_type, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, tc, "position", b2BodyDef_position, MRB_ARGS_NONE());
   mrb_define_method(mrb, tc, "position=", b2BodyDef_set_position, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "angle", b2BodyDef_angle, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "angle=", b2BodyDef_set_angle, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "linearVelocity", b2BodyDef_linearVelocity, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "linearVelocity=", b2BodyDef_set_linearVelocity, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "angularVelocity", b2BodyDef_angularVelocity, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "angularVelocity=", b2BodyDef_set_angularVelocity, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "linearDamping", b2BodyDef_linearDamping, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "linearDamping=", b2BodyDef_set_linearDamping, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "angularDamping", b2BodyDef_angularDamping, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "angularDamping=", b2BodyDef_set_angularDamping, MRB_ARGS_REQ(1));
 }
 
 ////////////////////////////////////////////////////////////////
@@ -367,13 +442,29 @@ static mrb_value b2Body_GetUserData(mrb_state *mrb, mrb_value self) {
   return (retval == NULL ? mrb_nil_value() : mrb_voidp_value(mrb, retval));
 }
 
+static mrb_value b2Body_GetPosition(mrb_state *mrb, mrb_value self) {
+
+  b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
+  const b2Vec2& retval = instance->GetPosition();
+  return wrap(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(retval), "B2Vec2");
+}
+
+static mrb_value b2Body_GetAngle(mrb_state *mrb, mrb_value self) {
+
+  b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
+  float retval = instance->GetAngle();
+  return mrb_float_value(mrb, retval);
+}
+
 static void installb2Body(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "B2Body", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
-  mrb_define_method(mrb, tc, "CreateFixture", b2Body_CreateFixture, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "GetNext", b2Body_GetNext, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "GetUserData", b2Body_GetUserData, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "createFixture", b2Body_CreateFixture, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getNext", b2Body_GetNext, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getUserData", b2Body_GetUserData, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getPosition", b2Body_GetPosition, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getAngle", b2Body_GetAngle, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -443,11 +534,11 @@ static void installb2World(mrb_state *mrb, struct RClass *mod) {
   struct RClass* tc = mrb_define_class_under(mrb, mod, "B2World", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "initialize", b2World___ctor, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "SetAllowSleeping", b2World_SetAllowSleeping, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "SetContinuousPhysics", b2World_SetContinuousPhysics, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "CreateBody", b2World_CreateBody, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "Step", b2World_Step, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "GetBodyList", b2World_GetBodyList, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setAllowSleeping", b2World_SetAllowSleeping, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setContinuousPhysics", b2World_SetContinuousPhysics, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "createBody", b2World_CreateBody, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "step", b2World_Step, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getBodyList", b2World_GetBodyList, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////

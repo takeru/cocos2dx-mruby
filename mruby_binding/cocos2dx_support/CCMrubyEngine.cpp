@@ -16,7 +16,7 @@
 #include "MrubyCocos2d.h"
 #include "MrubyCocos2d_WebSocket.h"
 #include "MrubyCocosDenshion.h"
-// #include "MrubyBox2D.h"
+#include "MrubyBox2D.h"
 
 extern "C" mrb_value mrb_get_backtrace(mrb_state*, mrb_value);
 extern mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, cocos2d::CCTouch* ptr);
@@ -198,7 +198,7 @@ bool CCMrubyEngine::init(void)
   installMrubyCocos2d(m_mrb);
   installMrubyCocos2d_WebSocket(m_mrb);
   installMrubyCocosDenshion(m_mrb);
-  // installMrubyBox2D(m_mrb);
+  installMrubyBox2D(m_mrb);
 
   // Installs helper functions.
   // This line must be after installing mruby bindings,
