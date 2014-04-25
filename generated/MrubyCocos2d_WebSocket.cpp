@@ -1,10 +1,67 @@
 #include "WebSocket.h"
 #include "mruby/mruby.h"
+#include <string>
+#include "cocos2d.h"
 
 extern int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc);
-USING_NS_CC_EXT;
+USING_NS_CC;
 
-// TODO release WebSocket object.
+namespace cocos2dmruby {
+class WebSocket :
+  public cocos2d::extension::WebSocket,
+  public cocos2d::extension::WebSocket::Delegate
+{
+private:
+    int _nHandler = -1;
+public:
+    static WebSocket* create(int nHandler, const std::string& url);
+    void onOpen(cocos2d::extension::WebSocket* ws);
+    void onMessage(cocos2d::extension::WebSocket* ws, const cocos2d::extension::WebSocket::Data& data);
+    void onClose(cocos2d::extension::WebSocket* ws);
+    void onError(cocos2d::extension::WebSocket* ws, const cocos2d::extension::WebSocket::ErrorCode& error);
+};
+
+WebSocket* WebSocket::create(int nHandler, const std::string& url)
+{
+    WebSocket* ws = new WebSocket();
+    ws->init(*ws, url, NULL);
+    ws->_nHandler = nHandler;
+    return ws;
+}
+
+void WebSocket::onOpen(cocos2d::extension::WebSocket* ws)
+{
+    CCArray* pArrayArgs = CCArray::createWithCapacity(1);
+    pArrayArgs->addObject(CCString::create("open"));
+    CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
+}
+
+void WebSocket::onMessage(cocos2d::extension::WebSocket* ws, const cocos2d::extension::WebSocket::Data& data)
+{
+    CCArray* pArrayArgs = CCArray::createWithCapacity(2);
+    pArrayArgs->addObject(CCString::create("message"));
+    pArrayArgs->addObject(CCString::createWithData((unsigned char*)data.bytes, data.len));
+    CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
+}
+
+void WebSocket::onClose(cocos2d::extension::WebSocket* ws)
+{
+    CCArray* pArrayArgs = CCArray::createWithCapacity(1);
+    pArrayArgs->addObject(CCString::create("close"));
+    CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
+    CC_SAFE_DELETE(ws);
+}
+
+void WebSocket::onError(cocos2d::extension::WebSocket* ws, const cocos2d::extension::WebSocket::ErrorCode& error)
+{
+    CCArray* pArrayArgs = CCArray::createWithCapacity(2);
+    pArrayArgs->addObject(CCString::create("error"));
+    pArrayArgs->addObject(CCInteger::create(error));
+    CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
+}
+
+}// end of namespace cocos2dmruby.
+using namespace cocos2dmruby;
 
 #include "mruby/mruby.h"
 #include "mruby/mruby/class.h"
@@ -70,16 +127,16 @@ static mrb_value WebSocket___ctor(mrb_state *mrb, mrb_value self) {
   DATA_PTR(self) = retval; return self;
 }
 
-static mrb_value WebSocket_init(mrb_state *mrb, mrb_value self) {
+static mrb_value WebSocket_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_value block;
   mrb_get_args(mrb, "*&", &args, &arg_count, &block);
   int blockHandler = registerProc(mrb, self, block);
   const std::string& p0 = std::string(mrb_string_value_ptr(mrb, args[0]));
-  WebSocket* instance = static_cast<WebSocket*>(DATA_PTR(self));
-  bool retval = instance->init(blockHandler, p0);
-  return mrb_bool_value(retval);
+  
+  WebSocket* retval = WebSocket::create(blockHandler, p0);
+  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "WebSocket"));
 }
 
 static mrb_value WebSocket_send(mrb_state *mrb, mrb_value self) {
@@ -104,7 +161,7 @@ static void installWebSocket(mrb_state *mrb, struct RClass *mod) {
   struct RClass* tc = mrb_define_class_under(mrb, mod, "WebSocket", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_method(mrb, tc, "initialize", WebSocket___ctor, MRB_ARGS_ANY());
-  mrb_define_method(mrb, tc, "init", WebSocket_init, MRB_ARGS_ANY());
+  mrb_define_class_method(mrb, tc, "create", WebSocket_create, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "send", WebSocket_send, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "close", WebSocket_close, MRB_ARGS_ANY());
 }
