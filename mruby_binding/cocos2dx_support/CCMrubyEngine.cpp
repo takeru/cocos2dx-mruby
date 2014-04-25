@@ -330,8 +330,30 @@ int CCMrubyEngine::executeSchedule(int nHandler, float dt, CCNode* pNode)
 
 int CCMrubyEngine::executeLayerTouchesEvent(CCLayer* pLayer, int eventType, CCSet *pTouches)
 {
-  CCLOGERROR("CCMrubyEngine::executeLayerTouchesEvent has not implemented: %p, %d, %p", pLayer, eventType, pTouches);
-  return 0;
+    CCTouchScriptHandlerEntry* pScriptHandlerEntry = pLayer->getScriptTouchHandlerEntry();
+    if (!pScriptHandlerEntry) return FALSE;
+    int nHandler = pScriptHandlerEntry->getHandler();
+    if (!nHandler) return FALSE;
+
+    int arena = mrb_gc_arena_save(m_mrb);
+    mrb_value proc = getRegisteredProc(m_mrb, nHandler);
+    mrb_value args[2];
+    args[0] = mrb_fixnum_value(eventType);
+    mrb_value array = mrb_ary_new(m_mrb);
+    printf("count=%d\n", pTouches->count());
+    for(CCSetIterator it=pTouches->begin(); it!=pTouches->end(); it++){
+        CCTouch* pTouch = (CCTouch*)(*it);
+        mrb_value touch = wrap_Cocos2d_CCTouch(m_mrb, pTouch);
+        mrb_ary_push(m_mrb, array, touch);
+    }
+    args[1] = array;
+    mrb_value ret = mrb_yield_argv(m_mrb, proc, 2, args);
+
+    bool exc = checkUncaughtException(m_mrb);
+    mrb_gc_arena_restore(m_mrb, arena);
+    if(exc){ return 0; }
+    
+    return mrb_bool(ret) ? 1 : 0;
 }
 
 int CCMrubyEngine::executeLayerTouchEvent(CCLayer* pLayer, int eventType, CCTouch *pTouch)

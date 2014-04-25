@@ -19,23 +19,6 @@ diff -r orig/cocos2d-x-2.2.3/cocos2dx/platform/ios/CCApplication.mm cocos2d-x-2.
 diff -r orig/cocos2d-x-2.2.3/cocos2dx/platform/ios/CCEGLView.mm cocos2d-x-2.2.3/cocos2dx/platform/ios/CCEGLView.mm
 41d40
 < 
-diff -r orig/cocos2d-x-2.2.3/cocos2dx/platform/ios/EAGLView.mm cocos2d-x-2.2.3/cocos2dx/platform/ios/EAGLView.mm
-408c408
-<         ids[i] = (int)touch;
----
->         ids[i] = *(int *)touch;
-428c428
-<         ids[i] = (int)touch;
----
->         ids[i] = *(int *)touch;
-449c449
-<         ids[i] = (int)touch;
----
->         ids[i] = *(int *)touch;
-470c470
-<         ids[i] = (int)touch;
----
->         ids[i] = *(int *)touch;
 Only in cocos2d-x-2.2.3/cocos2dx/platform/third_party: .DS_Store
 Only in cocos2d-x-2.2.3/cocos2dx/platform/third_party/ios: .DS_Store
 diff -r orig/cocos2d-x-2.2.3/cocos2dx/proj.ios/cocos2dx.xcodeproj/project.pbxproj cocos2d-x-2.2.3/cocos2dx/proj.ios/cocos2dx.xcodeproj/project.pbxproj
@@ -57,18 +40,34 @@ diff -r orig/cocos2d-x-2.2.3/cocos2dx/proj.ios/cocos2dx.xcodeproj/project.pbxpro
 > 				GCC_WARN_UNUSED_FUNCTION = YES;
 1692a1697
 > 				ONLY_ACTIVE_ARCH = YES;
-1702c1707
+1693a1699
+> 				VALID_ARCHS = "";
+1702c1708
 < 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 ---
 > 				CLANG_WARN_BOOL_CONVERSION = YES;
-1703a1709
+1703a1710
 > 				CLANG_WARN_EMPTY_BODY = YES;
-1713a1720
+1713a1721
 > 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-1714a1722
+1714a1723
 > 				GCC_WARN_UNDECLARED_SELECTOR = YES;
-1715a1724
+1715a1725
 > 				GCC_WARN_UNUSED_FUNCTION = YES;
+1719a1730
+> 				VALID_ARCHS = "";
+1726a1738
+> 				ARCHS = "$(ARCHS_STANDARD)";
+1740a1753
+> 				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+1747a1761
+> 				VALID_ARCHS = "armv7 armv7s";
+1753a1768
+> 				ARCHS = "$(ARCHS_STANDARD)";
+1766a1782
+> 				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+1773a1790
+> 				VALID_ARCHS = "armv7 armv7s";
 Only in cocos2d-x-2.2.3/cocos2dx/proj.ios/cocos2dx.xcodeproj: xcuserdata
 Only in cocos2d-x-2.2.3/extensions: .DS_Store
 Only in cocos2d-x-2.2.3: projects
