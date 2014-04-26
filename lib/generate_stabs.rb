@@ -434,6 +434,8 @@ EOD
         else
           return %!(#{varname} == NULL ? mrb_nil_value() : wrap(mrb, #{varname}, "#{plain_type.capitalize1}"))!
         end
+      elsif is_enum?(type)
+        return "mrb_fixnum_value((int)#{varname})"
       else
         # TODO: Think other way to copy object.
         return %!wrap(mrb, new(mrb_malloc(mrb, sizeof(#{plain_type}))) #{plain_type}(#{varname}), "#{plain_type.capitalize1}")!

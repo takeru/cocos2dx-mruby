@@ -1,0 +1,81 @@
+ModuleName = 'Cocos2d'
+
+Header = <<EOD
+#include "mruby/mruby.h"
+#include "cocos2d.h"
+
+extern int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc);
+
+#include "CCSwipeGestureRecognizer.h"
+
+USING_NS_CC;
+
+class CCSwipeGestureRecognizerForScript : public CCSwipeGestureRecognizer
+{
+public:
+    CREATE_FUNC(CCSwipeGestureRecognizerForScript);
+    void setHandler(int nHandler);
+    void didRecognizeGesture(CCObject * obj);
+    int _nHandler = -1;
+};
+
+void CCSwipeGestureRecognizerForScript::setHandler(int nHandler)
+{
+    _nHandler = nHandler;
+    this->setTarget(this, callfuncO_selector(CCSwipeGestureRecognizerForScript::didRecognizeGesture));
+}
+
+void CCSwipeGestureRecognizerForScript::didRecognizeGesture(CCObject * obj)
+{
+    CCSwipe* swipe = (CCSwipe*)obj;
+    CCArray* pArrayArgs = CCArray::createWithCapacity(1);
+    pArrayArgs->addObject(swipe);
+    CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
+}
+
+template <class T>
+mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
+mrb_value wrap_Cocos2d_CCSwipe(mrb_state *mrb, CCSwipe* ptr) {
+  return wrap(mrb, ptr, "CCSwipe");
+}
+
+EOD
+
+Enums = ['CCSwipeGestureRecognizerDirection']
+
+Constants = [
+  # enum CCSwipeGestureRecognizerDirection
+  ['int', 'kSwipeGestureRecognizerDirectionRight'],
+  ['int', 'kSwipeGestureRecognizerDirectionLeft'],
+  ['int', 'kSwipeGestureRecognizerDirectionUp'],
+  ['int', 'kSwipeGestureRecognizerDirectionDown'],
+]
+
+Classes = {
+  'CCGestureRecognizer' => {
+    :parent => 'CCLayer',
+    :methods => [
+      [0, 'void', 'setCancelsTouchesInView', ['bool']],
+    ],
+  },
+  'CCSwipe' => {
+    :parent => 'CCObject',
+    :methods => [
+      [ATTR_ACCESSOR, 'CCSwipeGestureRecognizerDirection', 'direction'],
+      [ATTR_ACCESSOR, 'CCPoint&', 'location'],
+    ]
+  },
+  'CCSwipeGestureRecognizer' => {
+    :parent => 'CCGestureRecognizer',
+    :methods => [
+      [0, 'void', 'setDirection', ['int']], #CCSwipeGestureRecognizerDirection
+    ],
+  },
+  'CCSwipeGestureRecognizerForScript' => {
+    :parent => 'CCSwipeGestureRecognizer',
+    :methods => [
+      [STATIC, 'CCSwipeGestureRecognizerForScript*', 'create', []],
+      [0, 'void', 'setHandler', ['block']],
+    ],
+  },
+}

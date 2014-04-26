@@ -293,7 +293,7 @@ static mrb_value b2BodyDef___ctor(mrb_state *mrb, mrb_value self) {
 
 static mrb_value b2BodyDef_type(mrb_state *mrb, mrb_value self) {
   b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(b2BodyType))) b2BodyType(instance->type), "B2BodyType");
+  return mrb_fixnum_value((int)instance->type);
 }
 
 static mrb_value b2BodyDef_set_type(mrb_state *mrb, mrb_value self) {

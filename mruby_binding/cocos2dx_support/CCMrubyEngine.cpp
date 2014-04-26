@@ -17,11 +17,14 @@
 #include "MrubyCocos2d_WebSocket.h"
 #include "MrubyCocosDenshion.h"
 #include "MrubyBox2D.h"
+#include "MrubyCocos2dxExtensions.h"
+#include "CCSwipeGestureRecognizer.h"
 
 extern "C" mrb_value mrb_get_backtrace(mrb_state*, mrb_value);
 extern mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, cocos2d::CCTouch* ptr);
 extern mrb_value wrap_Cocos2d_CCObject(mrb_state *mrb, cocos2d::CCObject* ptr);
 extern mrb_value wrap_Cocos2d_CCNode(mrb_state *mrb, cocos2d::CCNode* ptr);
+extern mrb_value wrap_Cocos2d_CCSwipe(mrb_state *mrb, CCSwipe* ptr);
 
 static const char* getBaseName(const char* fullpath) {
   int len = strlen(fullpath);
@@ -199,6 +202,7 @@ bool CCMrubyEngine::init(void)
   installMrubyCocos2d_WebSocket(m_mrb);
   installMrubyCocosDenshion(m_mrb);
   installMrubyBox2D(m_mrb);
+  installMrubyCocos2dxExtensions(m_mrb);
 
   // Installs helper functions.
   // This line must be after installing mruby bindings,
@@ -340,7 +344,6 @@ int CCMrubyEngine::executeLayerTouchesEvent(CCLayer* pLayer, int eventType, CCSe
     mrb_value args[2];
     args[0] = mrb_fixnum_value(eventType);
     mrb_value array = mrb_ary_new(m_mrb);
-    printf("count=%d\n", pTouches->count());
     for(CCSetIterator it=pTouches->begin(); it!=pTouches->end(); it++){
         CCTouch* pTouch = (CCTouch*)(*it);
         mrb_value touch = wrap_Cocos2d_CCTouch(m_mrb, pTouch);
@@ -410,8 +413,14 @@ int CCMrubyEngine::executeEventWithArgs(int nHandler, CCArray* pArgs)
             mrb_str_buf_cat(m_mrb, args[i], s->getCString(), s->length());
         }else if(CCInteger* cci = dynamic_cast<CCInteger*>(arg)){
             args[i] = mrb_fixnum_value(cci->getValue());
+        }else if(CCSwipe* obj = dynamic_cast<CCSwipe*>(arg)){
+            args[i] = wrap_Cocos2d_CCSwipe(m_mrb, obj);
+        }else if(CCNode* obj = dynamic_cast<CCNode*>(arg)){
+            args[i] = wrap_Cocos2d_CCNode(m_mrb, obj);
+        }else if(CCObject* obj = dynamic_cast<CCObject*>(arg)){
+            args[i] = wrap_Cocos2d_CCObject(m_mrb, obj);
         }else{
-          args[i] = mrb_nil_value();
+            args[i] = mrb_nil_value();
         }
     }
     mrb_funcall_argv(m_mrb, block, mrb_intern_cstr(m_mrb,"call"), pArgs->count(), args);
