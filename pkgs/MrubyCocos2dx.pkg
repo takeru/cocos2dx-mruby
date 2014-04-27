@@ -53,10 +53,22 @@ Constants = [
   ['int', 'kResolutionFixedHeight'],
   ['int', 'kResolutionFixedWidth'],
   ['int', 'kResolutionUnKnown'],
+
+  # CCTextAlignment
+  ['int', 'kCCTextAlignmentLeft'],
+  ['int', 'kCCTextAlignmentCenter'],
+  ['int', 'kCCTextAlignmentRight'],
+
+  # CCVerticalTextAlignment
+  ['int', 'kCCVerticalTextAlignmentTop'],
+  ['int', 'kCCVerticalTextAlignmentCenter'],
+  ['int', 'kCCVerticalTextAlignmentBottom'],
 ]
 Enums = [
   "ccTouchesMode",
-  "ResolutionPolicy"
+  "ResolutionPolicy",
+  "CCTextAlignment",
+  "CCVerticalTextAlignment",
 ]
 
 Functions = [
@@ -299,6 +311,11 @@ Classes = {
     :parent => 'CCSprite',
     :methods => [
                  [STATIC, 'CCLabelTTF*', 'create', ['const char*', 'const char*', 'float']],
+                 [STATIC, 'CCLabelTTF*', 'create', ['const char*', 'const char*', 'float',
+                                                    'const CCSize&', 'CCTextAlignment']],
+                 [STATIC, 'CCLabelTTF*', 'create', ['const char*', 'const char*', 'float',
+                                                    'const CCSize&', 'CCTextAlignment', 'CCVerticalTextAlignment']],
+                 [0, 'void', 'setString', ['const char*']],
                 ],
   },
   'CCLabelBMFont' => {

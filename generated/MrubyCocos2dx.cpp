@@ -1349,12 +1349,47 @@ static mrb_value CCLabelTTF_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 3) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    const char* p1 = mrb_string_value_ptr(mrb, args[1]);
+    float p2 = get_float(args[2]);
+    
+    CCLabelTTF* retval = CCLabelTTF::create(p0, p1, p2);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLabelTTF"));
+  } else if (arg_count == 5) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    const char* p1 = mrb_string_value_ptr(mrb, args[1]);
+    float p2 = get_float(args[2]);
+    const CCSize& p3 = *static_cast<CCSize*>(DATA_PTR(args[3]));
+    CCTextAlignment p4 = (CCTextAlignment)mrb_fixnum(args[4]);
+    
+    CCLabelTTF* retval = CCLabelTTF::create(p0, p1, p2, p3, p4);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLabelTTF"));
+  } else if (arg_count == 6) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    const char* p1 = mrb_string_value_ptr(mrb, args[1]);
+    float p2 = get_float(args[2]);
+    const CCSize& p3 = *static_cast<CCSize*>(DATA_PTR(args[3]));
+    CCTextAlignment p4 = (CCTextAlignment)mrb_fixnum(args[4]);
+    CCVerticalTextAlignment p5 = (CCVerticalTextAlignment)mrb_fixnum(args[5]);
+    
+    CCLabelTTF* retval = CCLabelTTF::create(p0, p1, p2, p3, p4, p5);
+    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLabelTTF"));
+  } else {
+
+    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLabelTTF#create");
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCLabelTTF_setString(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
   const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-  const char* p1 = mrb_string_value_ptr(mrb, args[1]);
-  float p2 = get_float(args[2]);
-  
-  CCLabelTTF* retval = CCLabelTTF::create(p0, p1, p2);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCLabelTTF"));
+  CCLabelTTF* instance = static_cast<CCLabelTTF*>(DATA_PTR(self));
+  instance->setString(p0);
+  return mrb_nil_value();
 }
 
 static void installCCLabelTTF(mrb_state *mrb, struct RClass *mod) {
@@ -1362,6 +1397,7 @@ static void installCCLabelTTF(mrb_state *mrb, struct RClass *mod) {
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCLabelTTF", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCLabelTTF_create, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setString", CCLabelTTF_setString, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -2169,6 +2205,12 @@ void installMrubyCocos2dx(mrb_state *mrb) {
   mrb_define_const(mrb, mod, "KResolutionFixedHeight", mrb_fixnum_value(kResolutionFixedHeight));
   mrb_define_const(mrb, mod, "KResolutionFixedWidth", mrb_fixnum_value(kResolutionFixedWidth));
   mrb_define_const(mrb, mod, "KResolutionUnKnown", mrb_fixnum_value(kResolutionUnKnown));
+  mrb_define_const(mrb, mod, "KCCTextAlignmentLeft", mrb_fixnum_value(kCCTextAlignmentLeft));
+  mrb_define_const(mrb, mod, "KCCTextAlignmentCenter", mrb_fixnum_value(kCCTextAlignmentCenter));
+  mrb_define_const(mrb, mod, "KCCTextAlignmentRight", mrb_fixnum_value(kCCTextAlignmentRight));
+  mrb_define_const(mrb, mod, "KCCVerticalTextAlignmentTop", mrb_fixnum_value(kCCVerticalTextAlignmentTop));
+  mrb_define_const(mrb, mod, "KCCVerticalTextAlignmentCenter", mrb_fixnum_value(kCCVerticalTextAlignmentCenter));
+  mrb_define_const(mrb, mod, "KCCVerticalTextAlignmentBottom", mrb_fixnum_value(kCCVerticalTextAlignmentBottom));
   mrb_define_module_function(mrb, mod, "cCPointMake", CCPointMake__, MRB_ARGS_ANY());
   mrb_define_module_function(mrb, mod, "ccp", ccp__, MRB_ARGS_ANY());
   mrb_define_module_function(mrb, mod, "cCSizeMake", CCSizeMake__, MRB_ARGS_ANY());
