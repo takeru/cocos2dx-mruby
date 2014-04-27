@@ -32,7 +32,7 @@ void CCSwipeGestureRecognizerForScript::didRecognizeGesture(CCObject * obj)
 
 template <class T>
 mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
-mrb_value wrap_Cocos2d_CCSwipe(mrb_state *mrb, CCSwipe* ptr) {
+mrb_value wrap_Cocos2dx_CCSwipe(mrb_state *mrb, CCSwipe* ptr) {
   return wrap(mrb, ptr, "CCSwipe");
 }
 
@@ -77,7 +77,7 @@ static float get_float(mrb_value x) {
 }
 
 static struct RClass* getClass(mrb_state *mrb, const char* className) {
-  RClass* mod = mrb_module_get(mrb, "Cocos2d");
+  RClass* mod = mrb_module_get(mrb, "Cocos2dx");
   return mrb_class_get_under(mrb, mod, className);
 }
 
@@ -202,8 +202,8 @@ static void installCCSwipeGestureRecognizerForScript(mrb_state *mrb, struct RCla
 ////////////////////////////////////////////////////////////////
 // Functions.
 
-void installMrubyCocos2dxExtensions(mrb_state *mrb) {
-  struct RClass* mod = mrb_define_module(mrb, "Cocos2d");
+void installMrubyCocos2dx_Extensions(mrb_state *mrb) {
+  struct RClass* mod = mrb_define_module(mrb, "Cocos2dx");
   mrb_define_const(mrb, mod, "KSwipeGestureRecognizerDirectionRight", mrb_fixnum_value(kSwipeGestureRecognizerDirectionRight));
   mrb_define_const(mrb, mod, "KSwipeGestureRecognizerDirectionLeft", mrb_fixnum_value(kSwipeGestureRecognizerDirectionLeft));
   mrb_define_const(mrb, mod, "KSwipeGestureRecognizerDirectionUp", mrb_fixnum_value(kSwipeGestureRecognizerDirectionUp));

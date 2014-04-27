@@ -1,4 +1,4 @@
-ModuleName = 'Cocos2d'
+ModuleName = 'Cocos2dx'
 
 Header = <<EOD
 #include <string>
@@ -16,13 +16,13 @@ typedef ccColor4F CcColor4F;
 
 template <class T>
 mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
-mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, CCTouch* ptr) {
+mrb_value wrap_Cocos2dx_CCTouch(mrb_state *mrb, CCTouch* ptr) {
   return wrap(mrb, ptr, "CCTouch");
 }
-mrb_value wrap_Cocos2d_CCObject(mrb_state *mrb, CCObject* ptr) {
+mrb_value wrap_Cocos2dx_CCObject(mrb_state *mrb, CCObject* ptr) {
   return wrap(mrb, ptr, "CCObject");
 }
-mrb_value wrap_Cocos2d_CCNode(mrb_state *mrb, CCNode* ptr) {
+mrb_value wrap_Cocos2dx_CCNode(mrb_state *mrb, CCNode* ptr) {
   return wrap(mrb, ptr, "CCNode");
 }
 

@@ -13,13 +13,13 @@ typedef ccColor4F CcColor4F;
 
 template <class T>
 mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
-mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, CCTouch* ptr) {
+mrb_value wrap_Cocos2dx_CCTouch(mrb_state *mrb, CCTouch* ptr) {
   return wrap(mrb, ptr, "CCTouch");
 }
-mrb_value wrap_Cocos2d_CCObject(mrb_state *mrb, CCObject* ptr) {
+mrb_value wrap_Cocos2dx_CCObject(mrb_state *mrb, CCObject* ptr) {
   return wrap(mrb, ptr, "CCObject");
 }
-mrb_value wrap_Cocos2d_CCNode(mrb_state *mrb, CCNode* ptr) {
+mrb_value wrap_Cocos2dx_CCNode(mrb_state *mrb, CCNode* ptr) {
   return wrap(mrb, ptr, "CCNode");
 }
 
@@ -64,7 +64,7 @@ static float get_float(mrb_value x) {
 }
 
 static struct RClass* getClass(mrb_state *mrb, const char* className) {
-  RClass* mod = mrb_module_get(mrb, "Cocos2d");
+  RClass* mod = mrb_module_get(mrb, "Cocos2dx");
   return mrb_class_get_under(mrb, mod, className);
 }
 
@@ -2150,8 +2150,8 @@ static mrb_value ccc4f__(mrb_state *mrb, mrb_value self) {
   return wrap(mrb, new(mrb_malloc(mrb, sizeof(CcColor4F))) CcColor4F(retval), "CcColor4F");
 }
 
-void installMrubyCocos2d(mrb_state *mrb) {
-  struct RClass* mod = mrb_define_module(mrb, "Cocos2d");
+void installMrubyCocos2dx(mrb_state *mrb) {
+  struct RClass* mod = mrb_define_module(mrb, "Cocos2dx");
   mrb_define_const(mrb, mod, "CCTOUCHBEGAN", mrb_fixnum_value(CCTOUCHBEGAN));
   mrb_define_const(mrb, mod, "CCTOUCHMOVED", mrb_fixnum_value(CCTOUCHMOVED));
   mrb_define_const(mrb, mod, "CCTOUCHENDED", mrb_fixnum_value(CCTOUCHENDED));

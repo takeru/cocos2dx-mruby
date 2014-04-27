@@ -103,7 +103,7 @@ static float get_float(mrb_value x) {
 }
 
 static struct RClass* getClass(mrb_state *mrb, const char* className) {
-  RClass* mod = mrb_module_get(mrb, "Cocos2d");
+  RClass* mod = mrb_module_get(mrb, "Cocos2dx");
   return mrb_class_get_under(mrb, mod, className);
 }
 
@@ -169,7 +169,7 @@ static void installWebSocket(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // Functions.
 
-void installMrubyCocos2d_WebSocket(mrb_state *mrb) {
-  struct RClass* mod = mrb_define_module(mrb, "Cocos2d");
+void installMrubyCocos2dx_WebSocket(mrb_state *mrb) {
+  struct RClass* mod = mrb_define_module(mrb, "Cocos2dx");
   installWebSocket(mrb, mod);
 }

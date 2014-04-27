@@ -13,18 +13,18 @@
 #include "mruby/mruby/compile.h"
 #include "mruby/mruby/string.h"
 #include "mruby/mruby/variable.h"
-#include "MrubyCocos2d.h"
-#include "MrubyCocos2d_WebSocket.h"
+#include "MrubyCocos2dx.h"
+#include "MrubyCocos2dx_WebSocket.h"
 #include "MrubyCocosDenshion.h"
 #include "MrubyBox2D.h"
-#include "MrubyCocos2dxExtensions.h"
+#include "MrubyCocos2dx_Extensions.h"
 #include "CCSwipeGestureRecognizer.h"
 
 extern "C" mrb_value mrb_get_backtrace(mrb_state*, mrb_value);
-extern mrb_value wrap_Cocos2d_CCTouch(mrb_state *mrb, cocos2d::CCTouch* ptr);
-extern mrb_value wrap_Cocos2d_CCObject(mrb_state *mrb, cocos2d::CCObject* ptr);
-extern mrb_value wrap_Cocos2d_CCNode(mrb_state *mrb, cocos2d::CCNode* ptr);
-extern mrb_value wrap_Cocos2d_CCSwipe(mrb_state *mrb, CCSwipe* ptr);
+extern mrb_value wrap_Cocos2dx_CCTouch(mrb_state *mrb, cocos2d::CCTouch* ptr);
+extern mrb_value wrap_Cocos2dx_CCObject(mrb_state *mrb, cocos2d::CCObject* ptr);
+extern mrb_value wrap_Cocos2dx_CCNode(mrb_state *mrb, cocos2d::CCNode* ptr);
+extern mrb_value wrap_Cocos2dx_CCSwipe(mrb_state *mrb, CCSwipe* ptr);
 
 static const char* getBaseName(const char* fullpath) {
   int len = strlen(fullpath);
@@ -35,24 +35,24 @@ static const char* getBaseName(const char* fullpath) {
   return fullpath;
 }
 
-static struct RClass* getMrubyCocos2dClassPtr(mrb_state *mrb, const char* className) {
-  RClass* mod = mrb_module_get(mrb, "Cocos2d");
+static struct RClass* getMrubyCocos2dxClassPtr(mrb_state *mrb, const char* className) {
+  RClass* mod = mrb_module_get(mrb, "Cocos2dx");
   return mrb_class_get_under(mrb, mod, className);
 }
 
-static mrb_value getMrubyCocos2dClassValue(mrb_state *mrb, const char* className) {
-  return mrb_obj_value(getMrubyCocos2dClassPtr(mrb, className));
+static mrb_value getMrubyCocos2dxClassValue(mrb_state *mrb, const char* className) {
+  return mrb_obj_value(getMrubyCocos2dxClassPtr(mrb, className));
 }
 
 int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc) {
   // TODO save self(=CCLayer) for send back from executeLayerTouchEvent to proc.
-  mrb_value man = getMrubyCocos2dClassValue(mrb, "HandleManager");
+  mrb_value man = getMrubyCocos2dxClassValue(mrb, "HandleManager");
   mrb_value result = mrb_funcall(mrb, man, "register", 1, proc);
   return mrb_fixnum(result);
 }
 
 mrb_value getRegisteredProc(mrb_state *mrb, int id) {
-  mrb_value man = getMrubyCocos2dClassValue(mrb, "HandleManager");
+  mrb_value man = getMrubyCocos2dxClassValue(mrb, "HandleManager");
   mrb_value proc = mrb_funcall(mrb, man, "getProc", 1, mrb_fixnum_value(id));
   return proc;
 }
@@ -60,7 +60,7 @@ mrb_value getRegisteredProc(mrb_state *mrb, int id) {
 NS_CC_BEGIN
 
 static const char HelperFunctions[] =
-"module Cocos2d\n"
+"module Cocos2dx\n"
 "  class HandleManager\n"
 "    @@counter = 0\n"
 "    @@proc2id = {}\n"
@@ -89,7 +89,7 @@ static const char HelperFunctions[] =
 "      @@removeScriptObject.call(obj) if @@removeScriptObject\n"
 "    end\n"
 
-"    @@uncaughtException = nil\n"
+"    @@uncaughtException = proc{|e,bt| puts \"UncaughtException: #{([e.inspect]+e.backtrace).join(\"\\n  \")}\" }\n"
 "    def self.uncaughtException=(proc)\n"
 "      @@uncaughtException = proc\n"
 "    end\n"
@@ -159,7 +159,7 @@ static bool checkUncaughtException(mrb_state *mrb) {
     mrb_value exc = mrb_obj_value(mrb->exc);
     mrb_value backtrace = mrb_get_backtrace(mrb, exc);
     mrb->exc = 0;
-    mrb_value cb = getMrubyCocos2dClassValue(mrb, "Callback");
+    mrb_value cb = getMrubyCocos2dxClassValue(mrb, "Callback");
     mrb_funcall(mrb, cb, "_uncaughtException", 2, exc, backtrace);
     _dumpException(mrb);
     mrb_gc_arena_restore(mrb, arena);
@@ -198,11 +198,11 @@ bool CCMrubyEngine::init(void)
   mrb_define_method(m_mrb, m_mrb->kernel_module, "p",     _mrb_p,     MRB_ARGS_ANY());
 
   // Installs cocos2d classes.
-  installMrubyCocos2d(m_mrb);
-  installMrubyCocos2d_WebSocket(m_mrb);
+  installMrubyCocos2dx(m_mrb);
+  installMrubyCocos2dx_WebSocket(m_mrb);
+  installMrubyCocos2dx_Extensions(m_mrb);
   installMrubyCocosDenshion(m_mrb);
   installMrubyBox2D(m_mrb);
-  installMrubyCocos2dxExtensions(m_mrb);
 
   // Installs helper functions.
   // This line must be after installing mruby bindings,
@@ -216,8 +216,8 @@ bool CCMrubyEngine::init(void)
 void CCMrubyEngine::removeScriptObjectByCCObject(CCObject* pObj)
 {
   int arena = mrb_gc_arena_save(m_mrb);
-  mrb_value obj = wrap_Cocos2d_CCObject(m_mrb, pObj);
-  mrb_value cb  = getMrubyCocos2dClassValue(m_mrb, "Callback");
+  mrb_value obj = wrap_Cocos2dx_CCObject(m_mrb, pObj);
+  mrb_value cb  = getMrubyCocos2dxClassValue(m_mrb, "Callback");
   mrb_funcall(m_mrb, cb, "_removeScriptObject", 1, obj);
   checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
@@ -279,7 +279,7 @@ int CCMrubyEngine::executeNodeEvent(CCNode* pNode, int nAction)
 
   int arena = mrb_gc_arena_save(m_mrb);
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
-  mrb_value node = wrap_Cocos2d_CCNode(m_mrb, pNode);
+  mrb_value node = wrap_Cocos2dx_CCNode(m_mrb, pNode);
 
   mrb_funcall(m_mrb, proc, "call", 2, node, mrb_fixnum_value(nAction));
   bool exc = checkUncaughtException(m_mrb);
@@ -325,7 +325,7 @@ int CCMrubyEngine::executeSchedule(int nHandler, float dt, CCNode* pNode)
 
   int arena = mrb_gc_arena_save(m_mrb);
   mrb_value block = getRegisteredProc(m_mrb, nHandler);
-  mrb_value node = wrap_Cocos2d_CCNode(m_mrb, pNode);
+  mrb_value node = wrap_Cocos2dx_CCNode(m_mrb, pNode);
   mrb_funcall(m_mrb, block, "call", 2, mrb_float_value(m_mrb, dt), node);
   bool exc = checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
@@ -346,7 +346,7 @@ int CCMrubyEngine::executeLayerTouchesEvent(CCLayer* pLayer, int eventType, CCSe
     mrb_value array = mrb_ary_new(m_mrb);
     for(CCSetIterator it=pTouches->begin(); it!=pTouches->end(); it++){
         CCTouch* pTouch = (CCTouch*)(*it);
-        mrb_value touch = wrap_Cocos2d_CCTouch(m_mrb, pTouch);
+        mrb_value touch = wrap_Cocos2dx_CCTouch(m_mrb, pTouch);
         mrb_ary_push(m_mrb, array, touch);
     }
     args[1] = array;
@@ -370,7 +370,7 @@ int CCMrubyEngine::executeLayerTouchEvent(CCLayer* pLayer, int eventType, CCTouc
   mrb_value proc = getRegisteredProc(m_mrb, nHandler);
   mrb_value args[2];
   args[0] = mrb_fixnum_value(eventType);
-  args[1] = wrap_Cocos2d_CCTouch(m_mrb, pTouch);
+  args[1] = wrap_Cocos2dx_CCTouch(m_mrb, pTouch);
   mrb_value ret = mrb_yield_argv(m_mrb, proc, 2, args);
 
   bool exc = checkUncaughtException(m_mrb);
@@ -414,11 +414,11 @@ int CCMrubyEngine::executeEventWithArgs(int nHandler, CCArray* pArgs)
         }else if(CCInteger* cci = dynamic_cast<CCInteger*>(arg)){
             args[i] = mrb_fixnum_value(cci->getValue());
         }else if(CCSwipe* obj = dynamic_cast<CCSwipe*>(arg)){
-            args[i] = wrap_Cocos2d_CCSwipe(m_mrb, obj);
+            args[i] = wrap_Cocos2dx_CCSwipe(m_mrb, obj);
         }else if(CCNode* obj = dynamic_cast<CCNode*>(arg)){
-            args[i] = wrap_Cocos2d_CCNode(m_mrb, obj);
+            args[i] = wrap_Cocos2dx_CCNode(m_mrb, obj);
         }else if(CCObject* obj = dynamic_cast<CCObject*>(arg)){
-            args[i] = wrap_Cocos2d_CCObject(m_mrb, obj);
+            args[i] = wrap_Cocos2dx_CCObject(m_mrb, obj);
         }else{
             args[i] = mrb_nil_value();
         }

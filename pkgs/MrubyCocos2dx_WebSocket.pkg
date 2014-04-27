@@ -1,4 +1,4 @@
-ModuleName = 'Cocos2d'
+ModuleName = 'Cocos2dx'
 
 Header = <<EOD
 #include "WebSocket.h"

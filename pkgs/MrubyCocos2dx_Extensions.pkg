@@ -1,4 +1,4 @@
-ModuleName = 'Cocos2d'
+ModuleName = 'Cocos2dx'
 
 Header = <<EOD
 #include "mruby/mruby.h"
@@ -35,7 +35,7 @@ void CCSwipeGestureRecognizerForScript::didRecognizeGesture(CCObject * obj)
 
 template <class T>
 mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
-mrb_value wrap_Cocos2d_CCSwipe(mrb_state *mrb, CCSwipe* ptr) {
+mrb_value wrap_Cocos2dx_CCSwipe(mrb_state *mrb, CCSwipe* ptr) {
   return wrap(mrb, ptr, "CCSwipe");
 }
 
