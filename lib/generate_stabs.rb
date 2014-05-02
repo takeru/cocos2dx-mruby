@@ -52,13 +52,6 @@ class MrubyStubGenerator
 #include <new>
 #include <assert.h>
 
-static void dummy(mrb_state *mrb, void *ptr) {
-  //printf("dummy called\\n");
-}
-
-// TODO: Use different data type for each class.
-static struct mrb_data_type dummy_type = { "Dummy", dummy };
-
 static bool get_bool(mrb_value x) {
   return mrb_bool(x);
 }
@@ -94,15 +87,6 @@ static struct RClass* getClass(mrb_state *mrb, const char* className) {
 }
 }
 
-template <class T>
-mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
-  struct RClass* tc = getClass(mrb, type);
-  assert(tc != NULL);
-  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &dummy_type, NULL));
-  DATA_TYPE(instance) = &dummy_type;
-  DATA_PTR(instance) = (void*)ptr;
-  return instance;
-}
 EOD
   end
 
@@ -143,11 +127,14 @@ END
 ////////////////////////////////////////////////////////////////
 // #{klass}
 EOD
+      declare_type(klass)
       klass_methods.each do |method_name, methods|
         declare_methods(klass, method_name, methods)
       end
-
-      parent = info.has_key?(:parent) ? info[:parent] : nil
+      unless info.has_key?(:parent)
+        raise "missing :parent for #{klass}"
+      end
+      parent = info[:parent]
       declare_class(klass, parent, klass_methods)
     end
 
@@ -193,6 +180,23 @@ EOD
   def register_constant(type, varname)
     puts <<EOD
   mrb_define_const(mrb, mod, "#{varname.capitalize1}", #{c_value_to_mruby_value(type, varname)});
+EOD
+  end
+
+  def declare_type(klass)
+    puts <<EOD
+static void _dfree_#{klass}(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_#{klass}\\n");
+}
+static struct mrb_data_type _mrb_data_type_#{klass} = { "#{klass}", _dfree_#{klass} };
+mrb_value _wrap_#{klass}(mrb_state *mrb, const #{klass}* ptr) {
+  struct RClass* tc = getClass(mrb, "#{klass.capitalize1}");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_#{klass}, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_#{klass};
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 EOD
   end
 
@@ -302,8 +306,8 @@ EOD
       call_method = "#{method_name}"
     elsif is_constructor?(flag)
       get_instance = ''
-      call_method = "new #{klass}"
-      return_stmt = "DATA_PTR(self) = retval; return self;"
+      call_method = "/*TODO delete*/new #{klass}"
+      return_stmt = "DATA_TYPE(self) = &_mrb_data_type_#{klass}; DATA_PTR(self) = retval; return self;"
     elsif is_static?(flag)
       get_instance = ''
       call_method = "#{klass}::#{method_name}"
@@ -432,13 +436,14 @@ EOD
         if type =~ /^void\s*\*+/  # Treat as voidp
           return %!(#{varname} == NULL ? mrb_nil_value() : mrb_voidp_value(mrb, #{varname}))!
         else
-          return %!(#{varname} == NULL ? mrb_nil_value() : wrap(mrb, #{varname}, "#{plain_type.capitalize1}"))!
+          return %!(#{varname} == NULL ? mrb_nil_value() : _wrap_#{plain_type}(mrb, #{varname}))!
         end
       elsif is_enum?(type)
         return "mrb_fixnum_value((int)#{varname})"
       else
         # TODO: Think other way to copy object.
-        return %!wrap(mrb, new(mrb_malloc(mrb, sizeof(#{plain_type}))) #{plain_type}(#{varname}), "#{plain_type.capitalize1}")!
+        # TODO: release with mrb_free!!!!
+        return %!_wrap_#{plain_type}(mrb, new(mrb_malloc(mrb, sizeof(#{plain_type}))) #{plain_type}(#{varname}))!
       end
     end
   end

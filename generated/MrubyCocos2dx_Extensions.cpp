@@ -30,11 +30,7 @@ void CCSwipeGestureRecognizerForScript::didRecognizeGesture(CCObject * obj)
     CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
 }
 
-template <class T>
-mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
-mrb_value wrap_Cocos2dx_CCSwipe(mrb_state *mrb, CCSwipe* ptr) {
-  return wrap(mrb, ptr, "CCSwipe");
-}
+mrb_value _wrap_CCPoint(mrb_state *mrb, const CCPoint* ptr);
 
 
 #include "mruby/mruby.h"
@@ -44,13 +40,6 @@ mrb_value wrap_Cocos2dx_CCSwipe(mrb_state *mrb, CCSwipe* ptr) {
 #include "mruby/mruby/variable.h"
 #include <new>
 #include <assert.h>
-
-static void dummy(mrb_state *mrb, void *ptr) {
-  //printf("dummy called\n");
-}
-
-// TODO: Use different data type for each class.
-static struct mrb_data_type dummy_type = { "Dummy", dummy };
 
 static bool get_bool(mrb_value x) {
   return mrb_bool(x);
@@ -81,18 +70,21 @@ static struct RClass* getClass(mrb_state *mrb, const char* className) {
   return mrb_class_get_under(mrb, mod, className);
 }
 
-template <class T>
-mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
-  struct RClass* tc = getClass(mrb, type);
-  assert(tc != NULL);
-  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &dummy_type, NULL));
-  DATA_TYPE(instance) = &dummy_type;
-  DATA_PTR(instance) = (void*)ptr;
-  return instance;
-}
 
 ////////////////////////////////////////////////////////////////
 // CCGestureRecognizer
+static void _dfree_CCGestureRecognizer(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_CCGestureRecognizer\n");
+}
+static struct mrb_data_type _mrb_data_type_CCGestureRecognizer = { "CCGestureRecognizer", _dfree_CCGestureRecognizer };
+mrb_value _wrap_CCGestureRecognizer(mrb_state *mrb, const CCGestureRecognizer* ptr) {
+  struct RClass* tc = getClass(mrb, "CCGestureRecognizer");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_CCGestureRecognizer, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_CCGestureRecognizer;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static mrb_value CCGestureRecognizer_setCancelsTouchesInView(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -113,6 +105,18 @@ static void installCCGestureRecognizer(mrb_state *mrb, struct RClass *mod) {
 
 ////////////////////////////////////////////////////////////////
 // CCSwipe
+static void _dfree_CCSwipe(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_CCSwipe\n");
+}
+static struct mrb_data_type _mrb_data_type_CCSwipe = { "CCSwipe", _dfree_CCSwipe };
+mrb_value _wrap_CCSwipe(mrb_state *mrb, const CCSwipe* ptr) {
+  struct RClass* tc = getClass(mrb, "CCSwipe");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_CCSwipe, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_CCSwipe;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static mrb_value CCSwipe_direction(mrb_state *mrb, mrb_value self) {
   CCSwipe* instance = static_cast<CCSwipe*>(DATA_PTR(self));
@@ -129,7 +133,7 @@ static mrb_value CCSwipe_set_direction(mrb_state *mrb, mrb_value self) {
 
 static mrb_value CCSwipe_location(mrb_state *mrb, mrb_value self) {
   CCSwipe* instance = static_cast<CCSwipe*>(DATA_PTR(self));
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(instance->location), "CCPoint");
+  return _wrap_CCPoint(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(instance->location));
 }
 
 static mrb_value CCSwipe_set_location(mrb_state *mrb, mrb_value self) {
@@ -152,6 +156,18 @@ static void installCCSwipe(mrb_state *mrb, struct RClass *mod) {
 
 ////////////////////////////////////////////////////////////////
 // CCSwipeGestureRecognizer
+static void _dfree_CCSwipeGestureRecognizer(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_CCSwipeGestureRecognizer\n");
+}
+static struct mrb_data_type _mrb_data_type_CCSwipeGestureRecognizer = { "CCSwipeGestureRecognizer", _dfree_CCSwipeGestureRecognizer };
+mrb_value _wrap_CCSwipeGestureRecognizer(mrb_state *mrb, const CCSwipeGestureRecognizer* ptr) {
+  struct RClass* tc = getClass(mrb, "CCSwipeGestureRecognizer");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_CCSwipeGestureRecognizer, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_CCSwipeGestureRecognizer;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static mrb_value CCSwipeGestureRecognizer_setDirection(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -172,12 +188,24 @@ static void installCCSwipeGestureRecognizer(mrb_state *mrb, struct RClass *mod) 
 
 ////////////////////////////////////////////////////////////////
 // CCSwipeGestureRecognizerForScript
+static void _dfree_CCSwipeGestureRecognizerForScript(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_CCSwipeGestureRecognizerForScript\n");
+}
+static struct mrb_data_type _mrb_data_type_CCSwipeGestureRecognizerForScript = { "CCSwipeGestureRecognizerForScript", _dfree_CCSwipeGestureRecognizerForScript };
+mrb_value _wrap_CCSwipeGestureRecognizerForScript(mrb_state *mrb, const CCSwipeGestureRecognizerForScript* ptr) {
+  struct RClass* tc = getClass(mrb, "CCSwipeGestureRecognizerForScript");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_CCSwipeGestureRecognizerForScript, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_CCSwipeGestureRecognizerForScript;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static mrb_value CCSwipeGestureRecognizerForScript_create(mrb_state *mrb, mrb_value self) {
 
   
   CCSwipeGestureRecognizerForScript* retval = CCSwipeGestureRecognizerForScript::create();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "CCSwipeGestureRecognizerForScript"));
+  return (retval == NULL ? mrb_nil_value() : _wrap_CCSwipeGestureRecognizerForScript(mrb, retval));
 }
 
 static mrb_value CCSwipeGestureRecognizerForScript_setHandler(mrb_state *mrb, mrb_value self) {

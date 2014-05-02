@@ -8,6 +8,7 @@ EOD
 
 Classes = {
   'SimpleAudioEngine' => {
+    :parent => nil,
     :methods => [
                  [STATIC, 'SimpleAudioEngine*', 'sharedEngine', []],
                  [0, 'void', 'playBackgroundMusic', ['const char*']],

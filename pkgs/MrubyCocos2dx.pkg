@@ -14,18 +14,6 @@ using namespace cocos2d;
 typedef ccColor3B CcColor3B;
 typedef ccColor4F CcColor4F;
 
-template <class T>
-mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
-mrb_value wrap_Cocos2dx_CCTouch(mrb_state *mrb, CCTouch* ptr) {
-  return wrap(mrb, ptr, "CCTouch");
-}
-mrb_value wrap_Cocos2dx_CCObject(mrb_state *mrb, CCObject* ptr) {
-  return wrap(mrb, ptr, "CCObject");
-}
-mrb_value wrap_Cocos2dx_CCNode(mrb_state *mrb, CCNode* ptr) {
-  return wrap(mrb, ptr, "CCNode");
-}
-
 EOD
 
 Constants = [
@@ -83,6 +71,7 @@ Functions = [
 
 Classes = {
   'CcColor3B' => {
+    :parent => nil,
     :methods => [
                  [ATTR_ACCESSOR, 'unsigned char', 'r'],
                  [ATTR_ACCESSOR, 'unsigned char', 'g'],
@@ -90,6 +79,7 @@ Classes = {
                 ],
   },
   'CcColor4F' => {
+    :parent => nil,
     :methods => [
                  [ATTR_ACCESSOR, 'float', 'r'],
                  [ATTR_ACCESSOR, 'float', 'g'],
@@ -98,6 +88,7 @@ Classes = {
                 ],
   },
   'CCPoint' => {
+    :parent => nil,
     :methods => [
                  [CONSTRUCTOR, []],
                  [CONSTRUCTOR, ['float', 'float']],
@@ -108,6 +99,7 @@ Classes = {
                 ],
   },
   'CCSize' => {
+    :parent => nil,
     :methods => [
                  [CONSTRUCTOR, []],
                  [CONSTRUCTOR, ['float', 'float']],
@@ -118,6 +110,7 @@ Classes = {
                 ],
   },
   'CCRect' => {
+    :parent => nil,
     :methods => [
                  [CONSTRUCTOR, []],
                  [CONSTRUCTOR, ['float', 'float', 'float', 'float']],
@@ -128,17 +121,24 @@ Classes = {
                  [0, 'bool', 'intersectsRect', ['const CCRect&']],
                 ],
   },
+  'ccBlendFunc' => {
+    :parent => nil,
+    :methods => [
+                ],
+  },
   'CCObject' => {
+    :parent => nil,
     :methods => [
                  [0, 'void', 'release', []],
                  [0, 'CCObject*', 'autorelease', []],
                  [0, 'unsigned int', 'retainCount', []],
                  [ATTR_ACCESSOR, 'int', 'm_nLuaID'],
                  [ATTR_ACCESSOR, 'int', 'm_uID'],
-                 [CUSTOM, 'int', 'dataptr', [], :code=>"  return mrb_fixnum_value((int)DATA_PTR(self));"]
+                #[CUSTOM, 'int', 'dataptr', [], :code=>"  return mrb_fixnum_value((int)DATA_PTR(self));"]
                 ],
   },
   'CCArray' => {
+    :parent => 'CCObject',
     :methods => [
                  [STATIC, 'CCArray*', 'create', []],
                  [0, 'void', 'addObject', ['CCObject*']],
@@ -212,10 +212,12 @@ Classes = {
                 ],
   },
   'CCTexture2D' => {
+    :parent => 'CCObject',
     :methods => [
                 ],
   },
   'CCTextureCache' => {
+    :parent => 'CCObject',
     :methods => [
                  [STATIC, 'CCTextureCache*', 'sharedTextureCache', []],
                  [0, 'CCTexture2D*', 'addImage', ['const char*']],
@@ -291,9 +293,6 @@ Classes = {
                  [STATIC, 'CCSprite*', 'createWithSpriteFrame', ['CCSpriteFrame*']],
                  [STATIC, 'CCSprite*', 'createWithTexture', ['CCTexture2D*']],
                  [STATIC, 'CCSprite*', 'createWithTexture', ['CCTexture2D*', 'const CCRect&']],
-                 [CONSTRUCTOR, []],
-                 [0, 'void', 'initWithTexture', ['CCTexture2D*']],
-                 [0, 'void', 'initWithTexture', ['CCTexture2D*', 'const CCRect&']],
                  [0, 'void', 'setTextureRect', ['const CCRect&']],
                  [0, 'void', 'setTextureRect', ['const CCRect&', 'bool', 'const CCSize&']],
                 ],
@@ -301,7 +300,6 @@ Classes = {
   'CCSpriteBatchNode' => {
     :parent => 'CCNode',
     :methods => [
-                 [CONSTRUCTOR, []],
                  [STATIC, 'CCSpriteBatchNode*', 'create', ['const char*', 'unsigned int']],
                  [STATIC, 'CCSpriteBatchNode*', 'create', ['const char*']],
                  [0, 'CCTexture2D*', 'getTexture', []],
@@ -345,7 +343,7 @@ Classes = {
   const ccColor4F& p4 = *static_cast<ccColor4F*>(DATA_PTR(args[3]));
   CCDrawNode* instance = static_cast<CCDrawNode*>(DATA_PTR(self));
   instance->drawPolygon(p0, p1, p2, p3, p4);
-  delete p0;
+  delete[] p0;
   return mrb_nil_value();
 END
                  [0, 'void', 'clear', []],
@@ -356,7 +354,6 @@ END
   'CCLayer' => {
     :parent => 'CCNode',
     :methods => [
-                 [CONSTRUCTOR, []],
                  [STATIC, 'CCLayer*', 'create', []],
                  [0, 'void', 'registerScriptTouchHandler', ['block']],
                  [0, 'void', 'registerScriptTouchHandler', ['block', 'bool']],
@@ -379,12 +376,14 @@ END
                 ],
   },
   'CCScheduler' => {
+    :parent => 'CCObject',
     :methods => [
                  [0, 'unsigned int', 'scheduleScriptFunc', ['block', 'float', 'bool']],
                  [0, 'void', 'unscheduleScriptEntry', ['unsigned int']],
                 ],
   },
   'CCDirector' => {
+    :parent => 'CCObject', # TypeInfo
     :methods => [
                  [STATIC, 'CCDirector*', 'sharedDirector', []],
                  [0, 'CCSize', 'getWinSize', []],
@@ -400,6 +399,7 @@ END
                 ],
   },
   'CCEGLView' => {
+    :parent => nil, # CCEGLViewProtocol
     :methods => [
                  [STATIC, 'CCEGLView*', 'sharedOpenGLView', []],
                  [0, 'const CCSize&', 'getDesignResolutionSize', []],
@@ -408,6 +408,7 @@ END
                 ],
   },
   'CCFileUtils' => {
+    :parent => nil, # TypeInfo
     :methods => [
                  [STATIC, 'CCFileUtils*', 'sharedFileUtils', []],
                  [0, 'std::string', 'fullPathForFilename', ['const char*']],
@@ -463,6 +464,7 @@ END
                 ],
   },
   'CCUserDefault' => {
+    :parent => nil,
     :methods => [
                  [STATIC, 'CCUserDefault*', 'sharedUserDefault', []],
                  [0, 'int', 'getIntegerForKey', ['const char*', 'int']],

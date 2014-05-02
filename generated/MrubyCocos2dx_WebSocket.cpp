@@ -71,13 +71,6 @@ using namespace cocos2dmruby;
 #include <new>
 #include <assert.h>
 
-static void dummy(mrb_state *mrb, void *ptr) {
-  //printf("dummy called\n");
-}
-
-// TODO: Use different data type for each class.
-static struct mrb_data_type dummy_type = { "Dummy", dummy };
-
 static bool get_bool(mrb_value x) {
   return mrb_bool(x);
 }
@@ -107,24 +100,27 @@ static struct RClass* getClass(mrb_state *mrb, const char* className) {
   return mrb_class_get_under(mrb, mod, className);
 }
 
-template <class T>
-mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
-  struct RClass* tc = getClass(mrb, type);
+
+////////////////////////////////////////////////////////////////
+// WebSocket
+static void _dfree_WebSocket(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_WebSocket\n");
+}
+static struct mrb_data_type _mrb_data_type_WebSocket = { "WebSocket", _dfree_WebSocket };
+mrb_value _wrap_WebSocket(mrb_state *mrb, const WebSocket* ptr) {
+  struct RClass* tc = getClass(mrb, "WebSocket");
   assert(tc != NULL);
-  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &dummy_type, NULL));
-  DATA_TYPE(instance) = &dummy_type;
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_WebSocket, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_WebSocket;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
 
-////////////////////////////////////////////////////////////////
-// WebSocket
-
 static mrb_value WebSocket___ctor(mrb_state *mrb, mrb_value self) {
 
   
-  WebSocket* retval = new WebSocket();
-  DATA_PTR(self) = retval; return self;
+  WebSocket* retval = /*TODO delete*/new WebSocket();
+  DATA_TYPE(self) = &_mrb_data_type_WebSocket; DATA_PTR(self) = retval; return self;
 }
 
 static mrb_value WebSocket_create(mrb_state *mrb, mrb_value self) {
@@ -136,7 +132,7 @@ static mrb_value WebSocket_create(mrb_state *mrb, mrb_value self) {
   const std::string& p0 = std::string(mrb_string_value_ptr(mrb, args[0]));
   
   WebSocket* retval = WebSocket::create(blockHandler, p0);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "WebSocket"));
+  return (retval == NULL ? mrb_nil_value() : _wrap_WebSocket(mrb, retval));
 }
 
 static mrb_value WebSocket_send(mrb_state *mrb, mrb_value self) {

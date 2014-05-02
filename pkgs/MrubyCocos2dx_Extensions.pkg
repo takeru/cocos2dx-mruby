@@ -33,11 +33,7 @@ void CCSwipeGestureRecognizerForScript::didRecognizeGesture(CCObject * obj)
     CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
 }
 
-template <class T>
-mrb_value wrap(mrb_state *mrb, T* ptr, const char* type);
-mrb_value wrap_Cocos2dx_CCSwipe(mrb_state *mrb, CCSwipe* ptr) {
-  return wrap(mrb, ptr, "CCSwipe");
-}
+mrb_value _wrap_CCPoint(mrb_state *mrb, const CCPoint* ptr);
 
 EOD
 

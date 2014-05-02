@@ -8,13 +8,6 @@
 #include <new>
 #include <assert.h>
 
-static void dummy(mrb_state *mrb, void *ptr) {
-  //printf("dummy called\n");
-}
-
-// TODO: Use different data type for each class.
-static struct mrb_data_type dummy_type = { "Dummy", dummy };
-
 static bool get_bool(mrb_value x) {
   return mrb_bool(x);
 }
@@ -44,18 +37,21 @@ static struct RClass* getClass(mrb_state *mrb, const char* className) {
   return mrb_class_get_under(mrb, mod, className);
 }
 
-template <class T>
-mrb_value wrap(mrb_state *mrb, T* ptr, const char* type) {
-  struct RClass* tc = getClass(mrb, type);
-  assert(tc != NULL);
-  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &dummy_type, NULL));
-  DATA_TYPE(instance) = &dummy_type;
-  DATA_PTR(instance) = (void*)ptr;
-  return instance;
-}
 
 ////////////////////////////////////////////////////////////////
 // b2Vec2
+static void _dfree_b2Vec2(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_b2Vec2\n");
+}
+static struct mrb_data_type _mrb_data_type_b2Vec2 = { "b2Vec2", _dfree_b2Vec2 };
+mrb_value _wrap_b2Vec2(mrb_state *mrb, const b2Vec2* ptr) {
+  struct RClass* tc = getClass(mrb, "B2Vec2");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_b2Vec2, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_b2Vec2;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static mrb_value b2Vec2___ctor(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -64,14 +60,14 @@ static mrb_value b2Vec2___ctor(mrb_state *mrb, mrb_value self) {
   if (arg_count == 0) {
   
     
-    b2Vec2* retval = new b2Vec2();
-    DATA_PTR(self) = retval; return self;
+    b2Vec2* retval = /*TODO delete*/new b2Vec2();
+    DATA_TYPE(self) = &_mrb_data_type_b2Vec2; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 2) {
     float p0 = get_float(args[0]);
     float p1 = get_float(args[1]);
     
-    b2Vec2* retval = new b2Vec2(p0, p1);
-    DATA_PTR(self) = retval; return self;
+    b2Vec2* retval = /*TODO delete*/new b2Vec2(p0, p1);
+    DATA_TYPE(self) = &_mrb_data_type_b2Vec2; DATA_PTR(self) = retval; return self;
   } else {
 
     mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2Vec2#__ctor");
@@ -130,6 +126,18 @@ static void installb2Vec2(mrb_state *mrb, struct RClass *mod) {
 
 ////////////////////////////////////////////////////////////////
 // b2Shape
+static void _dfree_b2Shape(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_b2Shape\n");
+}
+static struct mrb_data_type _mrb_data_type_b2Shape = { "b2Shape", _dfree_b2Shape };
+mrb_value _wrap_b2Shape(mrb_state *mrb, const b2Shape* ptr) {
+  struct RClass* tc = getClass(mrb, "B2Shape");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_b2Shape, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_b2Shape;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static void installb2Shape(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
@@ -139,12 +147,24 @@ static void installb2Shape(mrb_state *mrb, struct RClass *mod) {
 
 ////////////////////////////////////////////////////////////////
 // b2EdgeShape
+static void _dfree_b2EdgeShape(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_b2EdgeShape\n");
+}
+static struct mrb_data_type _mrb_data_type_b2EdgeShape = { "b2EdgeShape", _dfree_b2EdgeShape };
+mrb_value _wrap_b2EdgeShape(mrb_state *mrb, const b2EdgeShape* ptr) {
+  struct RClass* tc = getClass(mrb, "B2EdgeShape");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_b2EdgeShape, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_b2EdgeShape;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static mrb_value b2EdgeShape___ctor(mrb_state *mrb, mrb_value self) {
 
   
-  b2EdgeShape* retval = new b2EdgeShape();
-  DATA_PTR(self) = retval; return self;
+  b2EdgeShape* retval = /*TODO delete*/new b2EdgeShape();
+  DATA_TYPE(self) = &_mrb_data_type_b2EdgeShape; DATA_PTR(self) = retval; return self;
 }
 
 static mrb_value b2EdgeShape_Set(mrb_state *mrb, mrb_value self) {
@@ -168,12 +188,24 @@ static void installb2EdgeShape(mrb_state *mrb, struct RClass *mod) {
 
 ////////////////////////////////////////////////////////////////
 // b2PolygonShape
+static void _dfree_b2PolygonShape(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_b2PolygonShape\n");
+}
+static struct mrb_data_type _mrb_data_type_b2PolygonShape = { "b2PolygonShape", _dfree_b2PolygonShape };
+mrb_value _wrap_b2PolygonShape(mrb_state *mrb, const b2PolygonShape* ptr) {
+  struct RClass* tc = getClass(mrb, "B2PolygonShape");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_b2PolygonShape, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_b2PolygonShape;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static mrb_value b2PolygonShape___ctor(mrb_state *mrb, mrb_value self) {
 
   
-  b2PolygonShape* retval = new b2PolygonShape();
-  DATA_PTR(self) = retval; return self;
+  b2PolygonShape* retval = /*TODO delete*/new b2PolygonShape();
+  DATA_TYPE(self) = &_mrb_data_type_b2PolygonShape; DATA_PTR(self) = retval; return self;
 }
 
 static mrb_value b2PolygonShape_SetAsBox(mrb_state *mrb, mrb_value self) {
@@ -197,17 +229,29 @@ static void installb2PolygonShape(mrb_state *mrb, struct RClass *mod) {
 
 ////////////////////////////////////////////////////////////////
 // b2FixtureDef
+static void _dfree_b2FixtureDef(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_b2FixtureDef\n");
+}
+static struct mrb_data_type _mrb_data_type_b2FixtureDef = { "b2FixtureDef", _dfree_b2FixtureDef };
+mrb_value _wrap_b2FixtureDef(mrb_state *mrb, const b2FixtureDef* ptr) {
+  struct RClass* tc = getClass(mrb, "B2FixtureDef");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_b2FixtureDef, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_b2FixtureDef;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static mrb_value b2FixtureDef___ctor(mrb_state *mrb, mrb_value self) {
 
   
-  b2FixtureDef* retval = new b2FixtureDef();
-  DATA_PTR(self) = retval; return self;
+  b2FixtureDef* retval = /*TODO delete*/new b2FixtureDef();
+  DATA_TYPE(self) = &_mrb_data_type_b2FixtureDef; DATA_PTR(self) = retval; return self;
 }
 
 static mrb_value b2FixtureDef_shape(mrb_state *mrb, mrb_value self) {
   b2FixtureDef* instance = static_cast<b2FixtureDef*>(DATA_PTR(self));
-  return (instance->shape == NULL ? mrb_nil_value() : wrap(mrb, instance->shape, "B2Shape"));
+  return (instance->shape == NULL ? mrb_nil_value() : _wrap_b2Shape(mrb, instance->shape));
 }
 
 static mrb_value b2FixtureDef_set_shape(mrb_state *mrb, mrb_value self) {
@@ -274,6 +318,18 @@ static void installb2FixtureDef(mrb_state *mrb, struct RClass *mod) {
 
 ////////////////////////////////////////////////////////////////
 // b2Fixture
+static void _dfree_b2Fixture(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_b2Fixture\n");
+}
+static struct mrb_data_type _mrb_data_type_b2Fixture = { "b2Fixture", _dfree_b2Fixture };
+mrb_value _wrap_b2Fixture(mrb_state *mrb, const b2Fixture* ptr) {
+  struct RClass* tc = getClass(mrb, "B2Fixture");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_b2Fixture, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_b2Fixture;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static void installb2Fixture(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
@@ -283,12 +339,24 @@ static void installb2Fixture(mrb_state *mrb, struct RClass *mod) {
 
 ////////////////////////////////////////////////////////////////
 // b2BodyDef
+static void _dfree_b2BodyDef(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_b2BodyDef\n");
+}
+static struct mrb_data_type _mrb_data_type_b2BodyDef = { "b2BodyDef", _dfree_b2BodyDef };
+mrb_value _wrap_b2BodyDef(mrb_state *mrb, const b2BodyDef* ptr) {
+  struct RClass* tc = getClass(mrb, "B2BodyDef");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_b2BodyDef, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_b2BodyDef;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static mrb_value b2BodyDef___ctor(mrb_state *mrb, mrb_value self) {
 
   
-  b2BodyDef* retval = new b2BodyDef();
-  DATA_PTR(self) = retval; return self;
+  b2BodyDef* retval = /*TODO delete*/new b2BodyDef();
+  DATA_TYPE(self) = &_mrb_data_type_b2BodyDef; DATA_PTR(self) = retval; return self;
 }
 
 static mrb_value b2BodyDef_type(mrb_state *mrb, mrb_value self) {
@@ -306,7 +374,7 @@ static mrb_value b2BodyDef_set_type(mrb_state *mrb, mrb_value self) {
 
 static mrb_value b2BodyDef_position(mrb_state *mrb, mrb_value self) {
   b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(instance->position), "B2Vec2");
+  return _wrap_b2Vec2(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(instance->position));
 }
 
 static mrb_value b2BodyDef_set_position(mrb_state *mrb, mrb_value self) {
@@ -332,7 +400,7 @@ static mrb_value b2BodyDef_set_angle(mrb_state *mrb, mrb_value self) {
 
 static mrb_value b2BodyDef_linearVelocity(mrb_state *mrb, mrb_value self) {
   b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(instance->linearVelocity), "B2Vec2");
+  return _wrap_b2Vec2(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(instance->linearVelocity));
 }
 
 static mrb_value b2BodyDef_set_linearVelocity(mrb_state *mrb, mrb_value self) {
@@ -405,6 +473,18 @@ static void installb2BodyDef(mrb_state *mrb, struct RClass *mod) {
 
 ////////////////////////////////////////////////////////////////
 // b2Body
+static void _dfree_b2Body(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_b2Body\n");
+}
+static struct mrb_data_type _mrb_data_type_b2Body = { "b2Body", _dfree_b2Body };
+mrb_value _wrap_b2Body(mrb_state *mrb, const b2Body* ptr) {
+  struct RClass* tc = getClass(mrb, "B2Body");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_b2Body, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_b2Body;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static mrb_value b2Body_CreateFixture(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -414,13 +494,13 @@ static mrb_value b2Body_CreateFixture(mrb_state *mrb, mrb_value self) {
     const b2FixtureDef* p0 = static_cast<b2FixtureDef*>(DATA_PTR(args[0]));
     b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
     b2Fixture* retval = instance->CreateFixture(p0);
-    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "B2Fixture"));
+    return (retval == NULL ? mrb_nil_value() : _wrap_b2Fixture(mrb, retval));
   } else if (arg_count == 2) {
     const b2Shape* p0 = static_cast<b2Shape*>(DATA_PTR(args[0]));
     float p1 = get_float(args[1]);
     b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
     b2Fixture* retval = instance->CreateFixture(p0, p1);
-    return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "B2Fixture"));
+    return (retval == NULL ? mrb_nil_value() : _wrap_b2Fixture(mrb, retval));
   } else {
 
     mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2Body#CreateFixture");
@@ -432,7 +512,7 @@ static mrb_value b2Body_GetNext(mrb_state *mrb, mrb_value self) {
 
   b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
   b2Body* retval = instance->GetNext();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "B2Body"));
+  return (retval == NULL ? mrb_nil_value() : _wrap_b2Body(mrb, retval));
 }
 
 static mrb_value b2Body_GetUserData(mrb_state *mrb, mrb_value self) {
@@ -446,7 +526,7 @@ static mrb_value b2Body_GetPosition(mrb_state *mrb, mrb_value self) {
 
   b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
   const b2Vec2& retval = instance->GetPosition();
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(retval), "B2Vec2");
+  return _wrap_b2Vec2(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(retval));
 }
 
 static mrb_value b2Body_GetAngle(mrb_state *mrb, mrb_value self) {
@@ -469,6 +549,18 @@ static void installb2Body(mrb_state *mrb, struct RClass *mod) {
 
 ////////////////////////////////////////////////////////////////
 // b2World
+static void _dfree_b2World(mrb_state *mrb, void *ptr) {
+  // printf("_dfree_b2World\n");
+}
+static struct mrb_data_type _mrb_data_type_b2World = { "b2World", _dfree_b2World };
+mrb_value _wrap_b2World(mrb_state *mrb, const b2World* ptr) {
+  struct RClass* tc = getClass(mrb, "B2World");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_b2World, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_b2World;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
 
 static mrb_value b2World___ctor(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -476,8 +568,8 @@ static mrb_value b2World___ctor(mrb_state *mrb, mrb_value self) {
   mrb_get_args(mrb, "*", &args, &arg_count);
   b2Vec2 p0 = *static_cast<b2Vec2*>(DATA_PTR(args[0]));
   
-  b2World* retval = new b2World(p0);
-  DATA_PTR(self) = retval; return self;
+  b2World* retval = /*TODO delete*/new b2World(p0);
+  DATA_TYPE(self) = &_mrb_data_type_b2World; DATA_PTR(self) = retval; return self;
 }
 
 static mrb_value b2World_SetAllowSleeping(mrb_state *mrb, mrb_value self) {
@@ -507,7 +599,7 @@ static mrb_value b2World_CreateBody(mrb_state *mrb, mrb_value self) {
   const b2BodyDef* p0 = static_cast<b2BodyDef*>(DATA_PTR(args[0]));
   b2World* instance = static_cast<b2World*>(DATA_PTR(self));
   b2Body* retval = instance->CreateBody(p0);
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "B2Body"));
+  return (retval == NULL ? mrb_nil_value() : _wrap_b2Body(mrb, retval));
 }
 
 static mrb_value b2World_Step(mrb_state *mrb, mrb_value self) {
@@ -526,7 +618,7 @@ static mrb_value b2World_GetBodyList(mrb_state *mrb, mrb_value self) {
 
   b2World* instance = static_cast<b2World*>(DATA_PTR(self));
   b2Body* retval = instance->GetBodyList();
-  return (retval == NULL ? mrb_nil_value() : wrap(mrb, retval, "B2Body"));
+  return (retval == NULL ? mrb_nil_value() : _wrap_b2Body(mrb, retval));
 }
 
 static void installb2World(mrb_state *mrb, struct RClass *mod) {
@@ -552,7 +644,7 @@ static mrb_value b2Vec2__(mrb_state *mrb, mrb_value self) {
   float p1 = get_float(args[1]);
   
   b2Vec2 retval = b2Vec2(p0, p1);
-  return wrap(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(retval), "B2Vec2");
+  return _wrap_b2Vec2(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(retval));
 }
 
 void installMrubyBox2D(mrb_state *mrb) {
