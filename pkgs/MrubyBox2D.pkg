@@ -21,6 +21,7 @@ Functions = [
 Classes = {
   'b2Vec2' => {
     :parent => nil,
+    :memory_management => :default,
     :methods => [
                  [CONSTRUCTOR, []],
                  [CONSTRUCTOR, ['float', 'float']],
@@ -31,11 +32,13 @@ Classes = {
   },
   'b2Shape' => {
     :parent => nil,
+    :memory_management => :default,
     :methods => [
                 ],
   },
   'b2EdgeShape' => {
     :parent => 'b2Shape',
+    :memory_management => :default,
     :methods => [
                  [CONSTRUCTOR, []],
                  [0, 'void', 'Set', ['const b2Vec2&', 'const b2Vec2&']],
@@ -43,6 +46,7 @@ Classes = {
   },
   'b2PolygonShape' => {
     :parent => 'b2Shape',
+    :memory_management => :default,
     :methods => [
                  [CONSTRUCTOR, []],
                  [0, 'void', 'SetAsBox', ['float', 'float']],
@@ -50,6 +54,7 @@ Classes = {
   },
   'b2FixtureDef' => {
     :parent => nil,
+    :memory_management => :default,
     :methods => [
                  [CONSTRUCTOR, []],
                  [ATTR_ACCESSOR, 'const b2Shape*', 'shape'],
@@ -60,11 +65,13 @@ Classes = {
   },
   'b2Fixture' => {
     :parent => nil,
+    :memory_management => :none, # b2Body::CreateFixture,DestroyFixture
     :methods => [
                 ],
   },
   'b2BodyDef' => {
     :parent => nil,
+    :memory_management => :default,
     :methods => [
                  [CONSTRUCTOR, []],
                  [ATTR_ACCESSOR, 'b2BodyType', 'type'],
@@ -78,9 +85,11 @@ Classes = {
   },
   'b2Body' => {
     :parent => nil,
+    :memory_management => :none, # b2World::CreateBody,DestroyBody
     :methods => [
                  [0, 'b2Fixture*', 'CreateFixture', ['const b2FixtureDef*']],
                  [0, 'b2Fixture*', 'CreateFixture', ['const b2Shape*', 'float']],
+                 [0, 'void', 'DestroyFixture', ['b2Fixture*']],
                  [0, 'b2Body*', 'GetNext', []],
                  [0, 'void*', 'GetUserData', []],
                  [0, 'const b2Vec2&', 'GetPosition', []],
@@ -89,11 +98,13 @@ Classes = {
   },
   'b2World' => {
     :parent => nil,
+    :memory_management => :default,
     :methods => [
                  [CONSTRUCTOR, ['b2Vec2']],
                  [0, 'void', 'SetAllowSleeping', ['bool']],
                  [0, 'void', 'SetContinuousPhysics', ['bool']],
                  [0, 'b2Body*', 'CreateBody', ['const b2BodyDef*']],
+                 [0, 'void', 'DestroyBody', ['b2Body*']],
                  [0, 'void', 'Step', ['float', 'int', 'int']],
                  [0, 'b2Body*', 'GetBodyList', []],
                 ],

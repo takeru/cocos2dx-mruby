@@ -53,7 +53,7 @@ static struct RClass* getClass(mrb_state *mrb, const char* className) {
 ////////////////////////////////////////////////////////////////
 // CcColor3B
 static void _dfree_CcColor3B(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CcColor3B\n");
+  ((CcColor3B*)ptr)->~CcColor3B(); mrb_free(mrb, ptr);
 }
 static struct mrb_data_type _mrb_data_type_CcColor3B = { "CcColor3B", _dfree_CcColor3B };
 mrb_value _wrap_CcColor3B(mrb_state *mrb, const CcColor3B* ptr) {
@@ -119,7 +119,7 @@ static void installCcColor3B(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CcColor4F
 static void _dfree_CcColor4F(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CcColor4F\n");
+  ((CcColor4F*)ptr)->~CcColor4F(); mrb_free(mrb, ptr);
 }
 static struct mrb_data_type _mrb_data_type_CcColor4F = { "CcColor4F", _dfree_CcColor4F };
 mrb_value _wrap_CcColor4F(mrb_state *mrb, const CcColor4F* ptr) {
@@ -198,9 +198,60 @@ static void installCcColor4F(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// ccBlendFunc
+static void _dfree_ccBlendFunc(mrb_state *mrb, void *ptr) {
+  ((ccBlendFunc*)ptr)->~ccBlendFunc(); mrb_free(mrb, ptr);
+}
+static struct mrb_data_type _mrb_data_type_ccBlendFunc = { "ccBlendFunc", _dfree_ccBlendFunc };
+mrb_value _wrap_ccBlendFunc(mrb_state *mrb, const ccBlendFunc* ptr) {
+  struct RClass* tc = getClass(mrb, "CcBlendFunc");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_ccBlendFunc, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_ccBlendFunc;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
+
+static mrb_value ccBlendFunc_src(mrb_state *mrb, mrb_value self) {
+  ccBlendFunc* instance = static_cast<ccBlendFunc*>(DATA_PTR(self));
+  return mrb_fixnum_value(instance->src);
+}
+
+static mrb_value ccBlendFunc_set_src(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  ccBlendFunc* instance = static_cast<ccBlendFunc*>(DATA_PTR(self));
+  instance->src = get_int(o);
+  return mrb_nil_value();
+}
+
+static mrb_value ccBlendFunc_dst(mrb_state *mrb, mrb_value self) {
+  ccBlendFunc* instance = static_cast<ccBlendFunc*>(DATA_PTR(self));
+  return mrb_fixnum_value(instance->dst);
+}
+
+static mrb_value ccBlendFunc_set_dst(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  ccBlendFunc* instance = static_cast<ccBlendFunc*>(DATA_PTR(self));
+  instance->dst = get_int(o);
+  return mrb_nil_value();
+}
+
+static void installccBlendFunc(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = mrb->object_class;
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CcBlendFunc", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_method(mrb, tc, "src", ccBlendFunc_src, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "src=", ccBlendFunc_set_src, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "dst", ccBlendFunc_dst, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "dst=", ccBlendFunc_set_dst, MRB_ARGS_REQ(1));
+}
+
+////////////////////////////////////////////////////////////////
 // CCPoint
 static void _dfree_CCPoint(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCPoint\n");
+  ((CCPoint*)ptr)->~CCPoint(); mrb_free(mrb, ptr);
 }
 static struct mrb_data_type _mrb_data_type_CCPoint = { "CCPoint", _dfree_CCPoint };
 mrb_value _wrap_CCPoint(mrb_state *mrb, const CCPoint* ptr) {
@@ -219,23 +270,23 @@ static mrb_value CCPoint___ctor(mrb_state *mrb, mrb_value self) {
   if (arg_count == 0) {
   
     
-    CCPoint* retval = /*TODO delete*/new CCPoint();
+    CCPoint* retval = new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint();
     DATA_TYPE(self) = &_mrb_data_type_CCPoint; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 2) {
     float p0 = get_float(args[0]);
     float p1 = get_float(args[1]);
     
-    CCPoint* retval = /*TODO delete*/new CCPoint(p0, p1);
+    CCPoint* retval = new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(p0, p1);
     DATA_TYPE(self) = &_mrb_data_type_CCPoint; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 1) {
     const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
     
-    CCPoint* retval = /*TODO delete*/new CCPoint(p0);
+    CCPoint* retval = new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(p0);
     DATA_TYPE(self) = &_mrb_data_type_CCPoint; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 1) {
     const CCSize& p0 = *static_cast<CCSize*>(DATA_PTR(args[0]));
     
-    CCPoint* retval = /*TODO delete*/new CCPoint(p0);
+    CCPoint* retval = new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(p0);
     DATA_TYPE(self) = &_mrb_data_type_CCPoint; DATA_PTR(self) = retval; return self;
   } else {
 
@@ -284,7 +335,7 @@ static void installCCPoint(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCSize
 static void _dfree_CCSize(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCSize\n");
+  ((CCSize*)ptr)->~CCSize(); mrb_free(mrb, ptr);
 }
 static struct mrb_data_type _mrb_data_type_CCSize = { "CCSize", _dfree_CCSize };
 mrb_value _wrap_CCSize(mrb_state *mrb, const CCSize* ptr) {
@@ -303,23 +354,23 @@ static mrb_value CCSize___ctor(mrb_state *mrb, mrb_value self) {
   if (arg_count == 0) {
   
     
-    CCSize* retval = /*TODO delete*/new CCSize();
+    CCSize* retval = new(mrb_malloc(mrb, sizeof(CCSize))) CCSize();
     DATA_TYPE(self) = &_mrb_data_type_CCSize; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 2) {
     float p0 = get_float(args[0]);
     float p1 = get_float(args[1]);
     
-    CCSize* retval = /*TODO delete*/new CCSize(p0, p1);
+    CCSize* retval = new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(p0, p1);
     DATA_TYPE(self) = &_mrb_data_type_CCSize; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 1) {
     const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
     
-    CCSize* retval = /*TODO delete*/new CCSize(p0);
+    CCSize* retval = new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(p0);
     DATA_TYPE(self) = &_mrb_data_type_CCSize; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 1) {
     const CCSize& p0 = *static_cast<CCSize*>(DATA_PTR(args[0]));
     
-    CCSize* retval = /*TODO delete*/new CCSize(p0);
+    CCSize* retval = new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(p0);
     DATA_TYPE(self) = &_mrb_data_type_CCSize; DATA_PTR(self) = retval; return self;
   } else {
 
@@ -368,7 +419,7 @@ static void installCCSize(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCRect
 static void _dfree_CCRect(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCRect\n");
+  ((CCRect*)ptr)->~CCRect(); mrb_free(mrb, ptr);
 }
 static struct mrb_data_type _mrb_data_type_CCRect = { "CCRect", _dfree_CCRect };
 mrb_value _wrap_CCRect(mrb_state *mrb, const CCRect* ptr) {
@@ -387,7 +438,7 @@ static mrb_value CCRect___ctor(mrb_state *mrb, mrb_value self) {
   if (arg_count == 0) {
   
     
-    CCRect* retval = /*TODO delete*/new CCRect();
+    CCRect* retval = new(mrb_malloc(mrb, sizeof(CCRect))) CCRect();
     DATA_TYPE(self) = &_mrb_data_type_CCRect; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 4) {
     float p0 = get_float(args[0]);
@@ -395,12 +446,12 @@ static mrb_value CCRect___ctor(mrb_state *mrb, mrb_value self) {
     float p2 = get_float(args[2]);
     float p3 = get_float(args[3]);
     
-    CCRect* retval = /*TODO delete*/new CCRect(p0, p1, p2, p3);
+    CCRect* retval = new(mrb_malloc(mrb, sizeof(CCRect))) CCRect(p0, p1, p2, p3);
     DATA_TYPE(self) = &_mrb_data_type_CCRect; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 1) {
     const CCRect& p0 = *static_cast<CCRect*>(DATA_PTR(args[0]));
     
-    CCRect* retval = /*TODO delete*/new CCRect(p0);
+    CCRect* retval = new(mrb_malloc(mrb, sizeof(CCRect))) CCRect(p0);
     DATA_TYPE(self) = &_mrb_data_type_CCRect; DATA_PTR(self) = retval; return self;
   } else {
 
@@ -469,30 +520,9 @@ static void installCCRect(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
-// ccBlendFunc
-static void _dfree_ccBlendFunc(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_ccBlendFunc\n");
-}
-static struct mrb_data_type _mrb_data_type_ccBlendFunc = { "ccBlendFunc", _dfree_ccBlendFunc };
-mrb_value _wrap_ccBlendFunc(mrb_state *mrb, const ccBlendFunc* ptr) {
-  struct RClass* tc = getClass(mrb, "CcBlendFunc");
-  assert(tc != NULL);
-  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_ccBlendFunc, NULL));
-  DATA_TYPE(instance) = &_mrb_data_type_ccBlendFunc;
-  DATA_PTR(instance) = (void*)ptr;
-  return instance;
-}
-
-static void installccBlendFunc(mrb_state *mrb, struct RClass *mod) {
-  struct RClass* parent = mrb->object_class;
-  struct RClass* tc = mrb_define_class_under(mrb, mod, "CcBlendFunc", parent);
-  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
-}
-
-////////////////////////////////////////////////////////////////
 // CCObject
 static void _dfree_CCObject(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCObject\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCObject = { "CCObject", _dfree_CCObject };
 mrb_value _wrap_CCObject(mrb_state *mrb, const CCObject* ptr) {
@@ -567,7 +597,7 @@ static void installCCObject(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCArray
 static void _dfree_CCArray(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCArray\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCArray = { "CCArray", _dfree_CCArray };
 mrb_value _wrap_CCArray(mrb_state *mrb, const CCArray* ptr) {
@@ -607,7 +637,7 @@ static void installCCArray(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCAction
 static void _dfree_CCAction(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCAction\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCAction = { "CCAction", _dfree_CCAction };
 mrb_value _wrap_CCAction(mrb_state *mrb, const CCAction* ptr) {
@@ -628,7 +658,7 @@ static void installCCAction(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCFiniteTimeAction
 static void _dfree_CCFiniteTimeAction(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCFiniteTimeAction\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCFiniteTimeAction = { "CCFiniteTimeAction", _dfree_CCFiniteTimeAction };
 mrb_value _wrap_CCFiniteTimeAction(mrb_state *mrb, const CCFiniteTimeAction* ptr) {
@@ -649,7 +679,7 @@ static void installCCFiniteTimeAction(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCActionInterval
 static void _dfree_CCActionInterval(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCActionInterval\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCActionInterval = { "CCActionInterval", _dfree_CCActionInterval };
 mrb_value _wrap_CCActionInterval(mrb_state *mrb, const CCActionInterval* ptr) {
@@ -670,7 +700,7 @@ static void installCCActionInterval(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCActionInstant
 static void _dfree_CCActionInstant(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCActionInstant\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCActionInstant = { "CCActionInstant", _dfree_CCActionInstant };
 mrb_value _wrap_CCActionInstant(mrb_state *mrb, const CCActionInstant* ptr) {
@@ -691,7 +721,7 @@ static void installCCActionInstant(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCNode
 static void _dfree_CCNode(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCNode\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCNode = { "CCNode", _dfree_CCNode };
 mrb_value _wrap_CCNode(mrb_state *mrb, const CCNode* ptr) {
@@ -1026,7 +1056,7 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCNodeRGBA
 static void _dfree_CCNodeRGBA(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCNodeRGBA\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCNodeRGBA = { "CCNodeRGBA", _dfree_CCNodeRGBA };
 mrb_value _wrap_CCNodeRGBA(mrb_state *mrb, const CCNodeRGBA* ptr) {
@@ -1058,7 +1088,7 @@ static void installCCNodeRGBA(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCTexture2D
 static void _dfree_CCTexture2D(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCTexture2D\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCTexture2D = { "CCTexture2D", _dfree_CCTexture2D };
 mrb_value _wrap_CCTexture2D(mrb_state *mrb, const CCTexture2D* ptr) {
@@ -1079,7 +1109,7 @@ static void installCCTexture2D(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCTextureCache
 static void _dfree_CCTextureCache(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCTextureCache\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCTextureCache = { "CCTextureCache", _dfree_CCTextureCache };
 mrb_value _wrap_CCTextureCache(mrb_state *mrb, const CCTextureCache* ptr) {
@@ -1119,7 +1149,7 @@ static void installCCTextureCache(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCSpriteFrame
 static void _dfree_CCSpriteFrame(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCSpriteFrame\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCSpriteFrame = { "CCSpriteFrame", _dfree_CCSpriteFrame };
 mrb_value _wrap_CCSpriteFrame(mrb_state *mrb, const CCSpriteFrame* ptr) {
@@ -1164,7 +1194,7 @@ static void installCCSpriteFrame(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCAnimation
 static void _dfree_CCAnimation(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCAnimation\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCAnimation = { "CCAnimation", _dfree_CCAnimation };
 mrb_value _wrap_CCAnimation(mrb_state *mrb, const CCAnimation* ptr) {
@@ -1197,7 +1227,7 @@ static void installCCAnimation(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCAnimate
 static void _dfree_CCAnimate(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCAnimate\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCAnimate = { "CCAnimate", _dfree_CCAnimate };
 mrb_value _wrap_CCAnimate(mrb_state *mrb, const CCAnimate* ptr) {
@@ -1229,7 +1259,7 @@ static void installCCAnimate(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCRepeatForever
 static void _dfree_CCRepeatForever(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCRepeatForever\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCRepeatForever = { "CCRepeatForever", _dfree_CCRepeatForever };
 mrb_value _wrap_CCRepeatForever(mrb_state *mrb, const CCRepeatForever* ptr) {
@@ -1261,7 +1291,7 @@ static void installCCRepeatForever(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCScaleTo
 static void _dfree_CCScaleTo(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCScaleTo\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCScaleTo = { "CCScaleTo", _dfree_CCScaleTo };
 mrb_value _wrap_CCScaleTo(mrb_state *mrb, const CCScaleTo* ptr) {
@@ -1294,7 +1324,7 @@ static void installCCScaleTo(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCMoveBy
 static void _dfree_CCMoveBy(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCMoveBy\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCMoveBy = { "CCMoveBy", _dfree_CCMoveBy };
 mrb_value _wrap_CCMoveBy(mrb_state *mrb, const CCMoveBy* ptr) {
@@ -1327,7 +1357,7 @@ static void installCCMoveBy(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCMoveTo
 static void _dfree_CCMoveTo(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCMoveTo\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCMoveTo = { "CCMoveTo", _dfree_CCMoveTo };
 mrb_value _wrap_CCMoveTo(mrb_state *mrb, const CCMoveTo* ptr) {
@@ -1360,7 +1390,7 @@ static void installCCMoveTo(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCCallFunc
 static void _dfree_CCCallFunc(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCCallFunc\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCCallFunc = { "CCCallFunc", _dfree_CCCallFunc };
 mrb_value _wrap_CCCallFunc(mrb_state *mrb, const CCCallFunc* ptr) {
@@ -1393,7 +1423,7 @@ static void installCCCallFunc(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCSequence
 static void _dfree_CCSequence(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCSequence\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCSequence = { "CCSequence", _dfree_CCSequence };
 mrb_value _wrap_CCSequence(mrb_state *mrb, const CCSequence* ptr) {
@@ -1426,7 +1456,7 @@ static void installCCSequence(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCSpawn
 static void _dfree_CCSpawn(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCSpawn\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCSpawn = { "CCSpawn", _dfree_CCSpawn };
 mrb_value _wrap_CCSpawn(mrb_state *mrb, const CCSpawn* ptr) {
@@ -1459,7 +1489,7 @@ static void installCCSpawn(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCSprite
 static void _dfree_CCSprite(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCSprite\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCSprite = { "CCSprite", _dfree_CCSprite };
 mrb_value _wrap_CCSprite(mrb_state *mrb, const CCSprite* ptr) {
@@ -1566,7 +1596,7 @@ static void installCCSprite(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCSpriteBatchNode
 static void _dfree_CCSpriteBatchNode(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCSpriteBatchNode\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCSpriteBatchNode = { "CCSpriteBatchNode", _dfree_CCSpriteBatchNode };
 mrb_value _wrap_CCSpriteBatchNode(mrb_state *mrb, const CCSpriteBatchNode* ptr) {
@@ -1618,7 +1648,7 @@ static void installCCSpriteBatchNode(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCLabelTTF
 static void _dfree_CCLabelTTF(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCLabelTTF\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCLabelTTF = { "CCLabelTTF", _dfree_CCLabelTTF };
 mrb_value _wrap_CCLabelTTF(mrb_state *mrb, const CCLabelTTF* ptr) {
@@ -1688,7 +1718,7 @@ static void installCCLabelTTF(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCLabelBMFont
 static void _dfree_CCLabelBMFont(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCLabelBMFont\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCLabelBMFont = { "CCLabelBMFont", _dfree_CCLabelBMFont };
 mrb_value _wrap_CCLabelBMFont(mrb_state *mrb, const CCLabelBMFont* ptr) {
@@ -1745,7 +1775,7 @@ static void installCCLabelBMFont(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCDrawNode
 static void _dfree_CCDrawNode(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCDrawNode\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCDrawNode = { "CCDrawNode", _dfree_CCDrawNode };
 mrb_value _wrap_CCDrawNode(mrb_state *mrb, const CCDrawNode* ptr) {
@@ -1849,7 +1879,7 @@ static void installCCDrawNode(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCLayer
 static void _dfree_CCLayer(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCLayer\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCLayer = { "CCLayer", _dfree_CCLayer };
 mrb_value _wrap_CCLayer(mrb_state *mrb, const CCLayer* ptr) {
@@ -1950,7 +1980,7 @@ static void installCCLayer(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCLayerRGBA
 static void _dfree_CCLayerRGBA(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCLayerRGBA\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCLayerRGBA = { "CCLayerRGBA", _dfree_CCLayerRGBA };
 mrb_value _wrap_CCLayerRGBA(mrb_state *mrb, const CCLayerRGBA* ptr) {
@@ -1971,7 +2001,7 @@ static void installCCLayerRGBA(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCScene
 static void _dfree_CCScene(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCScene\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCScene = { "CCScene", _dfree_CCScene };
 mrb_value _wrap_CCScene(mrb_state *mrb, const CCScene* ptr) {
@@ -2000,7 +2030,7 @@ static void installCCScene(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCScheduler
 static void _dfree_CCScheduler(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCScheduler\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCScheduler = { "CCScheduler", _dfree_CCScheduler };
 mrb_value _wrap_CCScheduler(mrb_state *mrb, const CCScheduler* ptr) {
@@ -2046,7 +2076,7 @@ static void installCCScheduler(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCDirector
 static void _dfree_CCDirector(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCDirector\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCDirector = { "CCDirector", _dfree_CCDirector };
 mrb_value _wrap_CCDirector(mrb_state *mrb, const CCDirector* ptr) {
@@ -2173,7 +2203,7 @@ static void installCCDirector(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCEGLView
 static void _dfree_CCEGLView(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCEGLView\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCEGLView = { "CCEGLView", _dfree_CCEGLView };
 mrb_value _wrap_CCEGLView(mrb_state *mrb, const CCEGLView* ptr) {
@@ -2231,7 +2261,7 @@ static void installCCEGLView(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCFileUtils
 static void _dfree_CCFileUtils(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCFileUtils\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCFileUtils = { "CCFileUtils", _dfree_CCFileUtils };
 mrb_value _wrap_CCFileUtils(mrb_state *mrb, const CCFileUtils* ptr) {
@@ -2271,7 +2301,7 @@ static void installCCFileUtils(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCMenuItem
 static void _dfree_CCMenuItem(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCMenuItem\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCMenuItem = { "CCMenuItem", _dfree_CCMenuItem };
 mrb_value _wrap_CCMenuItem(mrb_state *mrb, const CCMenuItem* ptr) {
@@ -2304,7 +2334,7 @@ static void installCCMenuItem(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCMenuItemSprite
 static void _dfree_CCMenuItemSprite(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCMenuItemSprite\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCMenuItemSprite = { "CCMenuItemSprite", _dfree_CCMenuItemSprite };
 mrb_value _wrap_CCMenuItemSprite(mrb_state *mrb, const CCMenuItemSprite* ptr) {
@@ -2325,7 +2355,7 @@ static void installCCMenuItemSprite(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCMenuItemImage
 static void _dfree_CCMenuItemImage(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCMenuItemImage\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCMenuItemImage = { "CCMenuItemImage", _dfree_CCMenuItemImage };
 mrb_value _wrap_CCMenuItemImage(mrb_state *mrb, const CCMenuItemImage* ptr) {
@@ -2358,7 +2388,7 @@ static void installCCMenuItemImage(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCMenuItemLabel
 static void _dfree_CCMenuItemLabel(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCMenuItemLabel\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCMenuItemLabel = { "CCMenuItemLabel", _dfree_CCMenuItemLabel };
 mrb_value _wrap_CCMenuItemLabel(mrb_state *mrb, const CCMenuItemLabel* ptr) {
@@ -2379,7 +2409,7 @@ static void installCCMenuItemLabel(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCMenuItemFont
 static void _dfree_CCMenuItemFont(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCMenuItemFont\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCMenuItemFont = { "CCMenuItemFont", _dfree_CCMenuItemFont };
 mrb_value _wrap_CCMenuItemFont(mrb_state *mrb, const CCMenuItemFont* ptr) {
@@ -2411,7 +2441,7 @@ static void installCCMenuItemFont(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCMenu
 static void _dfree_CCMenu(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCMenu\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCMenu = { "CCMenu", _dfree_CCMenu };
 mrb_value _wrap_CCMenu(mrb_state *mrb, const CCMenu* ptr) {
@@ -2451,7 +2481,7 @@ static void installCCMenu(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCTouch
 static void _dfree_CCTouch(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCTouch\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCTouch = { "CCTouch", _dfree_CCTouch };
 mrb_value _wrap_CCTouch(mrb_state *mrb, const CCTouch* ptr) {
@@ -2536,7 +2566,7 @@ static void installCCTouch(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCUserDefault
 static void _dfree_CCUserDefault(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCUserDefault\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCUserDefault = { "CCUserDefault", _dfree_CCUserDefault };
 mrb_value _wrap_CCUserDefault(mrb_state *mrb, const CCUserDefault* ptr) {
@@ -2701,10 +2731,10 @@ void installMrubyCocos2dx(mrb_state *mrb) {
   mrb_define_module_function(mrb, mod, "ccc4f", ccc4f__, MRB_ARGS_ANY());
   installCcColor3B(mrb, mod);
   installCcColor4F(mrb, mod);
+  installccBlendFunc(mrb, mod);
   installCCPoint(mrb, mod);
   installCCSize(mrb, mod);
   installCCRect(mrb, mod);
-  installccBlendFunc(mrb, mod);
   installCCObject(mrb, mod);
   installCCArray(mrb, mod);
   installCCAction(mrb, mod);

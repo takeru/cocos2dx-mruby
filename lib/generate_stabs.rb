@@ -127,7 +127,7 @@ END
 ////////////////////////////////////////////////////////////////
 // #{klass}
 EOD
-      declare_type(klass)
+      declare_type(klass, info[:memory_management])
       klass_methods.each do |method_name, methods|
         declare_methods(klass, method_name, methods)
       end
@@ -183,10 +183,18 @@ EOD
 EOD
   end
 
-  def declare_type(klass)
+  def declare_type(klass, memory_management)
+    case memory_management
+    when :none
+      dfree_code = "//nop"
+    when :default
+      dfree_code = "((#{klass}*)ptr)->~#{klass}(); mrb_free(mrb, ptr);"
+    else
+      raise "invalid memory_management=#{memory_management} for #{klass}."
+    end
     puts <<EOD
 static void _dfree_#{klass}(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_#{klass}\\n");
+  #{dfree_code}
 }
 static struct mrb_data_type _mrb_data_type_#{klass} = { "#{klass}", _dfree_#{klass} };
 mrb_value _wrap_#{klass}(mrb_state *mrb, const #{klass}* ptr) {
@@ -306,7 +314,7 @@ EOD
       call_method = "#{method_name}"
     elsif is_constructor?(flag)
       get_instance = ''
-      call_method = "/*TODO delete*/new #{klass}"
+      call_method = "new(mrb_malloc(mrb, sizeof(#{klass}))) #{klass}"
       return_stmt = "DATA_TYPE(self) = &_mrb_data_type_#{klass}; DATA_PTR(self) = retval; return self;"
     elsif is_static?(flag)
       get_instance = ''
@@ -441,8 +449,6 @@ EOD
       elsif is_enum?(type)
         return "mrb_fixnum_value((int)#{varname})"
       else
-        # TODO: Think other way to copy object.
-        # TODO: release with mrb_free!!!!
         return %!_wrap_#{plain_type}(mrb, new(mrb_malloc(mrb, sizeof(#{plain_type}))) #{plain_type}(#{varname}))!
       end
     end

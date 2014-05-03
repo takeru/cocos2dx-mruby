@@ -74,7 +74,7 @@ static struct RClass* getClass(mrb_state *mrb, const char* className) {
 ////////////////////////////////////////////////////////////////
 // CCGestureRecognizer
 static void _dfree_CCGestureRecognizer(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCGestureRecognizer\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCGestureRecognizer = { "CCGestureRecognizer", _dfree_CCGestureRecognizer };
 mrb_value _wrap_CCGestureRecognizer(mrb_state *mrb, const CCGestureRecognizer* ptr) {
@@ -106,7 +106,7 @@ static void installCCGestureRecognizer(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCSwipe
 static void _dfree_CCSwipe(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCSwipe\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCSwipe = { "CCSwipe", _dfree_CCSwipe };
 mrb_value _wrap_CCSwipe(mrb_state *mrb, const CCSwipe* ptr) {
@@ -157,7 +157,7 @@ static void installCCSwipe(mrb_state *mrb, struct RClass *mod) {
 ////////////////////////////////////////////////////////////////
 // CCSwipeGestureRecognizer
 static void _dfree_CCSwipeGestureRecognizer(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCSwipeGestureRecognizer\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCSwipeGestureRecognizer = { "CCSwipeGestureRecognizer", _dfree_CCSwipeGestureRecognizer };
 mrb_value _wrap_CCSwipeGestureRecognizer(mrb_state *mrb, const CCSwipeGestureRecognizer* ptr) {
@@ -189,7 +189,7 @@ static void installCCSwipeGestureRecognizer(mrb_state *mrb, struct RClass *mod) 
 ////////////////////////////////////////////////////////////////
 // CCSwipeGestureRecognizerForScript
 static void _dfree_CCSwipeGestureRecognizerForScript(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_CCSwipeGestureRecognizerForScript\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_CCSwipeGestureRecognizerForScript = { "CCSwipeGestureRecognizerForScript", _dfree_CCSwipeGestureRecognizerForScript };
 mrb_value _wrap_CCSwipeGestureRecognizerForScript(mrb_state *mrb, const CCSwipeGestureRecognizerForScript* ptr) {

@@ -71,7 +71,8 @@ Functions = [
 
 Classes = {
   'CcColor3B' => {
-    :parent => nil,
+    :parent => nil,#:struct,
+    :memory_management => :default,
     :methods => [
                  [ATTR_ACCESSOR, 'unsigned char', 'r'],
                  [ATTR_ACCESSOR, 'unsigned char', 'g'],
@@ -79,7 +80,8 @@ Classes = {
                 ],
   },
   'CcColor4F' => {
-    :parent => nil,
+    :parent => nil,#:struct,
+    :memory_management => :default,
     :methods => [
                  [ATTR_ACCESSOR, 'float', 'r'],
                  [ATTR_ACCESSOR, 'float', 'g'],
@@ -87,8 +89,17 @@ Classes = {
                  [ATTR_ACCESSOR, 'float', 'a'],
                 ],
   },
+  'ccBlendFunc' => {
+    :parent => nil,#:struct,
+    :memory_management => :default,
+    :methods => [
+                 [ATTR_ACCESSOR, 'unsigned int', 'src'],
+                 [ATTR_ACCESSOR, 'unsigned int', 'dst'],
+                ],
+  },
   'CCPoint' => {
     :parent => nil,
+    :memory_management => :default,
     :methods => [
                  [CONSTRUCTOR, []],
                  [CONSTRUCTOR, ['float', 'float']],
@@ -100,6 +111,7 @@ Classes = {
   },
   'CCSize' => {
     :parent => nil,
+    :memory_management => :default,
     :methods => [
                  [CONSTRUCTOR, []],
                  [CONSTRUCTOR, ['float', 'float']],
@@ -111,6 +123,7 @@ Classes = {
   },
   'CCRect' => {
     :parent => nil,
+    :memory_management => :default,
     :methods => [
                  [CONSTRUCTOR, []],
                  [CONSTRUCTOR, ['float', 'float', 'float', 'float']],
@@ -121,13 +134,9 @@ Classes = {
                  [0, 'bool', 'intersectsRect', ['const CCRect&']],
                 ],
   },
-  'ccBlendFunc' => {
-    :parent => nil,
-    :methods => [
-                ],
-  },
   'CCObject' => {
     :parent => nil,
+    :memory_management => :none,
     :methods => [
                  [0, 'void', 'release', []],
                  [0, 'CCObject*', 'autorelease', []],
@@ -139,6 +148,7 @@ Classes = {
   },
   'CCArray' => {
     :parent => 'CCObject',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCArray*', 'create', []],
                  [0, 'void', 'addObject', ['CCObject*']],
@@ -146,30 +156,35 @@ Classes = {
   },
   'CCAction' => {
     :parent => 'CCObject',
+    :memory_management => :none,
     :methods => [
                   # TODO
                 ],
   },
   'CCFiniteTimeAction' => {
     :parent => 'CCAction',
+    :memory_management => :none,
     :methods => [
                   # TODO
                 ],
   },
   'CCActionInterval' => {
     :parent => 'CCFiniteTimeAction',
+    :memory_management => :none,
     :methods => [
                   # TODO
                 ],
   },
   'CCActionInstant' => {
     :parent => 'CCFiniteTimeAction',
+    :memory_management => :none,
     :methods => [
                   # TODO
                 ],
   },
   'CCNode' => {
     :parent => 'CCObject',
+    :memory_management => :none,
     :methods => [
                  [0, 'void', 'setPosition', ['const CCPoint&']],
                  [0, 'void', 'setPosition', ['float', 'float']],
@@ -207,17 +222,20 @@ Classes = {
   },
   'CCNodeRGBA' => {
     :parent => 'CCNode',
+    :memory_management => :none,
     :methods => [
                  [0, 'void', 'setColor', ['const CcColor3B&']],
                 ],
   },
   'CCTexture2D' => {
     :parent => 'CCObject',
+    :memory_management => :none,
     :methods => [
                 ],
   },
   'CCTextureCache' => {
     :parent => 'CCObject',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCTextureCache*', 'sharedTextureCache', []],
                  [0, 'CCTexture2D*', 'addImage', ['const char*']],
@@ -225,6 +243,7 @@ Classes = {
   },
   'CCSpriteFrame' => {
     :parent => 'CCObject',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCSpriteFrame*', 'create', ['const char*', 'const CCRect&']],
                  [STATIC, 'CCSpriteFrame*', 'createWithTexture', ['CCTexture2D*', 'const CCRect&']],
@@ -232,60 +251,70 @@ Classes = {
   },
   'CCAnimation' => {
     :parent => 'CCObject',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCAnimation*', 'createWithSpriteFrames', ['CCArray*', 'float']],
                 ],
   },
   'CCAnimate' => {
     :parent => 'CCActionInterval',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCAnimate*', 'create', ['CCAnimation*']],
                 ],
   },
   'CCRepeatForever' => {
     :parent => 'CCActionInterval',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCRepeatForever*', 'create', ['CCActionInterval*']],
                 ],
   },
   'CCScaleTo' => {
     :parent => 'CCActionInterval',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCScaleTo*', 'create', ['float', 'float']],
                 ],
   },
   'CCMoveBy' => {
     :parent => 'CCActionInterval',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCMoveBy*', 'create', ['float', 'const CCPoint&']],
                 ],
   },
   'CCMoveTo' => {
     :parent => 'CCMoveBy',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCMoveTo*', 'create', ['float', 'const CCPoint&']],
                 ],
   },
   'CCCallFunc' => {
     :parent => 'CCActionInstant',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCCallFunc*', 'create', ['block']],
                 ],
   },
   'CCSequence' => {
     :parent => 'CCActionInterval',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCActionInterval*', 'createWithTwoActions', ['CCFiniteTimeAction*', 'CCFiniteTimeAction*']],
                 ],
   },
   'CCSpawn' => {
     :parent => 'CCActionInterval',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCActionInterval*', 'createWithTwoActions', ['CCFiniteTimeAction*', 'CCFiniteTimeAction*']],
                 ],
   },
   'CCSprite' => {
     :parent => 'CCNodeRGBA',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCSprite*', 'create', []],
                  [STATIC, 'CCSprite*', 'create', ['const char*']],
@@ -299,6 +328,7 @@ Classes = {
   },
   'CCSpriteBatchNode' => {
     :parent => 'CCNode',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCSpriteBatchNode*', 'create', ['const char*', 'unsigned int']],
                  [STATIC, 'CCSpriteBatchNode*', 'create', ['const char*']],
@@ -307,6 +337,7 @@ Classes = {
   },
   'CCLabelTTF' => {
     :parent => 'CCSprite',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCLabelTTF*', 'create', ['const char*', 'const char*', 'float']],
                  [STATIC, 'CCLabelTTF*', 'create', ['const char*', 'const char*', 'float',
@@ -318,6 +349,7 @@ Classes = {
   },
   'CCLabelBMFont' => {
     :parent => 'CCSpriteBatchNode',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCLabelBMFont*', 'create', ['const char*', 'const char*', 'float']],
                  [STATIC, 'CCLabelBMFont*', 'create', ['const char*', 'const char*']],
@@ -326,6 +358,7 @@ Classes = {
   },
   'CCDrawNode' => {
     :parent => 'CCNode',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCDrawNode*', 'create', []],
                  [0, 'void', 'drawDot', ['const CCPoint&', 'float', 'const ccColor4F&']],
@@ -353,6 +386,7 @@ END
   },
   'CCLayer' => {
     :parent => 'CCNode',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCLayer*', 'create', []],
                  [0, 'void', 'registerScriptTouchHandler', ['block']],
@@ -366,17 +400,20 @@ END
   },
   'CCLayerRGBA' => {
     :parent => 'CCLayer',
+    :memory_management => :none,
     :methods => [
                 ],
   },
   'CCScene' => {
     :parent => 'CCNode',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCScene*', 'create', []],
                 ],
   },
   'CCScheduler' => {
     :parent => 'CCObject',
+    :memory_management => :none,
     :methods => [
                  [0, 'unsigned int', 'scheduleScriptFunc', ['block', 'float', 'bool']],
                  [0, 'void', 'unscheduleScriptEntry', ['unsigned int']],
@@ -384,6 +421,7 @@ END
   },
   'CCDirector' => {
     :parent => 'CCObject', # TypeInfo
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCDirector*', 'sharedDirector', []],
                  [0, 'CCSize', 'getWinSize', []],
@@ -400,6 +438,7 @@ END
   },
   'CCEGLView' => {
     :parent => nil, # CCEGLViewProtocol
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCEGLView*', 'sharedOpenGLView', []],
                  [0, 'const CCSize&', 'getDesignResolutionSize', []],
@@ -409,6 +448,7 @@ END
   },
   'CCFileUtils' => {
     :parent => nil, # TypeInfo
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCFileUtils*', 'sharedFileUtils', []],
                  [0, 'std::string', 'fullPathForFilename', ['const char*']],
@@ -417,34 +457,40 @@ END
 
   'CCMenuItem' => {
     :parent => 'CCNodeRGBA',
+    :memory_management => :none,
     :methods => [
                  [0, 'void', 'registerScriptTapHandler', ['block']],
                 ],
   },
   'CCMenuItemSprite' => {
     :parent => 'CCMenuItem',
+    :memory_management => :none,
     :methods => [
                 ],
   },
   'CCMenuItemImage' => {
     :parent => 'CCMenuItemSprite',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCMenuItemImage*', 'create', ['const char*', 'const char*']],
                 ],
   },
   'CCMenuItemLabel' => {
     :parent => 'CCMenuItem',
+    :memory_management => :none,
     :methods => [
                 ],
   },
   'CCMenuItemFont' => {
     :parent => 'CCMenuItemLabel',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCMenuItemFont*', 'create', ['const char*']],
                 ],
   },
   'CCMenu' => {
     :parent => 'CCLayerRGBA',
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCMenu*', 'create', []],
                  [STATIC, 'CCMenu*', 'createWithItem', ['CCMenuItem*']],
@@ -452,6 +498,7 @@ END
   },
   'CCTouch' => {
     :parent => 'CCObject',
+    :memory_management => :none,
     :methods => [
                  [0, 'CCPoint', 'getLocation', []],
                  [0, 'CCPoint', 'getPreviousLocation', []],
@@ -465,6 +512,7 @@ END
   },
   'CCUserDefault' => {
     :parent => nil,
+    :memory_management => :none,
     :methods => [
                  [STATIC, 'CCUserDefault*', 'sharedUserDefault', []],
                  [0, 'int', 'getIntegerForKey', ['const char*', 'int']],

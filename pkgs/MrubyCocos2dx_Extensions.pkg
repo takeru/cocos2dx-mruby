@@ -50,12 +50,14 @@ Constants = [
 Classes = {
   'CCGestureRecognizer' => {
     :parent => 'CCLayer',
+    :memory_management => :none,
     :methods => [
       [0, 'void', 'setCancelsTouchesInView', ['bool']],
     ],
   },
   'CCSwipe' => {
     :parent => 'CCObject',
+    :memory_management => :none,
     :methods => [
       [ATTR_ACCESSOR, 'CCSwipeGestureRecognizerDirection', 'direction'],
       [ATTR_ACCESSOR, 'CCPoint&', 'location'],
@@ -63,12 +65,14 @@ Classes = {
   },
   'CCSwipeGestureRecognizer' => {
     :parent => 'CCGestureRecognizer',
+    :memory_management => :none,
     :methods => [
       [0, 'void', 'setDirection', ['int']], #CCSwipeGestureRecognizerDirection
     ],
   },
   'CCSwipeGestureRecognizerForScript' => {
     :parent => 'CCSwipeGestureRecognizer',
+    :memory_management => :none,
     :methods => [
       [STATIC, 'CCSwipeGestureRecognizerForScript*', 'create', []],
       [0, 'void', 'setHandler', ['block']],

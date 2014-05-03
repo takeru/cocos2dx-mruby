@@ -104,7 +104,7 @@ static struct RClass* getClass(mrb_state *mrb, const char* className) {
 ////////////////////////////////////////////////////////////////
 // WebSocket
 static void _dfree_WebSocket(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_WebSocket\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_WebSocket = { "WebSocket", _dfree_WebSocket };
 mrb_value _wrap_WebSocket(mrb_state *mrb, const WebSocket* ptr) {
@@ -119,7 +119,7 @@ mrb_value _wrap_WebSocket(mrb_state *mrb, const WebSocket* ptr) {
 static mrb_value WebSocket___ctor(mrb_state *mrb, mrb_value self) {
 
   
-  WebSocket* retval = /*TODO delete*/new WebSocket();
+  WebSocket* retval = new(mrb_malloc(mrb, sizeof(WebSocket))) WebSocket();
   DATA_TYPE(self) = &_mrb_data_type_WebSocket; DATA_PTR(self) = retval; return self;
 }
 

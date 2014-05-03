@@ -43,7 +43,7 @@ static struct RClass* getClass(mrb_state *mrb, const char* className) {
 ////////////////////////////////////////////////////////////////
 // SimpleAudioEngine
 static void _dfree_SimpleAudioEngine(mrb_state *mrb, void *ptr) {
-  // printf("_dfree_SimpleAudioEngine\n");
+  //nop
 }
 static struct mrb_data_type _mrb_data_type_SimpleAudioEngine = { "SimpleAudioEngine", _dfree_SimpleAudioEngine };
 mrb_value _wrap_SimpleAudioEngine(mrb_state *mrb, const SimpleAudioEngine* ptr) {

@@ -438,7 +438,7 @@ int CCMrubyEngine::executeEventWithArgs(int nHandler, CCArray* pArgs)
         }
     }
     mrb_funcall_argv(m_mrb, block, mrb_intern_cstr(m_mrb,"call"), pArgs->count(), args);
-    delete args;
+    delete[] args;
 
     bool exc = checkUncaughtException(m_mrb);
     mrb_gc_arena_restore(m_mrb, arena);

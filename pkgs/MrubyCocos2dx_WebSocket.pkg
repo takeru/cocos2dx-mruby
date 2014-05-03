@@ -70,6 +70,7 @@ EOD
 Classes = {
   'WebSocket' => {
     :parent => nil,
+    :memory_management => :none,
     :methods => [
                  [CONSTRUCTOR, []],
                  [STATIC, 'WebSocket*', 'create', ['block', 'const std::string&']],
