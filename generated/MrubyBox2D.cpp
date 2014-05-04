@@ -532,6 +532,17 @@ static mrb_value b2Body_GetUserData(mrb_state *mrb, mrb_value self) {
   return (retval == NULL ? mrb_nil_value() : mrb_voidp_value(mrb, retval));
 }
 
+static mrb_value b2Body_SetTransform(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const b2Vec2& p0 = *static_cast<b2Vec2*>(DATA_PTR(args[0]));
+  float p1 = get_float(args[1]);
+  b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
+  instance->SetTransform(p0, p1);
+  return mrb_nil_value();
+}
+
 static mrb_value b2Body_GetPosition(mrb_state *mrb, mrb_value self) {
 
   b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
@@ -546,6 +557,40 @@ static mrb_value b2Body_GetAngle(mrb_state *mrb, mrb_value self) {
   return mrb_float_value(mrb, retval);
 }
 
+static mrb_value b2Body_SetLinearVelocity(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const b2Vec2& p0 = *static_cast<b2Vec2*>(DATA_PTR(args[0]));
+  b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
+  instance->SetLinearVelocity(p0);
+  return mrb_nil_value();
+}
+
+static mrb_value b2Body_GetLinearVelocity(mrb_state *mrb, mrb_value self) {
+
+  b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
+  b2Vec2 retval = instance->GetLinearVelocity();
+  return _wrap_b2Vec2(mrb, new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(retval));
+}
+
+static mrb_value b2Body_SetAngularVelocity(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  float p0 = get_float(args[0]);
+  b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
+  instance->SetAngularVelocity(p0);
+  return mrb_nil_value();
+}
+
+static mrb_value b2Body_GetAngularVelocity(mrb_state *mrb, mrb_value self) {
+
+  b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
+  float retval = instance->GetAngularVelocity();
+  return mrb_float_value(mrb, retval);
+}
+
 static void installb2Body(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "B2Body", parent);
@@ -554,8 +599,13 @@ static void installb2Body(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "destroyFixture", b2Body_DestroyFixture, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getNext", b2Body_GetNext, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getUserData", b2Body_GetUserData, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setTransform", b2Body_SetTransform, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getPosition", b2Body_GetPosition, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getAngle", b2Body_GetAngle, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setLinearVelocity", b2Body_SetLinearVelocity, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getLinearVelocity", b2Body_GetLinearVelocity, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setAngularVelocity", b2Body_SetAngularVelocity, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getAngularVelocity", b2Body_GetAngularVelocity, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////

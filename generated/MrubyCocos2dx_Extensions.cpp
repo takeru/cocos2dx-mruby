@@ -4,6 +4,7 @@
 extern int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc);
 
 #include "CCSwipeGestureRecognizer.h"
+#include "CCPinchGestureRecognizer.h"
 
 USING_NS_CC;
 
@@ -27,6 +28,30 @@ void CCSwipeGestureRecognizerForScript::didRecognizeGesture(CCObject * obj)
     CCSwipe* swipe = (CCSwipe*)obj;
     CCArray* pArrayArgs = CCArray::createWithCapacity(1);
     pArrayArgs->addObject(swipe);
+    CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
+}
+
+// CCPinchGestureRecognizer
+class CCPinchGestureRecognizerForScript : public CCPinchGestureRecognizer
+{
+public:
+    CREATE_FUNC(CCPinchGestureRecognizerForScript);
+    void setHandler(int nHandler);
+    void didRecognizeGesture(CCObject * obj);
+    int _nHandler = -1;
+};
+
+void CCPinchGestureRecognizerForScript::setHandler(int nHandler)
+{
+    _nHandler = nHandler;
+    this->setTarget(this, callfuncO_selector(CCPinchGestureRecognizerForScript::didRecognizeGesture));
+}
+
+void CCPinchGestureRecognizerForScript::didRecognizeGesture(CCObject * obj)
+{
+    CCPinch* pinch = (CCPinch*)obj;
+    CCArray* pArrayArgs = CCArray::createWithCapacity(1);
+    pArrayArgs->addObject(pinch);
     CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
 }
 
@@ -155,6 +180,42 @@ static void installCCSwipe(mrb_state *mrb, struct RClass *mod) {
 }
 
 ////////////////////////////////////////////////////////////////
+// CCPinch
+static void _dfree_CCPinch(mrb_state *mrb, void *ptr) {
+  //nop
+}
+static struct mrb_data_type _mrb_data_type_CCPinch = { "CCPinch", _dfree_CCPinch };
+mrb_value _wrap_CCPinch(mrb_state *mrb, const CCPinch* ptr) {
+  struct RClass* tc = getClass(mrb, "CCPinch");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_CCPinch, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_CCPinch;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
+
+static mrb_value CCPinch_type(mrb_state *mrb, mrb_value self) {
+  CCPinch* instance = static_cast<CCPinch*>(DATA_PTR(self));
+  return mrb_fixnum_value((int)instance->type);
+}
+
+static mrb_value CCPinch_set_type(mrb_state *mrb, mrb_value self) {
+  mrb_value o;
+  mrb_get_args(mrb, "o", &o);
+  CCPinch* instance = static_cast<CCPinch*>(DATA_PTR(self));
+  instance->type = (CCPinchGestureRecognizerType)mrb_fixnum(o);
+  return mrb_nil_value();
+}
+
+static void installCCPinch(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCObject");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCPinch", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_method(mrb, tc, "type", CCPinch_type, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "type=", CCPinch_set_type, MRB_ARGS_REQ(1));
+}
+
+////////////////////////////////////////////////////////////////
 // CCSwipeGestureRecognizer
 static void _dfree_CCSwipeGestureRecognizer(mrb_state *mrb, void *ptr) {
   //nop
@@ -228,6 +289,68 @@ static void installCCSwipeGestureRecognizerForScript(mrb_state *mrb, struct RCla
 }
 
 ////////////////////////////////////////////////////////////////
+// CCPinchGestureRecognizer
+static void _dfree_CCPinchGestureRecognizer(mrb_state *mrb, void *ptr) {
+  //nop
+}
+static struct mrb_data_type _mrb_data_type_CCPinchGestureRecognizer = { "CCPinchGestureRecognizer", _dfree_CCPinchGestureRecognizer };
+mrb_value _wrap_CCPinchGestureRecognizer(mrb_state *mrb, const CCPinchGestureRecognizer* ptr) {
+  struct RClass* tc = getClass(mrb, "CCPinchGestureRecognizer");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_CCPinchGestureRecognizer, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_CCPinchGestureRecognizer;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
+
+static void installCCPinchGestureRecognizer(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCGestureRecognizer");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCPinchGestureRecognizer", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+}
+
+////////////////////////////////////////////////////////////////
+// CCPinchGestureRecognizerForScript
+static void _dfree_CCPinchGestureRecognizerForScript(mrb_state *mrb, void *ptr) {
+  //nop
+}
+static struct mrb_data_type _mrb_data_type_CCPinchGestureRecognizerForScript = { "CCPinchGestureRecognizerForScript", _dfree_CCPinchGestureRecognizerForScript };
+mrb_value _wrap_CCPinchGestureRecognizerForScript(mrb_state *mrb, const CCPinchGestureRecognizerForScript* ptr) {
+  struct RClass* tc = getClass(mrb, "CCPinchGestureRecognizerForScript");
+  assert(tc != NULL);
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_CCPinchGestureRecognizerForScript, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_CCPinchGestureRecognizerForScript;
+  DATA_PTR(instance) = (void*)ptr;
+  return instance;
+}
+
+static mrb_value CCPinchGestureRecognizerForScript_create(mrb_state *mrb, mrb_value self) {
+
+  
+  CCPinchGestureRecognizerForScript* retval = CCPinchGestureRecognizerForScript::create();
+  return (retval == NULL ? mrb_nil_value() : _wrap_CCPinchGestureRecognizerForScript(mrb, retval));
+}
+
+static mrb_value CCPinchGestureRecognizerForScript_setHandler(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_value block;
+  mrb_get_args(mrb, "*&", &args, &arg_count, &block);
+  int blockHandler = registerProc(mrb, self, block);
+  CCPinchGestureRecognizerForScript* instance = static_cast<CCPinchGestureRecognizerForScript*>(DATA_PTR(self));
+  instance->setHandler(blockHandler);
+  return mrb_nil_value();
+}
+
+static void installCCPinchGestureRecognizerForScript(mrb_state *mrb, struct RClass *mod) {
+  struct RClass* parent = getClass(mrb, "CCPinchGestureRecognizer");
+  struct RClass* tc = mrb_define_class_under(mrb, mod, "CCPinchGestureRecognizerForScript", parent);
+  MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
+  mrb_define_class_method(mrb, tc, "create", CCPinchGestureRecognizerForScript_create, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setHandler", CCPinchGestureRecognizerForScript_setHandler, MRB_ARGS_ANY());
+}
+
+////////////////////////////////////////////////////////////////
 // Functions.
 
 void installMrubyCocos2dx_Extensions(mrb_state *mrb) {
@@ -236,8 +359,13 @@ void installMrubyCocos2dx_Extensions(mrb_state *mrb) {
   mrb_define_const(mrb, mod, "KSwipeGestureRecognizerDirectionLeft", mrb_fixnum_value(kSwipeGestureRecognizerDirectionLeft));
   mrb_define_const(mrb, mod, "KSwipeGestureRecognizerDirectionUp", mrb_fixnum_value(kSwipeGestureRecognizerDirectionUp));
   mrb_define_const(mrb, mod, "KSwipeGestureRecognizerDirectionDown", mrb_fixnum_value(kSwipeGestureRecognizerDirectionDown));
+  mrb_define_const(mrb, mod, "KPinchGestureRecognizerTypeClose", mrb_fixnum_value(kPinchGestureRecognizerTypeClose));
+  mrb_define_const(mrb, mod, "KPinchGestureRecognizerTypeOpen", mrb_fixnum_value(kPinchGestureRecognizerTypeOpen));
   installCCGestureRecognizer(mrb, mod);
   installCCSwipe(mrb, mod);
+  installCCPinch(mrb, mod);
   installCCSwipeGestureRecognizer(mrb, mod);
   installCCSwipeGestureRecognizerForScript(mrb, mod);
+  installCCPinchGestureRecognizer(mrb, mod);
+  installCCPinchGestureRecognizerForScript(mrb, mod);
 }

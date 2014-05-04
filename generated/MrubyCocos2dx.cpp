@@ -830,6 +830,23 @@ static mrb_value CCNode_getAnchorPoint(mrb_state *mrb, mrb_value self) {
   return _wrap_CCPoint(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval));
 }
 
+static mrb_value CCNode_setScale(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  float p0 = get_float(args[0]);
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  instance->setScale(p0);
+  return mrb_nil_value();
+}
+
+static mrb_value CCNode_getScale(mrb_state *mrb, mrb_value self) {
+
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  float retval = instance->getScale();
+  return mrb_float_value(mrb, retval);
+}
+
 static mrb_value CCNode_addChild(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
@@ -929,6 +946,16 @@ static mrb_value CCNode_convertTouchToNodeSpace(mrb_state *mrb, mrb_value self) 
   CCTouch* p0 = static_cast<CCTouch*>(DATA_PTR(args[0]));
   CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
   CCPoint retval = instance->convertTouchToNodeSpace(p0);
+  return _wrap_CCPoint(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval));
+}
+
+static mrb_value CCNode_convertToNodeSpace(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  CCPoint retval = instance->convertToNodeSpace(p0);
   return _wrap_CCPoint(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval));
 }
 
@@ -1032,6 +1059,8 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "getRotation", CCNode_getRotation, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setAnchorPoint", CCNode_setAnchorPoint, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getAnchorPoint", CCNode_getAnchorPoint, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setScale", CCNode_setScale, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getScale", CCNode_getScale, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "addChild", CCNode_addChild, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getChildByTag", CCNode_getChildByTag, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "runAction", CCNode_runAction, MRB_ARGS_ANY());
@@ -1041,6 +1070,7 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "scheduleUpdateWithPriorityLua", CCNode_scheduleUpdateWithPriorityLua, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "boundingBox", CCNode_boundingBox, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "convertTouchToNodeSpace", CCNode_convertTouchToNodeSpace, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "convertToNodeSpace", CCNode_convertToNodeSpace, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getTag", CCNode_getTag, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setTag", CCNode_setTag, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getZOrder", CCNode_getZOrder, MRB_ARGS_ANY());

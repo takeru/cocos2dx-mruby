@@ -7,6 +7,7 @@ Header = <<EOD
 extern int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc);
 
 #include "CCSwipeGestureRecognizer.h"
+#include "CCPinchGestureRecognizer.h"
 
 USING_NS_CC;
 
@@ -33,11 +34,38 @@ void CCSwipeGestureRecognizerForScript::didRecognizeGesture(CCObject * obj)
     CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
 }
 
+// CCPinchGestureRecognizer
+class CCPinchGestureRecognizerForScript : public CCPinchGestureRecognizer
+{
+public:
+    CREATE_FUNC(CCPinchGestureRecognizerForScript);
+    void setHandler(int nHandler);
+    void didRecognizeGesture(CCObject * obj);
+    int _nHandler = -1;
+};
+
+void CCPinchGestureRecognizerForScript::setHandler(int nHandler)
+{
+    _nHandler = nHandler;
+    this->setTarget(this, callfuncO_selector(CCPinchGestureRecognizerForScript::didRecognizeGesture));
+}
+
+void CCPinchGestureRecognizerForScript::didRecognizeGesture(CCObject * obj)
+{
+    CCPinch* pinch = (CCPinch*)obj;
+    CCArray* pArrayArgs = CCArray::createWithCapacity(1);
+    pArrayArgs->addObject(pinch);
+    CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
+}
+
 mrb_value _wrap_CCPoint(mrb_state *mrb, const CCPoint* ptr);
 
 EOD
 
-Enums = ['CCSwipeGestureRecognizerDirection']
+Enums = [
+  'CCSwipeGestureRecognizerDirection',
+  'CCPinchGestureRecognizerType'
+]
 
 Constants = [
   # enum CCSwipeGestureRecognizerDirection
@@ -45,6 +73,10 @@ Constants = [
   ['int', 'kSwipeGestureRecognizerDirectionLeft'],
   ['int', 'kSwipeGestureRecognizerDirectionUp'],
   ['int', 'kSwipeGestureRecognizerDirectionDown'],
+
+  # enum CCPinchGestureRecognizerType
+  ['int', 'kPinchGestureRecognizerTypeClose'],
+  ['int', 'kPinchGestureRecognizerTypeOpen'],
 ]
 
 Classes = {
@@ -63,6 +95,13 @@ Classes = {
       [ATTR_ACCESSOR, 'CCPoint&', 'location'],
     ]
   },
+  'CCPinch' => {
+    :parent => 'CCObject',
+    :memory_management => :none,
+    :methods => [
+      [ATTR_ACCESSOR, 'CCPinchGestureRecognizerType', 'type'],
+    ]
+  },
   'CCSwipeGestureRecognizer' => {
     :parent => 'CCGestureRecognizer',
     :memory_management => :none,
@@ -75,6 +114,20 @@ Classes = {
     :memory_management => :none,
     :methods => [
       [STATIC, 'CCSwipeGestureRecognizerForScript*', 'create', []],
+      [0, 'void', 'setHandler', ['block']],
+    ],
+  },
+  'CCPinchGestureRecognizer' => {
+    :parent => 'CCGestureRecognizer',
+    :memory_management => :none,
+    :methods => [
+    ],
+  },
+  'CCPinchGestureRecognizerForScript' => {
+    :parent => 'CCPinchGestureRecognizer',
+    :memory_management => :none,
+    :methods => [
+      [STATIC, 'CCPinchGestureRecognizerForScript*', 'create', []],
       [0, 'void', 'setHandler', ['block']],
     ],
   },

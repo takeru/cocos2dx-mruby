@@ -20,11 +20,13 @@
 #include "MrubyBox2D.h"
 #include "MrubyCocos2dx_Extensions.h"
 #include "CCSwipeGestureRecognizer.h"
+#include "CCPinchGestureRecognizer.h"
 
 extern mrb_value _wrap_CCTouch(mrb_state *mrb, const cocos2d::CCTouch* ptr);
 extern mrb_value _wrap_CCObject(mrb_state *mrb, const cocos2d::CCObject* ptr);
 extern mrb_value _wrap_CCNode(mrb_state *mrb, const cocos2d::CCNode* ptr);
 extern mrb_value _wrap_CCSwipe(mrb_state *mrb, const CCSwipe* ptr);
+extern mrb_value _wrap_CCPinch(mrb_state *mrb, const CCPinch* ptr);
 
 static const char* getBaseName(const char* fullpath) {
   int len = strlen(fullpath);
@@ -429,6 +431,8 @@ int CCMrubyEngine::executeEventWithArgs(int nHandler, CCArray* pArgs)
             args[i] = mrb_fixnum_value(cci->getValue());
         }else if(CCSwipe* obj = dynamic_cast<CCSwipe*>(arg)){
             args[i] = _wrap_CCSwipe(m_mrb, obj);
+        }else if(CCPinch* obj = dynamic_cast<CCPinch*>(arg)){
+            args[i] = _wrap_CCPinch(m_mrb, obj);
         }else if(CCNode* obj = dynamic_cast<CCNode*>(arg)){
             args[i] = _wrap_CCNode(m_mrb, obj);
         }else if(CCObject* obj = dynamic_cast<CCObject*>(arg)){
