@@ -52,6 +52,16 @@ mrb_value _wrap_b2Vec2(mrb_state *mrb, const b2Vec2* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+b2Vec2* get_b2Vec2(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "B2Vec2");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<b2Vec2*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is b2Vec2.");
+    return NULL;
+  }
+}
 
 static mrb_value b2Vec2___ctor(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -69,8 +79,7 @@ static mrb_value b2Vec2___ctor(mrb_state *mrb, mrb_value self) {
     b2Vec2* retval = new(mrb_malloc(mrb, sizeof(b2Vec2))) b2Vec2(p0, p1);
     DATA_TYPE(self) = &_mrb_data_type_b2Vec2; DATA_PTR(self) = retval; return self;
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2Vec2#__ctor");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "b2Vec2#__ctor Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -138,6 +147,16 @@ mrb_value _wrap_b2Shape(mrb_state *mrb, const b2Shape* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+b2Shape* get_b2Shape(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "B2Shape");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<b2Shape*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is b2Shape.");
+    return NULL;
+  }
+}
 
 static void installb2Shape(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
@@ -159,6 +178,16 @@ mrb_value _wrap_b2EdgeShape(mrb_state *mrb, const b2EdgeShape* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+b2EdgeShape* get_b2EdgeShape(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "B2EdgeShape");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<b2EdgeShape*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is b2EdgeShape.");
+    return NULL;
+  }
+}
 
 static mrb_value b2EdgeShape___ctor(mrb_state *mrb, mrb_value self) {
 
@@ -171,8 +200,8 @@ static mrb_value b2EdgeShape_Set(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const b2Vec2& p0 = *static_cast<b2Vec2*>(DATA_PTR(args[0]));
-  const b2Vec2& p1 = *static_cast<b2Vec2*>(DATA_PTR(args[1]));
+  const b2Vec2& p0 = *get_b2Vec2(mrb, args[0]);
+  const b2Vec2& p1 = *get_b2Vec2(mrb, args[1]);
   b2EdgeShape* instance = static_cast<b2EdgeShape*>(DATA_PTR(self));
   instance->Set(p0, p1);
   return mrb_nil_value();
@@ -199,6 +228,16 @@ mrb_value _wrap_b2PolygonShape(mrb_state *mrb, const b2PolygonShape* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_b2PolygonShape;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+b2PolygonShape* get_b2PolygonShape(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "B2PolygonShape");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<b2PolygonShape*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is b2PolygonShape.");
+    return NULL;
+  }
 }
 
 static mrb_value b2PolygonShape___ctor(mrb_state *mrb, mrb_value self) {
@@ -241,6 +280,16 @@ mrb_value _wrap_b2FixtureDef(mrb_state *mrb, const b2FixtureDef* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+b2FixtureDef* get_b2FixtureDef(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "B2FixtureDef");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<b2FixtureDef*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is b2FixtureDef.");
+    return NULL;
+  }
+}
 
 static mrb_value b2FixtureDef___ctor(mrb_state *mrb, mrb_value self) {
 
@@ -258,7 +307,7 @@ static mrb_value b2FixtureDef_set_shape(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
   b2FixtureDef* instance = static_cast<b2FixtureDef*>(DATA_PTR(self));
-  instance->shape = static_cast<b2Shape*>(DATA_PTR(o));
+  instance->shape = get_b2Shape(mrb, o);
   return mrb_nil_value();
 }
 
@@ -330,6 +379,16 @@ mrb_value _wrap_b2Fixture(mrb_state *mrb, const b2Fixture* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+b2Fixture* get_b2Fixture(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "B2Fixture");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<b2Fixture*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is b2Fixture.");
+    return NULL;
+  }
+}
 
 static void installb2Fixture(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
@@ -350,6 +409,16 @@ mrb_value _wrap_b2BodyDef(mrb_state *mrb, const b2BodyDef* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_b2BodyDef;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+b2BodyDef* get_b2BodyDef(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "B2BodyDef");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<b2BodyDef*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is b2BodyDef.");
+    return NULL;
+  }
 }
 
 static mrb_value b2BodyDef___ctor(mrb_state *mrb, mrb_value self) {
@@ -381,7 +450,7 @@ static mrb_value b2BodyDef_set_position(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
   b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
-  instance->position = *static_cast<b2Vec2*>(DATA_PTR(o));
+  instance->position = *get_b2Vec2(mrb, o);
   return mrb_nil_value();
 }
 
@@ -407,7 +476,7 @@ static mrb_value b2BodyDef_set_linearVelocity(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
   b2BodyDef* instance = static_cast<b2BodyDef*>(DATA_PTR(self));
-  instance->linearVelocity = *static_cast<b2Vec2*>(DATA_PTR(o));
+  instance->linearVelocity = *get_b2Vec2(mrb, o);
   return mrb_nil_value();
 }
 
@@ -485,25 +554,34 @@ mrb_value _wrap_b2Body(mrb_state *mrb, const b2Body* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+b2Body* get_b2Body(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "B2Body");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<b2Body*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is b2Body.");
+    return NULL;
+  }
+}
 
 static mrb_value b2Body_CreateFixture(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
   if (arg_count == 1) {
-    const b2FixtureDef* p0 = static_cast<b2FixtureDef*>(DATA_PTR(args[0]));
+    const b2FixtureDef* p0 = get_b2FixtureDef(mrb, args[0]);
     b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
     b2Fixture* retval = instance->CreateFixture(p0);
     return (retval == NULL ? mrb_nil_value() : _wrap_b2Fixture(mrb, retval));
   } else if (arg_count == 2) {
-    const b2Shape* p0 = static_cast<b2Shape*>(DATA_PTR(args[0]));
+    const b2Shape* p0 = get_b2Shape(mrb, args[0]);
     float p1 = get_float(args[1]);
     b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
     b2Fixture* retval = instance->CreateFixture(p0, p1);
     return (retval == NULL ? mrb_nil_value() : _wrap_b2Fixture(mrb, retval));
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "b2Body#CreateFixture");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "b2Body#CreateFixture Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -512,7 +590,7 @@ static mrb_value b2Body_DestroyFixture(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  b2Fixture* p0 = static_cast<b2Fixture*>(DATA_PTR(args[0]));
+  b2Fixture* p0 = get_b2Fixture(mrb, args[0]);
   b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
   instance->DestroyFixture(p0);
   return mrb_nil_value();
@@ -536,7 +614,7 @@ static mrb_value b2Body_SetTransform(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const b2Vec2& p0 = *static_cast<b2Vec2*>(DATA_PTR(args[0]));
+  const b2Vec2& p0 = *get_b2Vec2(mrb, args[0]);
   float p1 = get_float(args[1]);
   b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
   instance->SetTransform(p0, p1);
@@ -561,7 +639,7 @@ static mrb_value b2Body_SetLinearVelocity(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const b2Vec2& p0 = *static_cast<b2Vec2*>(DATA_PTR(args[0]));
+  const b2Vec2& p0 = *get_b2Vec2(mrb, args[0]);
   b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
   instance->SetLinearVelocity(p0);
   return mrb_nil_value();
@@ -622,12 +700,22 @@ mrb_value _wrap_b2World(mrb_state *mrb, const b2World* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+b2World* get_b2World(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "B2World");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<b2World*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is b2World.");
+    return NULL;
+  }
+}
 
 static mrb_value b2World___ctor(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  b2Vec2 p0 = *static_cast<b2Vec2*>(DATA_PTR(args[0]));
+  b2Vec2 p0 = *get_b2Vec2(mrb, args[0]);
   
   b2World* retval = new(mrb_malloc(mrb, sizeof(b2World))) b2World(p0);
   DATA_TYPE(self) = &_mrb_data_type_b2World; DATA_PTR(self) = retval; return self;
@@ -657,7 +745,7 @@ static mrb_value b2World_CreateBody(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const b2BodyDef* p0 = static_cast<b2BodyDef*>(DATA_PTR(args[0]));
+  const b2BodyDef* p0 = get_b2BodyDef(mrb, args[0]);
   b2World* instance = static_cast<b2World*>(DATA_PTR(self));
   b2Body* retval = instance->CreateBody(p0);
   return (retval == NULL ? mrb_nil_value() : _wrap_b2Body(mrb, retval));
@@ -667,7 +755,7 @@ static mrb_value b2World_DestroyBody(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  b2Body* p0 = static_cast<b2Body*>(DATA_PTR(args[0]));
+  b2Body* p0 = get_b2Body(mrb, args[0]);
   b2World* instance = static_cast<b2World*>(DATA_PTR(self));
   instance->DestroyBody(p0);
   return mrb_nil_value();

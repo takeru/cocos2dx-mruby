@@ -54,6 +54,16 @@ mrb_value _wrap_SimpleAudioEngine(mrb_state *mrb, const SimpleAudioEngine* ptr) 
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+SimpleAudioEngine* get_SimpleAudioEngine(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "SimpleAudioEngine");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<SimpleAudioEngine*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is SimpleAudioEngine.");
+    return NULL;
+  }
+}
 
 static mrb_value SimpleAudioEngine_sharedEngine(mrb_state *mrb, mrb_value self) {
 
@@ -78,8 +88,7 @@ static mrb_value SimpleAudioEngine_playBackgroundMusic(mrb_state *mrb, mrb_value
     instance->playBackgroundMusic(p0, p1);
     return mrb_nil_value();
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "SimpleAudioEngine#playBackgroundMusic");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "SimpleAudioEngine#playBackgroundMusic Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -110,8 +119,7 @@ static mrb_value SimpleAudioEngine_playEffect(mrb_state *mrb, mrb_value self) {
     instance->playEffect(p0, p1);
     return mrb_nil_value();
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "SimpleAudioEngine#playEffect");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "SimpleAudioEngine#playEffect Wrong count of arguments.");
     return mrb_nil_value();
   }
 }

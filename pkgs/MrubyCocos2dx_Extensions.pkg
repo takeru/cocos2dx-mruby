@@ -58,7 +58,8 @@ void CCPinchGestureRecognizerForScript::didRecognizeGesture(CCObject * obj)
     CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
 }
 
-mrb_value _wrap_CCPoint(mrb_state *mrb, const CCPoint* ptr);
+extern mrb_value _wrap_CCPoint(mrb_state *mrb, const CCPoint* ptr);
+extern CCPoint* get_CCPoint(mrb_state *mrb, mrb_value v);
 
 EOD
 

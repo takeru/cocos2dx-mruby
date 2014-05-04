@@ -205,6 +205,16 @@ mrb_value _wrap_#{klass}(mrb_state *mrb, const #{klass}* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+#{klass}* get_#{klass}(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "#{klass.capitalize1}");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<#{klass}*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is #{klass}.");
+    return NULL;
+  }
+}
 EOD
   end
 
@@ -267,8 +277,7 @@ EOD
       end
       print <<EOD
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "#{klass}\##{method_name}");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "#{klass}\##{method_name} Wrong count of arguments.");
     return mrb_nil_value();
   }
 EOD
@@ -419,9 +428,9 @@ EOD
 
       plain_type = get_plain_type(type)
       if is_pointer_type(type)
-        return "static_cast<#{plain_type}*>(DATA_PTR(#{varname}))"
+        return "get_#{plain_type}(mrb, #{varname})"
       else
-        return "*static_cast<#{plain_type}*>(DATA_PTR(#{varname}))"
+        return "*get_#{plain_type}(mrb, #{varname})"
       end
     end
   end

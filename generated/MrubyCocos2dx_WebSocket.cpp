@@ -115,6 +115,16 @@ mrb_value _wrap_WebSocket(mrb_state *mrb, const WebSocket* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+WebSocket* get_WebSocket(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "WebSocket");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<WebSocket*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is WebSocket.");
+    return NULL;
+  }
+}
 
 static mrb_value WebSocket___ctor(mrb_state *mrb, mrb_value self) {
 

@@ -8,8 +8,8 @@ extern int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc);
 
 using namespace cocos2d;
 
-typedef ccColor3B CcColor3B;
-typedef ccColor4F CcColor4F;
+static CCSize* get_CCSize(mrb_state *mrb, mrb_value v);
+static CCTouch* get_CCTouch(mrb_state *mrb, mrb_value v);
 
 
 #include "mruby/mruby.h"
@@ -51,150 +51,170 @@ static struct RClass* getClass(mrb_state *mrb, const char* className) {
 
 
 ////////////////////////////////////////////////////////////////
-// CcColor3B
-static void _dfree_CcColor3B(mrb_state *mrb, void *ptr) {
-  ((CcColor3B*)ptr)->~CcColor3B(); mrb_free(mrb, ptr);
+// ccColor3B
+static void _dfree_ccColor3B(mrb_state *mrb, void *ptr) {
+  ((ccColor3B*)ptr)->~ccColor3B(); mrb_free(mrb, ptr);
 }
-static struct mrb_data_type _mrb_data_type_CcColor3B = { "CcColor3B", _dfree_CcColor3B };
-mrb_value _wrap_CcColor3B(mrb_state *mrb, const CcColor3B* ptr) {
+static struct mrb_data_type _mrb_data_type_ccColor3B = { "ccColor3B", _dfree_ccColor3B };
+mrb_value _wrap_ccColor3B(mrb_state *mrb, const ccColor3B* ptr) {
   struct RClass* tc = getClass(mrb, "CcColor3B");
   assert(tc != NULL);
-  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_CcColor3B, NULL));
-  DATA_TYPE(instance) = &_mrb_data_type_CcColor3B;
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_ccColor3B, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_ccColor3B;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+ccColor3B* get_ccColor3B(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CcColor3B");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<ccColor3B*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is ccColor3B.");
+    return NULL;
+  }
+}
 
-static mrb_value CcColor3B_r(mrb_state *mrb, mrb_value self) {
-  CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
+static mrb_value ccColor3B_r(mrb_state *mrb, mrb_value self) {
+  ccColor3B* instance = static_cast<ccColor3B*>(DATA_PTR(self));
   return mrb_fixnum_value(instance->r);
 }
 
-static mrb_value CcColor3B_set_r(mrb_state *mrb, mrb_value self) {
+static mrb_value ccColor3B_set_r(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
-  CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
+  ccColor3B* instance = static_cast<ccColor3B*>(DATA_PTR(self));
   instance->r = get_int(o);
   return mrb_nil_value();
 }
 
-static mrb_value CcColor3B_g(mrb_state *mrb, mrb_value self) {
-  CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
+static mrb_value ccColor3B_g(mrb_state *mrb, mrb_value self) {
+  ccColor3B* instance = static_cast<ccColor3B*>(DATA_PTR(self));
   return mrb_fixnum_value(instance->g);
 }
 
-static mrb_value CcColor3B_set_g(mrb_state *mrb, mrb_value self) {
+static mrb_value ccColor3B_set_g(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
-  CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
+  ccColor3B* instance = static_cast<ccColor3B*>(DATA_PTR(self));
   instance->g = get_int(o);
   return mrb_nil_value();
 }
 
-static mrb_value CcColor3B_b(mrb_state *mrb, mrb_value self) {
-  CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
+static mrb_value ccColor3B_b(mrb_state *mrb, mrb_value self) {
+  ccColor3B* instance = static_cast<ccColor3B*>(DATA_PTR(self));
   return mrb_fixnum_value(instance->b);
 }
 
-static mrb_value CcColor3B_set_b(mrb_state *mrb, mrb_value self) {
+static mrb_value ccColor3B_set_b(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
-  CcColor3B* instance = static_cast<CcColor3B*>(DATA_PTR(self));
+  ccColor3B* instance = static_cast<ccColor3B*>(DATA_PTR(self));
   instance->b = get_int(o);
   return mrb_nil_value();
 }
 
-static void installCcColor3B(mrb_state *mrb, struct RClass *mod) {
+static void installccColor3B(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CcColor3B", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
-  mrb_define_method(mrb, tc, "r", CcColor3B_r, MRB_ARGS_NONE());
-  mrb_define_method(mrb, tc, "r=", CcColor3B_set_r, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, tc, "g", CcColor3B_g, MRB_ARGS_NONE());
-  mrb_define_method(mrb, tc, "g=", CcColor3B_set_g, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, tc, "b", CcColor3B_b, MRB_ARGS_NONE());
-  mrb_define_method(mrb, tc, "b=", CcColor3B_set_b, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "r", ccColor3B_r, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "r=", ccColor3B_set_r, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "g", ccColor3B_g, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "g=", ccColor3B_set_g, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "b", ccColor3B_b, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "b=", ccColor3B_set_b, MRB_ARGS_REQ(1));
 }
 
 ////////////////////////////////////////////////////////////////
-// CcColor4F
-static void _dfree_CcColor4F(mrb_state *mrb, void *ptr) {
-  ((CcColor4F*)ptr)->~CcColor4F(); mrb_free(mrb, ptr);
+// ccColor4F
+static void _dfree_ccColor4F(mrb_state *mrb, void *ptr) {
+  ((ccColor4F*)ptr)->~ccColor4F(); mrb_free(mrb, ptr);
 }
-static struct mrb_data_type _mrb_data_type_CcColor4F = { "CcColor4F", _dfree_CcColor4F };
-mrb_value _wrap_CcColor4F(mrb_state *mrb, const CcColor4F* ptr) {
+static struct mrb_data_type _mrb_data_type_ccColor4F = { "ccColor4F", _dfree_ccColor4F };
+mrb_value _wrap_ccColor4F(mrb_state *mrb, const ccColor4F* ptr) {
   struct RClass* tc = getClass(mrb, "CcColor4F");
   assert(tc != NULL);
-  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_CcColor4F, NULL));
-  DATA_TYPE(instance) = &_mrb_data_type_CcColor4F;
+  mrb_value instance = mrb_obj_value(Data_Wrap_Struct(mrb, tc, &_mrb_data_type_ccColor4F, NULL));
+  DATA_TYPE(instance) = &_mrb_data_type_ccColor4F;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+ccColor4F* get_ccColor4F(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CcColor4F");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<ccColor4F*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is ccColor4F.");
+    return NULL;
+  }
+}
 
-static mrb_value CcColor4F_r(mrb_state *mrb, mrb_value self) {
-  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+static mrb_value ccColor4F_r(mrb_state *mrb, mrb_value self) {
+  ccColor4F* instance = static_cast<ccColor4F*>(DATA_PTR(self));
   return mrb_float_value(mrb, instance->r);
 }
 
-static mrb_value CcColor4F_set_r(mrb_state *mrb, mrb_value self) {
+static mrb_value ccColor4F_set_r(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
-  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+  ccColor4F* instance = static_cast<ccColor4F*>(DATA_PTR(self));
   instance->r = get_float(o);
   return mrb_nil_value();
 }
 
-static mrb_value CcColor4F_g(mrb_state *mrb, mrb_value self) {
-  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+static mrb_value ccColor4F_g(mrb_state *mrb, mrb_value self) {
+  ccColor4F* instance = static_cast<ccColor4F*>(DATA_PTR(self));
   return mrb_float_value(mrb, instance->g);
 }
 
-static mrb_value CcColor4F_set_g(mrb_state *mrb, mrb_value self) {
+static mrb_value ccColor4F_set_g(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
-  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+  ccColor4F* instance = static_cast<ccColor4F*>(DATA_PTR(self));
   instance->g = get_float(o);
   return mrb_nil_value();
 }
 
-static mrb_value CcColor4F_b(mrb_state *mrb, mrb_value self) {
-  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+static mrb_value ccColor4F_b(mrb_state *mrb, mrb_value self) {
+  ccColor4F* instance = static_cast<ccColor4F*>(DATA_PTR(self));
   return mrb_float_value(mrb, instance->b);
 }
 
-static mrb_value CcColor4F_set_b(mrb_state *mrb, mrb_value self) {
+static mrb_value ccColor4F_set_b(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
-  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+  ccColor4F* instance = static_cast<ccColor4F*>(DATA_PTR(self));
   instance->b = get_float(o);
   return mrb_nil_value();
 }
 
-static mrb_value CcColor4F_a(mrb_state *mrb, mrb_value self) {
-  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+static mrb_value ccColor4F_a(mrb_state *mrb, mrb_value self) {
+  ccColor4F* instance = static_cast<ccColor4F*>(DATA_PTR(self));
   return mrb_float_value(mrb, instance->a);
 }
 
-static mrb_value CcColor4F_set_a(mrb_state *mrb, mrb_value self) {
+static mrb_value ccColor4F_set_a(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
-  CcColor4F* instance = static_cast<CcColor4F*>(DATA_PTR(self));
+  ccColor4F* instance = static_cast<ccColor4F*>(DATA_PTR(self));
   instance->a = get_float(o);
   return mrb_nil_value();
 }
 
-static void installCcColor4F(mrb_state *mrb, struct RClass *mod) {
+static void installccColor4F(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CcColor4F", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
-  mrb_define_method(mrb, tc, "r", CcColor4F_r, MRB_ARGS_NONE());
-  mrb_define_method(mrb, tc, "r=", CcColor4F_set_r, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, tc, "g", CcColor4F_g, MRB_ARGS_NONE());
-  mrb_define_method(mrb, tc, "g=", CcColor4F_set_g, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, tc, "b", CcColor4F_b, MRB_ARGS_NONE());
-  mrb_define_method(mrb, tc, "b=", CcColor4F_set_b, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, tc, "a", CcColor4F_a, MRB_ARGS_NONE());
-  mrb_define_method(mrb, tc, "a=", CcColor4F_set_a, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "r", ccColor4F_r, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "r=", ccColor4F_set_r, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "g", ccColor4F_g, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "g=", ccColor4F_set_g, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "b", ccColor4F_b, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "b=", ccColor4F_set_b, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, tc, "a", ccColor4F_a, MRB_ARGS_NONE());
+  mrb_define_method(mrb, tc, "a=", ccColor4F_set_a, MRB_ARGS_REQ(1));
 }
 
 ////////////////////////////////////////////////////////////////
@@ -210,6 +230,16 @@ mrb_value _wrap_ccBlendFunc(mrb_state *mrb, const ccBlendFunc* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_ccBlendFunc;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+ccBlendFunc* get_ccBlendFunc(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CcBlendFunc");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<ccBlendFunc*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is ccBlendFunc.");
+    return NULL;
+  }
 }
 
 static mrb_value ccBlendFunc_src(mrb_state *mrb, mrb_value self) {
@@ -262,6 +292,16 @@ mrb_value _wrap_CCPoint(mrb_state *mrb, const CCPoint* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCPoint* get_CCPoint(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCPoint");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCPoint*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCPoint.");
+    return NULL;
+  }
+}
 
 static mrb_value CCPoint___ctor(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -279,18 +319,17 @@ static mrb_value CCPoint___ctor(mrb_state *mrb, mrb_value self) {
     CCPoint* retval = new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(p0, p1);
     DATA_TYPE(self) = &_mrb_data_type_CCPoint; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 1) {
-    const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+    const CCPoint& p0 = *get_CCPoint(mrb, args[0]);
     
     CCPoint* retval = new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(p0);
     DATA_TYPE(self) = &_mrb_data_type_CCPoint; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 1) {
-    const CCSize& p0 = *static_cast<CCSize*>(DATA_PTR(args[0]));
+    const CCSize& p0 = *get_CCSize(mrb, args[0]);
     
     CCPoint* retval = new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(p0);
     DATA_TYPE(self) = &_mrb_data_type_CCPoint; DATA_PTR(self) = retval; return self;
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCPoint#__ctor");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCPoint#__ctor Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -346,6 +385,16 @@ mrb_value _wrap_CCSize(mrb_state *mrb, const CCSize* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCSize* get_CCSize(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCSize");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCSize*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCSize.");
+    return NULL;
+  }
+}
 
 static mrb_value CCSize___ctor(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -363,18 +412,17 @@ static mrb_value CCSize___ctor(mrb_state *mrb, mrb_value self) {
     CCSize* retval = new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(p0, p1);
     DATA_TYPE(self) = &_mrb_data_type_CCSize; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 1) {
-    const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+    const CCPoint& p0 = *get_CCPoint(mrb, args[0]);
     
     CCSize* retval = new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(p0);
     DATA_TYPE(self) = &_mrb_data_type_CCSize; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 1) {
-    const CCSize& p0 = *static_cast<CCSize*>(DATA_PTR(args[0]));
+    const CCSize& p0 = *get_CCSize(mrb, args[0]);
     
     CCSize* retval = new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(p0);
     DATA_TYPE(self) = &_mrb_data_type_CCSize; DATA_PTR(self) = retval; return self;
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSize#__ctor");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCSize#__ctor Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -430,6 +478,16 @@ mrb_value _wrap_CCRect(mrb_state *mrb, const CCRect* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCRect* get_CCRect(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCRect");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCRect*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCRect.");
+    return NULL;
+  }
+}
 
 static mrb_value CCRect___ctor(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -449,13 +507,12 @@ static mrb_value CCRect___ctor(mrb_state *mrb, mrb_value self) {
     CCRect* retval = new(mrb_malloc(mrb, sizeof(CCRect))) CCRect(p0, p1, p2, p3);
     DATA_TYPE(self) = &_mrb_data_type_CCRect; DATA_PTR(self) = retval; return self;
   } else if (arg_count == 1) {
-    const CCRect& p0 = *static_cast<CCRect*>(DATA_PTR(args[0]));
+    const CCRect& p0 = *get_CCRect(mrb, args[0]);
     
     CCRect* retval = new(mrb_malloc(mrb, sizeof(CCRect))) CCRect(p0);
     DATA_TYPE(self) = &_mrb_data_type_CCRect; DATA_PTR(self) = retval; return self;
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCRect#__ctor");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCRect#__ctor Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -469,7 +526,7 @@ static mrb_value CCRect_set_origin(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
   CCRect* instance = static_cast<CCRect*>(DATA_PTR(self));
-  instance->origin = *static_cast<CCPoint*>(DATA_PTR(o));
+  instance->origin = *get_CCPoint(mrb, o);
   return mrb_nil_value();
 }
 
@@ -482,7 +539,7 @@ static mrb_value CCRect_set_size(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
   CCRect* instance = static_cast<CCRect*>(DATA_PTR(self));
-  instance->size = *static_cast<CCSize*>(DATA_PTR(o));
+  instance->size = *get_CCSize(mrb, o);
   return mrb_nil_value();
 }
 
@@ -490,7 +547,7 @@ static mrb_value CCRect_containsPoint(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+  const CCPoint& p0 = *get_CCPoint(mrb, args[0]);
   CCRect* instance = static_cast<CCRect*>(DATA_PTR(self));
   bool retval = instance->containsPoint(p0);
   return mrb_bool_value(retval);
@@ -500,7 +557,7 @@ static mrb_value CCRect_intersectsRect(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const CCRect& p0 = *static_cast<CCRect*>(DATA_PTR(args[0]));
+  const CCRect& p0 = *get_CCRect(mrb, args[0]);
   CCRect* instance = static_cast<CCRect*>(DATA_PTR(self));
   bool retval = instance->intersectsRect(p0);
   return mrb_bool_value(retval);
@@ -532,6 +589,16 @@ mrb_value _wrap_CCObject(mrb_state *mrb, const CCObject* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCObject;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCObject* get_CCObject(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCObject");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCObject*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCObject.");
+    return NULL;
+  }
 }
 
 static mrb_value CCObject_release(mrb_state *mrb, mrb_value self) {
@@ -608,6 +675,16 @@ mrb_value _wrap_CCArray(mrb_state *mrb, const CCArray* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCArray* get_CCArray(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCArray");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCArray*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCArray.");
+    return NULL;
+  }
+}
 
 static mrb_value CCArray_create(mrb_state *mrb, mrb_value self) {
 
@@ -620,7 +697,7 @@ static mrb_value CCArray_addObject(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCObject* p0 = static_cast<CCObject*>(DATA_PTR(args[0]));
+  CCObject* p0 = get_CCObject(mrb, args[0]);
   CCArray* instance = static_cast<CCArray*>(DATA_PTR(self));
   instance->addObject(p0);
   return mrb_nil_value();
@@ -648,6 +725,16 @@ mrb_value _wrap_CCAction(mrb_state *mrb, const CCAction* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCAction* get_CCAction(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCAction");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCAction*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCAction.");
+    return NULL;
+  }
+}
 
 static void installCCAction(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCObject");
@@ -668,6 +755,16 @@ mrb_value _wrap_CCFiniteTimeAction(mrb_state *mrb, const CCFiniteTimeAction* ptr
   DATA_TYPE(instance) = &_mrb_data_type_CCFiniteTimeAction;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCFiniteTimeAction* get_CCFiniteTimeAction(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCFiniteTimeAction");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCFiniteTimeAction*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCFiniteTimeAction.");
+    return NULL;
+  }
 }
 
 static void installCCFiniteTimeAction(mrb_state *mrb, struct RClass *mod) {
@@ -690,6 +787,16 @@ mrb_value _wrap_CCActionInterval(mrb_state *mrb, const CCActionInterval* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCActionInterval* get_CCActionInterval(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCActionInterval");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCActionInterval*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCActionInterval.");
+    return NULL;
+  }
+}
 
 static void installCCActionInterval(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCFiniteTimeAction");
@@ -710,6 +817,16 @@ mrb_value _wrap_CCActionInstant(mrb_state *mrb, const CCActionInstant* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCActionInstant;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCActionInstant* get_CCActionInstant(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCActionInstant");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCActionInstant*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCActionInstant.");
+    return NULL;
+  }
 }
 
 static void installCCActionInstant(mrb_state *mrb, struct RClass *mod) {
@@ -732,13 +849,23 @@ mrb_value _wrap_CCNode(mrb_state *mrb, const CCNode* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCNode* get_CCNode(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCNode");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCNode*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCNode.");
+    return NULL;
+  }
+}
 
 static mrb_value CCNode_setPosition(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
   if (arg_count == 1) {
-    const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+    const CCPoint& p0 = *get_CCPoint(mrb, args[0]);
     CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
     instance->setPosition(p0);
     return mrb_nil_value();
@@ -749,8 +876,7 @@ static mrb_value CCNode_setPosition(mrb_state *mrb, mrb_value self) {
     instance->setPosition(p0, p1);
     return mrb_nil_value();
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#setPosition");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCNode#setPosition Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -817,7 +943,7 @@ static mrb_value CCNode_setAnchorPoint(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+  const CCPoint& p0 = *get_CCPoint(mrb, args[0]);
   CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
   instance->setAnchorPoint(p0);
   return mrb_nil_value();
@@ -852,26 +978,25 @@ static mrb_value CCNode_addChild(mrb_state *mrb, mrb_value self) {
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
   if (arg_count == 1) {
-    CCNode* p0 = static_cast<CCNode*>(DATA_PTR(args[0]));
+    CCNode* p0 = get_CCNode(mrb, args[0]);
     CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
     instance->addChild(p0);
     return mrb_nil_value();
   } else if (arg_count == 2) {
-    CCNode* p0 = static_cast<CCNode*>(DATA_PTR(args[0]));
+    CCNode* p0 = get_CCNode(mrb, args[0]);
     int p1 = get_int(args[1]);
     CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
     instance->addChild(p0, p1);
     return mrb_nil_value();
   } else if (arg_count == 3) {
-    CCNode* p0 = static_cast<CCNode*>(DATA_PTR(args[0]));
+    CCNode* p0 = get_CCNode(mrb, args[0]);
     int p1 = get_int(args[1]);
     int p2 = get_int(args[2]);
     CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
     instance->addChild(p0, p1, p2);
     return mrb_nil_value();
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCNode#addChild");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCNode#addChild Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -890,7 +1015,7 @@ static mrb_value CCNode_runAction(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCAction* p0 = static_cast<CCAction*>(DATA_PTR(args[0]));
+  CCAction* p0 = get_CCAction(mrb, args[0]);
   CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
   instance->runAction(p0);
   return mrb_nil_value();
@@ -943,7 +1068,7 @@ static mrb_value CCNode_convertTouchToNodeSpace(mrb_state *mrb, mrb_value self) 
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCTouch* p0 = static_cast<CCTouch*>(DATA_PTR(args[0]));
+  CCTouch* p0 = get_CCTouch(mrb, args[0]);
   CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
   CCPoint retval = instance->convertTouchToNodeSpace(p0);
   return _wrap_CCPoint(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval));
@@ -953,7 +1078,7 @@ static mrb_value CCNode_convertToNodeSpace(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+  const CCPoint& p0 = *get_CCPoint(mrb, args[0]);
   CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
   CCPoint retval = instance->convertToNodeSpace(p0);
   return _wrap_CCPoint(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval));
@@ -1004,7 +1129,7 @@ static mrb_value CCNode_setUserObject(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCObject* p0 = static_cast<CCObject*>(DATA_PTR(args[0]));
+  CCObject* p0 = get_CCObject(mrb, args[0]);
   CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
   instance->setUserObject(p0);
   return mrb_nil_value();
@@ -1097,12 +1222,22 @@ mrb_value _wrap_CCNodeRGBA(mrb_state *mrb, const CCNodeRGBA* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCNodeRGBA* get_CCNodeRGBA(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCNodeRGBA");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCNodeRGBA*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCNodeRGBA.");
+    return NULL;
+  }
+}
 
 static mrb_value CCNodeRGBA_setColor(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const CcColor3B& p0 = *static_cast<CcColor3B*>(DATA_PTR(args[0]));
+  const ccColor3B& p0 = *get_ccColor3B(mrb, args[0]);
   CCNodeRGBA* instance = static_cast<CCNodeRGBA*>(DATA_PTR(self));
   instance->setColor(p0);
   return mrb_nil_value();
@@ -1129,6 +1264,16 @@ mrb_value _wrap_CCTexture2D(mrb_state *mrb, const CCTexture2D* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCTexture2D* get_CCTexture2D(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCTexture2D");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCTexture2D*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCTexture2D.");
+    return NULL;
+  }
+}
 
 static void installCCTexture2D(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCObject");
@@ -1149,6 +1294,16 @@ mrb_value _wrap_CCTextureCache(mrb_state *mrb, const CCTextureCache* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCTextureCache;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCTextureCache* get_CCTextureCache(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCTextureCache");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCTextureCache*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCTextureCache.");
+    return NULL;
+  }
 }
 
 static mrb_value CCTextureCache_sharedTextureCache(mrb_state *mrb, mrb_value self) {
@@ -1190,13 +1345,23 @@ mrb_value _wrap_CCSpriteFrame(mrb_state *mrb, const CCSpriteFrame* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCSpriteFrame* get_CCSpriteFrame(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCSpriteFrame");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCSpriteFrame*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCSpriteFrame.");
+    return NULL;
+  }
+}
 
 static mrb_value CCSpriteFrame_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
   const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-  const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
+  const CCRect& p1 = *get_CCRect(mrb, args[1]);
   
   CCSpriteFrame* retval = CCSpriteFrame::create(p0, p1);
   return (retval == NULL ? mrb_nil_value() : _wrap_CCSpriteFrame(mrb, retval));
@@ -1206,8 +1371,8 @@ static mrb_value CCSpriteFrame_createWithTexture(mrb_state *mrb, mrb_value self)
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCTexture2D* p0 = static_cast<CCTexture2D*>(DATA_PTR(args[0]));
-  const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
+  CCTexture2D* p0 = get_CCTexture2D(mrb, args[0]);
+  const CCRect& p1 = *get_CCRect(mrb, args[1]);
   
   CCSpriteFrame* retval = CCSpriteFrame::createWithTexture(p0, p1);
   return (retval == NULL ? mrb_nil_value() : _wrap_CCSpriteFrame(mrb, retval));
@@ -1235,12 +1400,22 @@ mrb_value _wrap_CCAnimation(mrb_state *mrb, const CCAnimation* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCAnimation* get_CCAnimation(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCAnimation");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCAnimation*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCAnimation.");
+    return NULL;
+  }
+}
 
 static mrb_value CCAnimation_createWithSpriteFrames(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCArray* p0 = static_cast<CCArray*>(DATA_PTR(args[0]));
+  CCArray* p0 = get_CCArray(mrb, args[0]);
   float p1 = get_float(args[1]);
   
   CCAnimation* retval = CCAnimation::createWithSpriteFrames(p0, p1);
@@ -1268,12 +1443,22 @@ mrb_value _wrap_CCAnimate(mrb_state *mrb, const CCAnimate* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCAnimate* get_CCAnimate(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCAnimate");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCAnimate*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCAnimate.");
+    return NULL;
+  }
+}
 
 static mrb_value CCAnimate_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCAnimation* p0 = static_cast<CCAnimation*>(DATA_PTR(args[0]));
+  CCAnimation* p0 = get_CCAnimation(mrb, args[0]);
   
   CCAnimate* retval = CCAnimate::create(p0);
   return (retval == NULL ? mrb_nil_value() : _wrap_CCAnimate(mrb, retval));
@@ -1300,12 +1485,22 @@ mrb_value _wrap_CCRepeatForever(mrb_state *mrb, const CCRepeatForever* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCRepeatForever* get_CCRepeatForever(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCRepeatForever");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCRepeatForever*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCRepeatForever.");
+    return NULL;
+  }
+}
 
 static mrb_value CCRepeatForever_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCActionInterval* p0 = static_cast<CCActionInterval*>(DATA_PTR(args[0]));
+  CCActionInterval* p0 = get_CCActionInterval(mrb, args[0]);
   
   CCRepeatForever* retval = CCRepeatForever::create(p0);
   return (retval == NULL ? mrb_nil_value() : _wrap_CCRepeatForever(mrb, retval));
@@ -1331,6 +1526,16 @@ mrb_value _wrap_CCScaleTo(mrb_state *mrb, const CCScaleTo* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCScaleTo;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCScaleTo* get_CCScaleTo(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCScaleTo");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCScaleTo*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCScaleTo.");
+    return NULL;
+  }
 }
 
 static mrb_value CCScaleTo_create(mrb_state *mrb, mrb_value self) {
@@ -1365,13 +1570,23 @@ mrb_value _wrap_CCMoveBy(mrb_state *mrb, const CCMoveBy* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCMoveBy* get_CCMoveBy(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCMoveBy");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCMoveBy*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCMoveBy.");
+    return NULL;
+  }
+}
 
 static mrb_value CCMoveBy_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
   float p0 = get_float(args[0]);
-  const CCPoint& p1 = *static_cast<CCPoint*>(DATA_PTR(args[1]));
+  const CCPoint& p1 = *get_CCPoint(mrb, args[1]);
   
   CCMoveBy* retval = CCMoveBy::create(p0, p1);
   return (retval == NULL ? mrb_nil_value() : _wrap_CCMoveBy(mrb, retval));
@@ -1398,13 +1613,23 @@ mrb_value _wrap_CCMoveTo(mrb_state *mrb, const CCMoveTo* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCMoveTo* get_CCMoveTo(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCMoveTo");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCMoveTo*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCMoveTo.");
+    return NULL;
+  }
+}
 
 static mrb_value CCMoveTo_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
   float p0 = get_float(args[0]);
-  const CCPoint& p1 = *static_cast<CCPoint*>(DATA_PTR(args[1]));
+  const CCPoint& p1 = *get_CCPoint(mrb, args[1]);
   
   CCMoveTo* retval = CCMoveTo::create(p0, p1);
   return (retval == NULL ? mrb_nil_value() : _wrap_CCMoveTo(mrb, retval));
@@ -1430,6 +1655,16 @@ mrb_value _wrap_CCCallFunc(mrb_state *mrb, const CCCallFunc* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCCallFunc;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCCallFunc* get_CCCallFunc(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCCallFunc");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCCallFunc*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCCallFunc.");
+    return NULL;
+  }
 }
 
 static mrb_value CCCallFunc_create(mrb_state *mrb, mrb_value self) {
@@ -1464,13 +1699,23 @@ mrb_value _wrap_CCSequence(mrb_state *mrb, const CCSequence* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCSequence* get_CCSequence(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCSequence");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCSequence*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCSequence.");
+    return NULL;
+  }
+}
 
 static mrb_value CCSequence_createWithTwoActions(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCFiniteTimeAction* p0 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[0]));
-  CCFiniteTimeAction* p1 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[1]));
+  CCFiniteTimeAction* p0 = get_CCFiniteTimeAction(mrb, args[0]);
+  CCFiniteTimeAction* p1 = get_CCFiniteTimeAction(mrb, args[1]);
   
   CCActionInterval* retval = CCSequence::createWithTwoActions(p0, p1);
   return (retval == NULL ? mrb_nil_value() : _wrap_CCActionInterval(mrb, retval));
@@ -1497,13 +1742,23 @@ mrb_value _wrap_CCSpawn(mrb_state *mrb, const CCSpawn* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCSpawn* get_CCSpawn(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCSpawn");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCSpawn*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCSpawn.");
+    return NULL;
+  }
+}
 
 static mrb_value CCSpawn_createWithTwoActions(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCFiniteTimeAction* p0 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[0]));
-  CCFiniteTimeAction* p1 = static_cast<CCFiniteTimeAction*>(DATA_PTR(args[1]));
+  CCFiniteTimeAction* p0 = get_CCFiniteTimeAction(mrb, args[0]);
+  CCFiniteTimeAction* p1 = get_CCFiniteTimeAction(mrb, args[1]);
   
   CCActionInterval* retval = CCSpawn::createWithTwoActions(p0, p1);
   return (retval == NULL ? mrb_nil_value() : _wrap_CCActionInterval(mrb, retval));
@@ -1530,6 +1785,16 @@ mrb_value _wrap_CCSprite(mrb_state *mrb, const CCSprite* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCSprite* get_CCSprite(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCSprite");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCSprite*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCSprite.");
+    return NULL;
+  }
+}
 
 static mrb_value CCSprite_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -1547,13 +1812,12 @@ static mrb_value CCSprite_create(mrb_state *mrb, mrb_value self) {
     return (retval == NULL ? mrb_nil_value() : _wrap_CCSprite(mrb, retval));
   } else if (arg_count == 2) {
     const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-    const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
+    const CCRect& p1 = *get_CCRect(mrb, args[1]);
     
     CCSprite* retval = CCSprite::create(p0, p1);
     return (retval == NULL ? mrb_nil_value() : _wrap_CCSprite(mrb, retval));
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSprite#create");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCSprite#create Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -1562,7 +1826,7 @@ static mrb_value CCSprite_createWithSpriteFrame(mrb_state *mrb, mrb_value self) 
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCSpriteFrame* p0 = static_cast<CCSpriteFrame*>(DATA_PTR(args[0]));
+  CCSpriteFrame* p0 = get_CCSpriteFrame(mrb, args[0]);
   
   CCSprite* retval = CCSprite::createWithSpriteFrame(p0);
   return (retval == NULL ? mrb_nil_value() : _wrap_CCSprite(mrb, retval));
@@ -1573,19 +1837,18 @@ static mrb_value CCSprite_createWithTexture(mrb_state *mrb, mrb_value self) {
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
   if (arg_count == 1) {
-    CCTexture2D* p0 = static_cast<CCTexture2D*>(DATA_PTR(args[0]));
+    CCTexture2D* p0 = get_CCTexture2D(mrb, args[0]);
     
     CCSprite* retval = CCSprite::createWithTexture(p0);
     return (retval == NULL ? mrb_nil_value() : _wrap_CCSprite(mrb, retval));
   } else if (arg_count == 2) {
-    CCTexture2D* p0 = static_cast<CCTexture2D*>(DATA_PTR(args[0]));
-    const CCRect& p1 = *static_cast<CCRect*>(DATA_PTR(args[1]));
+    CCTexture2D* p0 = get_CCTexture2D(mrb, args[0]);
+    const CCRect& p1 = *get_CCRect(mrb, args[1]);
     
     CCSprite* retval = CCSprite::createWithTexture(p0, p1);
     return (retval == NULL ? mrb_nil_value() : _wrap_CCSprite(mrb, retval));
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSprite#createWithTexture");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCSprite#createWithTexture Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -1595,20 +1858,19 @@ static mrb_value CCSprite_setTextureRect(mrb_state *mrb, mrb_value self) {
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
   if (arg_count == 1) {
-    const CCRect& p0 = *static_cast<CCRect*>(DATA_PTR(args[0]));
+    const CCRect& p0 = *get_CCRect(mrb, args[0]);
     CCSprite* instance = static_cast<CCSprite*>(DATA_PTR(self));
     instance->setTextureRect(p0);
     return mrb_nil_value();
   } else if (arg_count == 3) {
-    const CCRect& p0 = *static_cast<CCRect*>(DATA_PTR(args[0]));
+    const CCRect& p0 = *get_CCRect(mrb, args[0]);
     bool p1 = get_bool(args[1]);
-    const CCSize& p2 = *static_cast<CCSize*>(DATA_PTR(args[2]));
+    const CCSize& p2 = *get_CCSize(mrb, args[2]);
     CCSprite* instance = static_cast<CCSprite*>(DATA_PTR(self));
     instance->setTextureRect(p0, p1, p2);
     return mrb_nil_value();
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSprite#setTextureRect");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCSprite#setTextureRect Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -1637,6 +1899,16 @@ mrb_value _wrap_CCSpriteBatchNode(mrb_state *mrb, const CCSpriteBatchNode* ptr) 
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCSpriteBatchNode* get_CCSpriteBatchNode(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCSpriteBatchNode");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCSpriteBatchNode*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCSpriteBatchNode.");
+    return NULL;
+  }
+}
 
 static mrb_value CCSpriteBatchNode_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -1654,8 +1926,7 @@ static mrb_value CCSpriteBatchNode_create(mrb_state *mrb, mrb_value self) {
     CCSpriteBatchNode* retval = CCSpriteBatchNode::create(p0);
     return (retval == NULL ? mrb_nil_value() : _wrap_CCSpriteBatchNode(mrb, retval));
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCSpriteBatchNode#create");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCSpriteBatchNode#create Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -1689,6 +1960,16 @@ mrb_value _wrap_CCLabelTTF(mrb_state *mrb, const CCLabelTTF* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCLabelTTF* get_CCLabelTTF(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCLabelTTF");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCLabelTTF*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCLabelTTF.");
+    return NULL;
+  }
+}
 
 static mrb_value CCLabelTTF_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -1705,7 +1986,7 @@ static mrb_value CCLabelTTF_create(mrb_state *mrb, mrb_value self) {
     const char* p0 = mrb_string_value_ptr(mrb, args[0]);
     const char* p1 = mrb_string_value_ptr(mrb, args[1]);
     float p2 = get_float(args[2]);
-    const CCSize& p3 = *static_cast<CCSize*>(DATA_PTR(args[3]));
+    const CCSize& p3 = *get_CCSize(mrb, args[3]);
     CCTextAlignment p4 = (CCTextAlignment)mrb_fixnum(args[4]);
     
     CCLabelTTF* retval = CCLabelTTF::create(p0, p1, p2, p3, p4);
@@ -1714,15 +1995,14 @@ static mrb_value CCLabelTTF_create(mrb_state *mrb, mrb_value self) {
     const char* p0 = mrb_string_value_ptr(mrb, args[0]);
     const char* p1 = mrb_string_value_ptr(mrb, args[1]);
     float p2 = get_float(args[2]);
-    const CCSize& p3 = *static_cast<CCSize*>(DATA_PTR(args[3]));
+    const CCSize& p3 = *get_CCSize(mrb, args[3]);
     CCTextAlignment p4 = (CCTextAlignment)mrb_fixnum(args[4]);
     CCVerticalTextAlignment p5 = (CCVerticalTextAlignment)mrb_fixnum(args[5]);
     
     CCLabelTTF* retval = CCLabelTTF::create(p0, p1, p2, p3, p4, p5);
     return (retval == NULL ? mrb_nil_value() : _wrap_CCLabelTTF(mrb, retval));
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLabelTTF#create");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCLabelTTF#create Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -1759,6 +2039,16 @@ mrb_value _wrap_CCLabelBMFont(mrb_state *mrb, const CCLabelBMFont* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCLabelBMFont* get_CCLabelBMFont(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCLabelBMFont");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCLabelBMFont*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCLabelBMFont.");
+    return NULL;
+  }
+}
 
 static mrb_value CCLabelBMFont_create(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -1778,8 +2068,7 @@ static mrb_value CCLabelBMFont_create(mrb_state *mrb, mrb_value self) {
     CCLabelBMFont* retval = CCLabelBMFont::create(p0, p1);
     return (retval == NULL ? mrb_nil_value() : _wrap_CCLabelBMFont(mrb, retval));
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLabelBMFont#create");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCLabelBMFont#create Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -1816,6 +2105,16 @@ mrb_value _wrap_CCDrawNode(mrb_state *mrb, const CCDrawNode* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCDrawNode* get_CCDrawNode(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCDrawNode");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCDrawNode*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCDrawNode.");
+    return NULL;
+  }
+}
 
 static mrb_value CCDrawNode_create(mrb_state *mrb, mrb_value self) {
 
@@ -1828,9 +2127,9 @@ static mrb_value CCDrawNode_drawDot(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+  const CCPoint& p0 = *get_CCPoint(mrb, args[0]);
   float p1 = get_float(args[1]);
-  const ccColor4F& p2 = *static_cast<ccColor4F*>(DATA_PTR(args[2]));
+  const ccColor4F& p2 = *get_ccColor4F(mrb, args[2]);
   CCDrawNode* instance = static_cast<CCDrawNode*>(DATA_PTR(self));
   instance->drawDot(p0, p1, p2);
   return mrb_nil_value();
@@ -1840,10 +2139,10 @@ static mrb_value CCDrawNode_drawSegment(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
-  const CCPoint& p1 = *static_cast<CCPoint*>(DATA_PTR(args[1]));
+  const CCPoint& p0 = *get_CCPoint(mrb, args[0]);
+  const CCPoint& p1 = *get_CCPoint(mrb, args[1]);
   float p2 = get_float(args[2]);
-  const ccColor4F& p3 = *static_cast<ccColor4F*>(DATA_PTR(args[3]));
+  const ccColor4F& p3 = *get_ccColor4F(mrb, args[3]);
   CCDrawNode* instance = static_cast<CCDrawNode*>(DATA_PTR(self));
   instance->drawSegment(p0, p1, p2, p3);
   return mrb_nil_value();
@@ -1887,7 +2186,7 @@ static mrb_value CCDrawNode_setBlendFunc(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const ccBlendFunc& p0 = *static_cast<ccBlendFunc*>(DATA_PTR(args[0]));
+  const ccBlendFunc& p0 = *get_ccBlendFunc(mrb, args[0]);
   CCDrawNode* instance = static_cast<CCDrawNode*>(DATA_PTR(self));
   instance->setBlendFunc(p0);
   return mrb_nil_value();
@@ -1919,6 +2218,16 @@ mrb_value _wrap_CCLayer(mrb_state *mrb, const CCLayer* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCLayer;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCLayer* get_CCLayer(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCLayer");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCLayer*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCLayer.");
+    return NULL;
+  }
 }
 
 static mrb_value CCLayer_create(mrb_state *mrb, mrb_value self) {
@@ -1960,8 +2269,7 @@ static mrb_value CCLayer_registerScriptTouchHandler(mrb_state *mrb, mrb_value se
     instance->registerScriptTouchHandler(blockHandler, p0, p1, p2);
     return mrb_nil_value();
   } else {
-
-    mrb_raise(mrb, mrb_class_get(mrb, "ArgumentError"), "CCLayer#registerScriptTouchHandler");
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCLayer#registerScriptTouchHandler Wrong count of arguments.");
     return mrb_nil_value();
   }
 }
@@ -2021,6 +2329,16 @@ mrb_value _wrap_CCLayerRGBA(mrb_state *mrb, const CCLayerRGBA* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCLayerRGBA* get_CCLayerRGBA(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCLayerRGBA");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCLayerRGBA*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCLayerRGBA.");
+    return NULL;
+  }
+}
 
 static void installCCLayerRGBA(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCLayer");
@@ -2041,6 +2359,16 @@ mrb_value _wrap_CCScene(mrb_state *mrb, const CCScene* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCScene;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCScene* get_CCScene(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCScene");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCScene*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCScene.");
+    return NULL;
+  }
 }
 
 static mrb_value CCScene_create(mrb_state *mrb, mrb_value self) {
@@ -2070,6 +2398,16 @@ mrb_value _wrap_CCScheduler(mrb_state *mrb, const CCScheduler* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCScheduler;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCScheduler* get_CCScheduler(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCScheduler");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCScheduler*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCScheduler.");
+    return NULL;
+  }
 }
 
 static mrb_value CCScheduler_scheduleScriptFunc(mrb_state *mrb, mrb_value self) {
@@ -2117,6 +2455,16 @@ mrb_value _wrap_CCDirector(mrb_state *mrb, const CCDirector* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCDirector* get_CCDirector(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCDirector");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCDirector*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCDirector.");
+    return NULL;
+  }
+}
 
 static mrb_value CCDirector_sharedDirector(mrb_state *mrb, mrb_value self) {
 
@@ -2150,7 +2498,7 @@ static mrb_value CCDirector_convertToGL(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const CCPoint& p0 = *static_cast<CCPoint*>(DATA_PTR(args[0]));
+  const CCPoint& p0 = *get_CCPoint(mrb, args[0]);
   CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
   CCPoint retval = instance->convertToGL(p0);
   return _wrap_CCPoint(mrb, new(mrb_malloc(mrb, sizeof(CCPoint))) CCPoint(retval));
@@ -2160,7 +2508,7 @@ static mrb_value CCDirector_runWithScene(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCScene* p0 = static_cast<CCScene*>(DATA_PTR(args[0]));
+  CCScene* p0 = get_CCScene(mrb, args[0]);
   CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
   instance->runWithScene(p0);
   return mrb_nil_value();
@@ -2170,7 +2518,7 @@ static mrb_value CCDirector_replaceScene(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCScene* p0 = static_cast<CCScene*>(DATA_PTR(args[0]));
+  CCScene* p0 = get_CCScene(mrb, args[0]);
   CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
   instance->replaceScene(p0);
   return mrb_nil_value();
@@ -2180,7 +2528,7 @@ static mrb_value CCDirector_pushScene(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCScene* p0 = static_cast<CCScene*>(DATA_PTR(args[0]));
+  CCScene* p0 = get_CCScene(mrb, args[0]);
   CCDirector* instance = static_cast<CCDirector*>(DATA_PTR(self));
   instance->pushScene(p0);
   return mrb_nil_value();
@@ -2244,6 +2592,16 @@ mrb_value _wrap_CCEGLView(mrb_state *mrb, const CCEGLView* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCEGLView* get_CCEGLView(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCEGLView");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCEGLView*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCEGLView.");
+    return NULL;
+  }
+}
 
 static mrb_value CCEGLView_sharedOpenGLView(mrb_state *mrb, mrb_value self) {
 
@@ -2302,6 +2660,16 @@ mrb_value _wrap_CCFileUtils(mrb_state *mrb, const CCFileUtils* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCFileUtils* get_CCFileUtils(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCFileUtils");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCFileUtils*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCFileUtils.");
+    return NULL;
+  }
+}
 
 static mrb_value CCFileUtils_sharedFileUtils(mrb_state *mrb, mrb_value self) {
 
@@ -2342,6 +2710,16 @@ mrb_value _wrap_CCMenuItem(mrb_state *mrb, const CCMenuItem* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCMenuItem* get_CCMenuItem(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCMenuItem");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCMenuItem*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCMenuItem.");
+    return NULL;
+  }
+}
 
 static mrb_value CCMenuItem_registerScriptTapHandler(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -2375,6 +2753,16 @@ mrb_value _wrap_CCMenuItemSprite(mrb_state *mrb, const CCMenuItemSprite* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCMenuItemSprite* get_CCMenuItemSprite(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCMenuItemSprite");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCMenuItemSprite*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCMenuItemSprite.");
+    return NULL;
+  }
+}
 
 static void installCCMenuItemSprite(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCMenuItem");
@@ -2395,6 +2783,16 @@ mrb_value _wrap_CCMenuItemImage(mrb_state *mrb, const CCMenuItemImage* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCMenuItemImage;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCMenuItemImage* get_CCMenuItemImage(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCMenuItemImage");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCMenuItemImage*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCMenuItemImage.");
+    return NULL;
+  }
 }
 
 static mrb_value CCMenuItemImage_create(mrb_state *mrb, mrb_value self) {
@@ -2429,6 +2827,16 @@ mrb_value _wrap_CCMenuItemLabel(mrb_state *mrb, const CCMenuItemLabel* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCMenuItemLabel* get_CCMenuItemLabel(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCMenuItemLabel");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCMenuItemLabel*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCMenuItemLabel.");
+    return NULL;
+  }
+}
 
 static void installCCMenuItemLabel(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCMenuItem");
@@ -2449,6 +2857,16 @@ mrb_value _wrap_CCMenuItemFont(mrb_state *mrb, const CCMenuItemFont* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCMenuItemFont;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCMenuItemFont* get_CCMenuItemFont(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCMenuItemFont");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCMenuItemFont*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCMenuItemFont.");
+    return NULL;
+  }
 }
 
 static mrb_value CCMenuItemFont_create(mrb_state *mrb, mrb_value self) {
@@ -2482,6 +2900,16 @@ mrb_value _wrap_CCMenu(mrb_state *mrb, const CCMenu* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCMenu* get_CCMenu(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCMenu");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCMenu*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCMenu.");
+    return NULL;
+  }
+}
 
 static mrb_value CCMenu_create(mrb_state *mrb, mrb_value self) {
 
@@ -2494,7 +2922,7 @@ static mrb_value CCMenu_createWithItem(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  CCMenuItem* p0 = static_cast<CCMenuItem*>(DATA_PTR(args[0]));
+  CCMenuItem* p0 = get_CCMenuItem(mrb, args[0]);
   
   CCMenu* retval = CCMenu::createWithItem(p0);
   return (retval == NULL ? mrb_nil_value() : _wrap_CCMenu(mrb, retval));
@@ -2521,6 +2949,16 @@ mrb_value _wrap_CCTouch(mrb_state *mrb, const CCTouch* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCTouch;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCTouch* get_CCTouch(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCTouch");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCTouch*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCTouch.");
+    return NULL;
+  }
 }
 
 static mrb_value CCTouch_getLocation(mrb_state *mrb, mrb_value self) {
@@ -2606,6 +3044,16 @@ mrb_value _wrap_CCUserDefault(mrb_state *mrb, const CCUserDefault* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCUserDefault;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCUserDefault* get_CCUserDefault(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCUserDefault");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCUserDefault*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCUserDefault.");
+    return NULL;
+  }
 }
 
 static mrb_value CCUserDefault_sharedUserDefault(mrb_state *mrb, mrb_value self) {
@@ -2703,8 +3151,8 @@ static mrb_value ccc3__(mrb_state *mrb, mrb_value self) {
   unsigned char p1 = get_int(args[1]);
   unsigned char p2 = get_int(args[2]);
   
-  CcColor3B retval = ccc3(p0, p1, p2);
-  return _wrap_CcColor3B(mrb, new(mrb_malloc(mrb, sizeof(CcColor3B))) CcColor3B(retval));
+  ccColor3B retval = ccc3(p0, p1, p2);
+  return _wrap_ccColor3B(mrb, new(mrb_malloc(mrb, sizeof(ccColor3B))) ccColor3B(retval));
 }
 
 static mrb_value CCRANDOM_0_1__(mrb_state *mrb, mrb_value self) {
@@ -2723,8 +3171,8 @@ static mrb_value ccc4f__(mrb_state *mrb, mrb_value self) {
   float p2 = get_float(args[2]);
   float p3 = get_float(args[3]);
   
-  CcColor4F retval = ccc4f(p0, p1, p2, p3);
-  return _wrap_CcColor4F(mrb, new(mrb_malloc(mrb, sizeof(CcColor4F))) CcColor4F(retval));
+  ccColor4F retval = ccc4f(p0, p1, p2, p3);
+  return _wrap_ccColor4F(mrb, new(mrb_malloc(mrb, sizeof(ccColor4F))) ccColor4F(retval));
 }
 
 void installMrubyCocos2dx(mrb_state *mrb) {
@@ -2759,8 +3207,8 @@ void installMrubyCocos2dx(mrb_state *mrb) {
   mrb_define_module_function(mrb, mod, "ccc3", ccc3__, MRB_ARGS_ANY());
   mrb_define_module_function(mrb, mod, "cCRANDOM_0_1", CCRANDOM_0_1__, MRB_ARGS_ANY());
   mrb_define_module_function(mrb, mod, "ccc4f", ccc4f__, MRB_ARGS_ANY());
-  installCcColor3B(mrb, mod);
-  installCcColor4F(mrb, mod);
+  installccColor3B(mrb, mod);
+  installccColor4F(mrb, mod);
   installccBlendFunc(mrb, mod);
   installCCPoint(mrb, mod);
   installCCSize(mrb, mod);

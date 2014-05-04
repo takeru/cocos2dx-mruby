@@ -11,8 +11,8 @@ extern int registerProc(mrb_state *mrb, mrb_value self, mrb_value proc);
 
 using namespace cocos2d;
 
-typedef ccColor3B CcColor3B;
-typedef ccColor4F CcColor4F;
+static CCSize* get_CCSize(mrb_state *mrb, mrb_value v);
+static CCTouch* get_CCTouch(mrb_state *mrb, mrb_value v);
 
 EOD
 
@@ -64,13 +64,13 @@ Functions = [
   ['CCPoint', 'ccp', ['float', 'float']],
   ['CCSize', 'CCSizeMake', ['float', 'float']],
   ['CCRect', 'CCRectMake', ['float', 'float', 'float', 'float']],
-  ['CcColor3B', 'ccc3', ['unsigned char', 'unsigned char', 'unsigned char']],
+  ['ccColor3B', 'ccc3', ['unsigned char', 'unsigned char', 'unsigned char']],
   ['float', 'CCRANDOM_0_1', []],
-  ['CcColor4F', 'ccc4f', ['float', 'float', 'float', 'float']]
+  ['ccColor4F', 'ccc4f', ['float', 'float', 'float', 'float']]
 ]
 
 Classes = {
-  'CcColor3B' => {
+  'ccColor3B' => {
     :parent => nil,#:struct,
     :memory_management => :default,
     :methods => [
@@ -79,7 +79,7 @@ Classes = {
                  [ATTR_ACCESSOR, 'unsigned char', 'b'],
                 ],
   },
-  'CcColor4F' => {
+  'ccColor4F' => {
     :parent => nil,#:struct,
     :memory_management => :default,
     :methods => [
@@ -227,7 +227,7 @@ Classes = {
     :parent => 'CCNode',
     :memory_management => :none,
     :methods => [
-                 [0, 'void', 'setColor', ['const CcColor3B&']],
+                 [0, 'void', 'setColor', ['const ccColor3B&']],
                 ],
   },
   'CCTexture2D' => {

@@ -55,7 +55,8 @@ void CCPinchGestureRecognizerForScript::didRecognizeGesture(CCObject * obj)
     CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEventWithArgs(_nHandler, pArrayArgs);
 }
 
-mrb_value _wrap_CCPoint(mrb_state *mrb, const CCPoint* ptr);
+extern mrb_value _wrap_CCPoint(mrb_state *mrb, const CCPoint* ptr);
+extern CCPoint* get_CCPoint(mrb_state *mrb, mrb_value v);
 
 
 #include "mruby/mruby.h"
@@ -110,6 +111,16 @@ mrb_value _wrap_CCGestureRecognizer(mrb_state *mrb, const CCGestureRecognizer* p
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCGestureRecognizer* get_CCGestureRecognizer(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCGestureRecognizer");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCGestureRecognizer*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCGestureRecognizer.");
+    return NULL;
+  }
+}
 
 static mrb_value CCGestureRecognizer_setCancelsTouchesInView(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -142,6 +153,16 @@ mrb_value _wrap_CCSwipe(mrb_state *mrb, const CCSwipe* ptr) {
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCSwipe* get_CCSwipe(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCSwipe");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCSwipe*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCSwipe.");
+    return NULL;
+  }
+}
 
 static mrb_value CCSwipe_direction(mrb_state *mrb, mrb_value self) {
   CCSwipe* instance = static_cast<CCSwipe*>(DATA_PTR(self));
@@ -165,7 +186,7 @@ static mrb_value CCSwipe_set_location(mrb_state *mrb, mrb_value self) {
   mrb_value o;
   mrb_get_args(mrb, "o", &o);
   CCSwipe* instance = static_cast<CCSwipe*>(DATA_PTR(self));
-  instance->location = *static_cast<CCPoint*>(DATA_PTR(o));
+  instance->location = *get_CCPoint(mrb, o);
   return mrb_nil_value();
 }
 
@@ -192,6 +213,16 @@ mrb_value _wrap_CCPinch(mrb_state *mrb, const CCPinch* ptr) {
   DATA_TYPE(instance) = &_mrb_data_type_CCPinch;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCPinch* get_CCPinch(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCPinch");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCPinch*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCPinch.");
+    return NULL;
+  }
 }
 
 static mrb_value CCPinch_type(mrb_state *mrb, mrb_value self) {
@@ -229,6 +260,16 @@ mrb_value _wrap_CCSwipeGestureRecognizer(mrb_state *mrb, const CCSwipeGestureRec
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCSwipeGestureRecognizer* get_CCSwipeGestureRecognizer(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCSwipeGestureRecognizer");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCSwipeGestureRecognizer*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCSwipeGestureRecognizer.");
+    return NULL;
+  }
+}
 
 static mrb_value CCSwipeGestureRecognizer_setDirection(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
@@ -260,6 +301,16 @@ mrb_value _wrap_CCSwipeGestureRecognizerForScript(mrb_state *mrb, const CCSwipeG
   DATA_TYPE(instance) = &_mrb_data_type_CCSwipeGestureRecognizerForScript;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCSwipeGestureRecognizerForScript* get_CCSwipeGestureRecognizerForScript(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCSwipeGestureRecognizerForScript");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCSwipeGestureRecognizerForScript*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCSwipeGestureRecognizerForScript.");
+    return NULL;
+  }
 }
 
 static mrb_value CCSwipeGestureRecognizerForScript_create(mrb_state *mrb, mrb_value self) {
@@ -302,6 +353,16 @@ mrb_value _wrap_CCPinchGestureRecognizer(mrb_state *mrb, const CCPinchGestureRec
   DATA_PTR(instance) = (void*)ptr;
   return instance;
 }
+CCPinchGestureRecognizer* get_CCPinchGestureRecognizer(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCPinchGestureRecognizer");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCPinchGestureRecognizer*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCPinchGestureRecognizer.");
+    return NULL;
+  }
+}
 
 static void installCCPinchGestureRecognizer(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCGestureRecognizer");
@@ -322,6 +383,16 @@ mrb_value _wrap_CCPinchGestureRecognizerForScript(mrb_state *mrb, const CCPinchG
   DATA_TYPE(instance) = &_mrb_data_type_CCPinchGestureRecognizerForScript;
   DATA_PTR(instance) = (void*)ptr;
   return instance;
+}
+CCPinchGestureRecognizerForScript* get_CCPinchGestureRecognizerForScript(mrb_state *mrb, mrb_value v)
+{
+  struct RClass *c = getClass(mrb, "CCPinchGestureRecognizerForScript");
+  if(mrb_obj_is_kind_of(mrb, v, c)){
+    return static_cast<CCPinchGestureRecognizerForScript*>(DATA_PTR(v));
+  }else{
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "Wrong type for argument. required class is CCPinchGestureRecognizerForScript.");
+    return NULL;
+  }
 }
 
 static mrb_value CCPinchGestureRecognizerForScript_create(mrb_state *mrb, mrb_value self) {
