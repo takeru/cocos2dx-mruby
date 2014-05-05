@@ -2688,12 +2688,88 @@ static mrb_value CCFileUtils_fullPathForFilename(mrb_state *mrb, mrb_value self)
   return mrb_str_new(mrb, retval.c_str(), retval.size());
 }
 
+static mrb_value CCFileUtils_fullPathFromRelativeFile(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  const char* p1 = mrb_string_value_ptr(mrb, args[1]);
+  CCFileUtils* instance = static_cast<CCFileUtils*>(DATA_PTR(self));
+  const char* retval = instance->fullPathFromRelativeFile(p0, p1);
+  return mrb_str_new_cstr(mrb, retval);
+}
+
+static mrb_value CCFileUtils_addSearchPath(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  CCFileUtils* instance = static_cast<CCFileUtils*>(DATA_PTR(self));
+  instance->addSearchPath(p0);
+  return mrb_nil_value();
+}
+
+static mrb_value CCFileUtils_removeSearchPath(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  CCFileUtils* instance = static_cast<CCFileUtils*>(DATA_PTR(self));
+  instance->removeSearchPath(p0);
+  return mrb_nil_value();
+}
+
+static mrb_value CCFileUtils_removeAllPaths(mrb_state *mrb, mrb_value self) {
+
+  CCFileUtils* instance = static_cast<CCFileUtils*>(DATA_PTR(self));
+  instance->removeAllPaths();
+  return mrb_nil_value();
+}
+
+static mrb_value CCFileUtils_getSearchPaths(mrb_state *mrb, mrb_value self) {
+  CCFileUtils* instance = static_cast<CCFileUtils*>(DATA_PTR(self));
+  const std::vector<std::string>& retval = instance->getSearchPaths();
+  mrb_value array = mrb_ary_new(mrb);
+  for(auto s:retval){
+    mrb_value v = mrb_str_new(mrb, s.c_str(), s.size());
+    mrb_ary_push(mrb, array, v);
+  }
+  return array;
+}
+
+static mrb_value CCFileUtils_isFileExist(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const std::string& p0 = std::string(mrb_string_value_ptr(mrb, args[0]));
+  CCFileUtils* instance = static_cast<CCFileUtils*>(DATA_PTR(self));
+  bool retval = instance->isFileExist(p0);
+  return mrb_bool_value(retval);
+}
+
+static mrb_value CCFileUtils_isAbsolutePath(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const std::string& p0 = std::string(mrb_string_value_ptr(mrb, args[0]));
+  CCFileUtils* instance = static_cast<CCFileUtils*>(DATA_PTR(self));
+  bool retval = instance->isAbsolutePath(p0);
+  return mrb_bool_value(retval);
+}
+
 static void installCCFileUtils(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCFileUtils", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "sharedFileUtils", CCFileUtils_sharedFileUtils, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "fullPathForFilename", CCFileUtils_fullPathForFilename, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "fullPathFromRelativeFile", CCFileUtils_fullPathFromRelativeFile, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "addSearchPath", CCFileUtils_addSearchPath, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "removeSearchPath", CCFileUtils_removeSearchPath, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "removeAllPaths", CCFileUtils_removeAllPaths, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getSearchPaths", CCFileUtils_getSearchPaths, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "isFileExist", CCFileUtils_isFileExist, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "isAbsolutePath", CCFileUtils_isAbsolutePath, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -2879,11 +2955,22 @@ static mrb_value CCMenuItemFont_create(mrb_state *mrb, mrb_value self) {
   return (retval == NULL ? mrb_nil_value() : _wrap_CCMenuItemFont(mrb, retval));
 }
 
+static mrb_value CCMenuItemFont_setFontSizeObj(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  unsigned int p0 = get_int(args[0]);
+  CCMenuItemFont* instance = static_cast<CCMenuItemFont*>(DATA_PTR(self));
+  instance->setFontSizeObj(p0);
+  return mrb_nil_value();
+}
+
 static void installCCMenuItemFont(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCMenuItemLabel");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCMenuItemFont", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "create", CCMenuItemFont_create, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setFontSizeObj", CCMenuItemFont_setFontSizeObj, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////

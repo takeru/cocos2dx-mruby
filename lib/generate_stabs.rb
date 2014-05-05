@@ -447,6 +447,8 @@ EOD
       return "mrb_double_value(mrb, #{varname})"
     when 'std::string'
       return "mrb_str_new(mrb, #{varname}.c_str(), #{varname}.size())"
+    when 'const char*'
+      return "mrb_str_new_cstr(mrb, #{varname})"
     else
       plain_type = get_plain_type(type)
       if is_pointer_type(type)

@@ -455,6 +455,22 @@ END
     :methods => [
                  [STATIC, 'CCFileUtils*', 'sharedFileUtils', []],
                  [0, 'std::string', 'fullPathForFilename', ['const char*']],
+                 [0, 'const char*', 'fullPathFromRelativeFile', ['const char*', 'const char*']],
+                 [0, 'void', 'addSearchPath', ['const char*']],
+                 [0, 'void', 'removeSearchPath', ['const char*']],
+                 [0, 'void', 'removeAllPaths', []],
+                 [CUSTOM, 'const std::vector<std::string>&', 'getSearchPaths', [], :code=><<END],
+  CCFileUtils* instance = static_cast<CCFileUtils*>(DATA_PTR(self));
+  const std::vector<std::string>& retval = instance->getSearchPaths();
+  mrb_value array = mrb_ary_new(mrb);
+  for(auto s:retval){
+    mrb_value v = mrb_str_new(mrb, s.c_str(), s.size());
+    mrb_ary_push(mrb, array, v);
+  }
+  return array;
+END
+                 [0, 'bool', 'isFileExist', ['const std::string&']],
+                 [0, 'bool', 'isAbsolutePath', ['const std::string&']],
                 ],
   },
 
@@ -489,6 +505,7 @@ END
     :memory_management => :none,
     :methods => [
                  [STATIC, 'CCMenuItemFont*', 'create', ['const char*']],
+                 [0, 'void', 'setFontSizeObj', ['unsigned int']],
                 ],
   },
   'CCMenu' => {

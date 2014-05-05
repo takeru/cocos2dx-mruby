@@ -258,14 +258,18 @@ int CCMrubyEngine::executeString(const char* codes)
 int CCMrubyEngine::executeScriptFile(const char* filename)
 {
   std::string fullpath = CCFileUtils::sharedFileUtils()->fullPathForFilename(filename);
-
+  bool error = FALSE;
   int arena = mrb_gc_arena_save(m_mrb);
   if(executeWithDebugInfo){
     mrbc_context *cxt = mrbc_context_new(m_mrb);
     mrbc_filename(m_mrb, cxt, getBaseName(filename));
     FILE* fp = fopen(fullpath.c_str(), "rb");
-    mrb_load_file_cxt(m_mrb, fp, cxt);
-    fclose(fp);
+    if(fp){
+      mrb_load_file_cxt(m_mrb, fp, cxt);
+      fclose(fp);
+    }else{
+      error = TRUE;
+    }
     mrbc_context_free(m_mrb, cxt);
   }else{
     // No debug info.
@@ -276,7 +280,11 @@ int CCMrubyEngine::executeScriptFile(const char* filename)
   bool exc = checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
 
-  return !exc;
+  if(error==FALSE && exc==FALSE){
+    return 0; // OK
+  }else{
+    return 1;
+  }
 }
 
 int CCMrubyEngine::executeGlobalFunction(const char* functionName)
