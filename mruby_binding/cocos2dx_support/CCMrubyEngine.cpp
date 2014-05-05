@@ -262,7 +262,7 @@ int CCMrubyEngine::executeScriptFile(const char* filename)
   int arena = mrb_gc_arena_save(m_mrb);
   if(executeWithDebugInfo){
     mrbc_context *cxt = mrbc_context_new(m_mrb);
-    mrbc_filename(m_mrb, cxt, getBaseName(filename));
+    mrbc_filename(m_mrb, cxt, filename);
     FILE* fp = fopen(fullpath.c_str(), "rb");
     if(fp){
       mrb_load_file_cxt(m_mrb, fp, cxt);
