@@ -1323,12 +1323,20 @@ static mrb_value CCTextureCache_addImage(mrb_state *mrb, mrb_value self) {
   return (retval == NULL ? mrb_nil_value() : _wrap_CCTexture2D(mrb, retval));
 }
 
+static mrb_value CCTextureCache_removeAllTextures(mrb_state *mrb, mrb_value self) {
+
+  CCTextureCache* instance = static_cast<CCTextureCache*>(DATA_PTR(self));
+  instance->removeAllTextures();
+  return mrb_nil_value();
+}
+
 static void installCCTextureCache(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = getClass(mrb, "CCObject");
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCTextureCache", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "sharedTextureCache", CCTextureCache_sharedTextureCache, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "addImage", CCTextureCache_addImage, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "removeAllTextures", CCTextureCache_removeAllTextures, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
@@ -2678,6 +2686,13 @@ static mrb_value CCFileUtils_sharedFileUtils(mrb_state *mrb, mrb_value self) {
   return (retval == NULL ? mrb_nil_value() : _wrap_CCFileUtils(mrb, retval));
 }
 
+static mrb_value CCFileUtils_purgeCachedEntries(mrb_state *mrb, mrb_value self) {
+
+  CCFileUtils* instance = static_cast<CCFileUtils*>(DATA_PTR(self));
+  instance->purgeCachedEntries();
+  return mrb_nil_value();
+}
+
 static mrb_value CCFileUtils_fullPathForFilename(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
@@ -2762,6 +2777,7 @@ static void installCCFileUtils(mrb_state *mrb, struct RClass *mod) {
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCFileUtils", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "sharedFileUtils", CCFileUtils_sharedFileUtils, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "purgeCachedEntries", CCFileUtils_purgeCachedEntries, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "fullPathForFilename", CCFileUtils_fullPathForFilename, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "fullPathFromRelativeFile", CCFileUtils_fullPathFromRelativeFile, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "addSearchPath", CCFileUtils_addSearchPath, MRB_ARGS_ANY());

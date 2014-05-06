@@ -242,6 +242,7 @@ Classes = {
     :methods => [
                  [STATIC, 'CCTextureCache*', 'sharedTextureCache', []],
                  [0, 'CCTexture2D*', 'addImage', ['const char*']],
+                 [0, 'void', 'removeAllTextures', []]
                 ],
   },
   'CCSpriteFrame' => {
@@ -454,6 +455,7 @@ END
     :memory_management => :none,
     :methods => [
                  [STATIC, 'CCFileUtils*', 'sharedFileUtils', []],
+                 [0, 'void', 'purgeCachedEntries', []],
                  [0, 'std::string', 'fullPathForFilename', ['const char*']],
                  [0, 'const char*', 'fullPathFromRelativeFile', ['const char*', 'const char*']],
                  [0, 'void', 'addSearchPath', ['const char*']],
