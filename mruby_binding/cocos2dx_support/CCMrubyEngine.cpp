@@ -78,7 +78,9 @@ static const char HelperFunctions[] =
 "    end\n"
 
 "    def self.getProc(id)\n"
-"      return @@id2proc[id]\n"
+"      ret = @@id2proc[id]\n"
+"      raise \"handler id=#{id} is not registerd.\" unless ret\n"
+"      return ret\n"
 "    end\n"
 "  end\n"
 "  class Callback\n"
@@ -90,7 +92,7 @@ static const char HelperFunctions[] =
 "      @@remove_script_object.call(obj) if @@remove_script_object\n"
 "    end\n"
 
-"    @@uncaught_exception = proc{|e,bt| puts \"UncaughtException: #{([e.inspect]+e.backtrace).join(\"\\n  \")}\" }\n"
+"    @@uncaught_exception = proc{|e,bt| puts \"(default uncaught_exception handler) #{([e.inspect]+e.backtrace).join(\"\\n  \")}\"; }\n"
 "    def self.uncaught_exception(&proc)\n"
 "      @@uncaught_exception = proc\n"
 "    end\n"
@@ -250,9 +252,9 @@ int CCMrubyEngine::executeString(const char* codes)
     // No debug info.
     mrb_load_string(m_mrb, codes);
   }
-  bool exc = checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
-  return !exc;
+
+  return m_mrb->exc==NULL ? 0 : 1;
 }
 
 int CCMrubyEngine::executeScriptFile(const char* filename)
@@ -277,10 +279,9 @@ int CCMrubyEngine::executeScriptFile(const char* filename)
     mrb_load_file(m_mrb, fp);
     fclose(fp);
   }
-  bool exc = checkUncaughtException(m_mrb);
   mrb_gc_arena_restore(m_mrb, arena);
 
-  if(error==FALSE && exc==FALSE){
+  if(m_mrb->exc==NULL && error==FALSE){
     return 0; // OK
   }else{
     return 1;
@@ -449,7 +450,15 @@ int CCMrubyEngine::executeEventWithArgs(int nHandler, CCArray* pArgs)
             args[i] = mrb_nil_value();
         }
     }
-    mrb_funcall_argv(m_mrb, block, mrb_intern_cstr(m_mrb,"call"), pArgs->count(), args);
+    if(!mrb_nil_p(block)){
+        mrb_yield_argv(m_mrb, block, pArgs->count(), args);
+    }else{
+        mrb_value s = mrb_format(m_mrb, "CCMrubyEngine::executeEventWithArgs: handler id=%S is not registered. args=%S",
+                                 mrb_fixnum_value(nHandler),
+                                 mrb_inspect(m_mrb, mrb_ary_new_from_values(m_mrb, pArgs->count(), args))
+                                 );
+        mrb_funcall(m_mrb, mrb_top_self(m_mrb), "raise", 1, s);
+    }
     delete[] args;
 
     bool exc = checkUncaughtException(m_mrb);
