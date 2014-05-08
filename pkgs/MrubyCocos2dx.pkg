@@ -205,6 +205,7 @@ Classes = {
                  [0, 'CCNode*', 'getChildByTag', ['int']],
                  [0, 'void', 'runAction', ['CCAction*']],
                  [0, 'const CCSize&', 'getContentSize', []],
+                 [0, 'void', 'setContentSize', ['const CCSize&']],
                  [0, 'void', 'setVisible', ['bool']],
                  [0, 'void', 'scheduleUpdate', []],
                  [0, 'void', 'scheduleUpdateWithPriorityLua', ['block', 'int']],

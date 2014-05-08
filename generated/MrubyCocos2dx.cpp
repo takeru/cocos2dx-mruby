@@ -1028,6 +1028,16 @@ static mrb_value CCNode_getContentSize(mrb_state *mrb, mrb_value self) {
   return _wrap_CCSize(mrb, new(mrb_malloc(mrb, sizeof(CCSize))) CCSize(retval));
 }
 
+static mrb_value CCNode_setContentSize(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const CCSize& p0 = *get_CCSize(mrb, args[0]);
+  CCNode* instance = static_cast<CCNode*>(DATA_PTR(self));
+  instance->setContentSize(p0);
+  return mrb_nil_value();
+}
+
 static mrb_value CCNode_setVisible(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
@@ -1190,6 +1200,7 @@ static void installCCNode(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "getChildByTag", CCNode_getChildByTag, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "runAction", CCNode_runAction, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getContentSize", CCNode_getContentSize, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setContentSize", CCNode_setContentSize, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setVisible", CCNode_setVisible, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "scheduleUpdate", CCNode_scheduleUpdate, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "scheduleUpdateWithPriorityLua", CCNode_scheduleUpdateWithPriorityLua, MRB_ARGS_ANY());
