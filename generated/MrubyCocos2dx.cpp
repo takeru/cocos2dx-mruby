@@ -3177,15 +3177,32 @@ static mrb_value CCUserDefault_sharedUserDefault(mrb_state *mrb, mrb_value self)
   return (retval == NULL ? mrb_nil_value() : _wrap_CCUserDefault(mrb, retval));
 }
 
+static mrb_value CCUserDefault_flush(mrb_state *mrb, mrb_value self) {
+
+  CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+  instance->flush();
+  return mrb_nil_value();
+}
+
 static mrb_value CCUserDefault_getIntegerForKey(mrb_state *mrb, mrb_value self) {
   mrb_value* args;
   int arg_count;
   mrb_get_args(mrb, "*", &args, &arg_count);
-  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
-  int p1 = get_int(args[1]);
-  CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
-  int retval = instance->getIntegerForKey(p0, p1);
-  return mrb_fixnum_value(retval);
+  if (arg_count == 1) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+    int retval = instance->getIntegerForKey(p0);
+    return mrb_fixnum_value(retval);
+  } else if (arg_count == 2) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    int p1 = get_int(args[1]);
+    CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+    int retval = instance->getIntegerForKey(p0, p1);
+    return mrb_fixnum_value(retval);
+  } else {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCUserDefault#getIntegerForKey Wrong count of arguments.");
+    return mrb_nil_value();
+  }
 }
 
 static mrb_value CCUserDefault_setIntegerForKey(mrb_state *mrb, mrb_value self) {
@@ -3199,13 +3216,116 @@ static mrb_value CCUserDefault_setIntegerForKey(mrb_state *mrb, mrb_value self) 
   return mrb_nil_value();
 }
 
+static mrb_value CCUserDefault_getFloatForKey(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 1) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+    float retval = instance->getFloatForKey(p0);
+    return mrb_float_value(mrb, retval);
+  } else if (arg_count == 2) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    float p1 = get_float(args[1]);
+    CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+    float retval = instance->getFloatForKey(p0, p1);
+    return mrb_float_value(mrb, retval);
+  } else {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCUserDefault#getFloatForKey Wrong count of arguments.");
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCUserDefault_setFloatForKey(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  float p1 = get_float(args[1]);
+  CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+  instance->setFloatForKey(p0, p1);
+  return mrb_nil_value();
+}
+
+static mrb_value CCUserDefault_getBoolForKey(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 1) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+    bool retval = instance->getBoolForKey(p0);
+    return mrb_bool_value(retval);
+  } else if (arg_count == 2) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    bool p1 = get_bool(args[1]);
+    CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+    bool retval = instance->getBoolForKey(p0, p1);
+    return mrb_bool_value(retval);
+  } else {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCUserDefault#getBoolForKey Wrong count of arguments.");
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCUserDefault_setBoolForKey(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  bool p1 = get_bool(args[1]);
+  CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+  instance->setBoolForKey(p0, p1);
+  return mrb_nil_value();
+}
+
+static mrb_value CCUserDefault_getStringForKey(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  if (arg_count == 1) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+    std::string retval = instance->getStringForKey(p0);
+    return mrb_str_new(mrb, retval.c_str(), retval.size());
+  } else if (arg_count == 2) {
+    const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+    const std::string& p1 = std::string(mrb_string_value_ptr(mrb, args[1]));
+    CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+    std::string retval = instance->getStringForKey(p0, p1);
+    return mrb_str_new(mrb, retval.c_str(), retval.size());
+  } else {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "CCUserDefault#getStringForKey Wrong count of arguments.");
+    return mrb_nil_value();
+  }
+}
+
+static mrb_value CCUserDefault_setStringForKey(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const char* p0 = mrb_string_value_ptr(mrb, args[0]);
+  const std::string& p1 = std::string(mrb_string_value_ptr(mrb, args[1]));
+  CCUserDefault* instance = static_cast<CCUserDefault*>(DATA_PTR(self));
+  instance->setStringForKey(p0, p1);
+  return mrb_nil_value();
+}
+
 static void installCCUserDefault(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "CCUserDefault", parent);
   MRB_SET_INSTANCE_TT(tc, MRB_TT_DATA);
   mrb_define_class_method(mrb, tc, "sharedUserDefault", CCUserDefault_sharedUserDefault, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "flush", CCUserDefault_flush, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getIntegerForKey", CCUserDefault_getIntegerForKey, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setIntegerForKey", CCUserDefault_setIntegerForKey, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getFloatForKey", CCUserDefault_getFloatForKey, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setFloatForKey", CCUserDefault_setFloatForKey, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getBoolForKey", CCUserDefault_getBoolForKey, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setBoolForKey", CCUserDefault_setBoolForKey, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getStringForKey", CCUserDefault_getStringForKey, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "setStringForKey", CCUserDefault_setStringForKey, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////

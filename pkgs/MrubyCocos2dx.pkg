@@ -538,8 +538,27 @@ END
     :memory_management => :none,
     :methods => [
                  [STATIC, 'CCUserDefault*', 'sharedUserDefault', []],
+                 [0, 'void', 'flush', []],
+
+                 [0, 'int', 'getIntegerForKey', ['const char*']],
                  [0, 'int', 'getIntegerForKey', ['const char*', 'int']],
                  [0, 'void', 'setIntegerForKey', ['const char*', 'int']],
+
+                 [0, 'float', 'getFloatForKey', ['const char*']],
+                 [0, 'float', 'getFloatForKey', ['const char*', 'float']],
+                 [0, 'void', 'setFloatForKey', ['const char*', 'float']],
+
+                #[0, 'double', 'getDoubleForKey', ['const char*']],
+                #[0, 'double', 'getDoubleForKey', ['const char*', 'double']],
+                #[0, 'void', 'setDoubleForKey', ['const char*', 'double']],
+
+                 [0, 'bool', 'getBoolForKey', ['const char*']],
+                 [0, 'bool', 'getBoolForKey', ['const char*', 'bool']],
+                 [0, 'void', 'setBoolForKey', ['const char*', 'bool']],
+
+                 [0, 'std::string', 'getStringForKey', ['const char*']],
+                 [0, 'std::string', 'getStringForKey', ['const char*', 'const std::string&']],
+                 [0, 'void', 'setStringForKey', ['const char*', 'const std::string&']],
                 ],
   }
 }
