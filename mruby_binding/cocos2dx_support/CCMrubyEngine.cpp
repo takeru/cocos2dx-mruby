@@ -450,7 +450,17 @@ int CCMrubyEngine::executeEventWithArgs(int nHandler, CCArray* pArgs)
             args[i] = mrb_nil_value();
         }
     }
-    if(!mrb_nil_p(block)){
+    /*
+    if(false){ // debug
+        mrb_value s = mrb_format(m_mrb, "*** nHandler=%S args=%S",
+                                 mrb_fixnum_value(nHandler),
+                                 mrb_inspect(m_mrb, mrb_ary_new_from_values(m_mrb, pArgs->count(), args))
+                                 );
+        mrb_funcall(m_mrb, mrb_top_self(m_mrb), "puts", 1, s);
+    }
+    */
+    // if(!mrb_nil_p(block)){
+    if(m_mrb->exc==NULL){
         mrb_yield_argv(m_mrb, block, pArgs->count(), args);
     }else{
         mrb_value s = mrb_format(m_mrb, "CCMrubyEngine::executeEventWithArgs: handler id=%S is not registered. args=%S",
