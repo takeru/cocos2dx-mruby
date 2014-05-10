@@ -669,6 +669,23 @@ static mrb_value b2Body_GetAngularVelocity(mrb_state *mrb, mrb_value self) {
   return mrb_float_value(mrb, retval);
 }
 
+static mrb_value b2Body_ApplyForceToCenter(mrb_state *mrb, mrb_value self) {
+  mrb_value* args;
+  int arg_count;
+  mrb_get_args(mrb, "*", &args, &arg_count);
+  const b2Vec2& p0 = *get_b2Vec2(mrb, args[0]);
+  b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
+  instance->ApplyForceToCenter(p0);
+  return mrb_nil_value();
+}
+
+static mrb_value b2Body_GetMass(mrb_state *mrb, mrb_value self) {
+
+  b2Body* instance = static_cast<b2Body*>(DATA_PTR(self));
+  float retval = instance->GetMass();
+  return mrb_float_value(mrb, retval);
+}
+
 static void installb2Body(mrb_state *mrb, struct RClass *mod) {
   struct RClass* parent = mrb->object_class;
   struct RClass* tc = mrb_define_class_under(mrb, mod, "B2Body", parent);
@@ -684,6 +701,8 @@ static void installb2Body(mrb_state *mrb, struct RClass *mod) {
   mrb_define_method(mrb, tc, "getLinearVelocity", b2Body_GetLinearVelocity, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "setAngularVelocity", b2Body_SetAngularVelocity, MRB_ARGS_ANY());
   mrb_define_method(mrb, tc, "getAngularVelocity", b2Body_GetAngularVelocity, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "applyForceToCenter", b2Body_ApplyForceToCenter, MRB_ARGS_ANY());
+  mrb_define_method(mrb, tc, "getMass", b2Body_GetMass, MRB_ARGS_ANY());
 }
 
 ////////////////////////////////////////////////////////////////
