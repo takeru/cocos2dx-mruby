@@ -38,7 +38,10 @@ diff -r orig/cocos2d-x-2.2.3/cocos2dx/proj.ios/cocos2dx.xcodeproj/project.pbxpro
 > 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 1690a1694
 > 				GCC_WARN_UNUSED_FUNCTION = YES;
-1692a1697
+1692c1696,1697
+< 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+---
+> 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 > 				ONLY_ACTIVE_ARCH = YES;
 1693a1699
 > 				VALID_ARCHS = "";
@@ -54,20 +57,58 @@ diff -r orig/cocos2d-x-2.2.3/cocos2dx/proj.ios/cocos2dx.xcodeproj/project.pbxpro
 > 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 1715a1725
 > 				GCC_WARN_UNUSED_FUNCTION = YES;
+1717c1727
+< 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+---
+> 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 1719a1730
 > 				VALID_ARCHS = "";
 1726a1738
 > 				ARCHS = "$(ARCHS_STANDARD)";
 1740a1753
-> 				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+> 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 1747a1761
 > 				VALID_ARCHS = "armv7 armv7s";
 1753a1768
 > 				ARCHS = "$(ARCHS_STANDARD)";
 1766a1782
-> 				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+> 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 1773a1790
 > 				VALID_ARCHS = "armv7 armv7s";
 Only in cocos2d-x-2.2.3/cocos2dx/proj.ios/cocos2dx.xcodeproj: xcuserdata
 Only in cocos2d-x-2.2.3/extensions: .DS_Store
+diff -r orig/cocos2d-x-2.2.3/extensions/network/WebSocket.cpp cocos2d-x-2.2.3/extensions/network/WebSocket.cpp
+278,284c278
+<     
+<     pos = host.find(":");
+<     if(pos >= 0){
+<         port = atoi(host.substr(pos+1, host.size()).c_str());
+<     }
+<     
+<     pos = host.find("/", pos);
+---
+> 
+285a280
+>     pos = host.find("/");
+287c282,289
+<         path += host.substr(pos + 1, host.size());
+---
+>         path = host.substr(pos, host.size());
+>         host.erase(pos, host.size());
+>     }else{
+>         pos = host.find("?");
+>         if(pos >= 0){
+>             path += host.substr(pos, host.size());
+>             host.erase(pos, host.size());
+>         }
+289c291
+<     
+---
+> 
+291a294
+>         port = atoi(host.substr(pos+1, host.size()).c_str());
+295d297
+<     
+649a652
+>                 _wsHelper->joinSubThread();
 Only in cocos2d-x-2.2.3: projects
